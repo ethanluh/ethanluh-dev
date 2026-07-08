@@ -48,16 +48,11 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
       </button>
     </div>
   </div>
-  <object
-    data="/resume.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH"
-    type="application/pdf"
-    class="resume-modal-object"
-  >
-    <p class="p-6 font-mono text-xs text-stone">
-      Your browser can't preview PDFs inline.
-      <a href="/resume.pdf" download class="text-moss underline">Download the résumé</a> instead.
+  <div id="resume-canvas-container" class="resume-canvas-container">
+    <p class="p-6 font-mono text-xs text-stone" id="resume-canvas-fallback">
+      Loading résumé…
     </p>
-  </object>
+  </div>
 </dialog>
 
 <style>
@@ -84,19 +79,73 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
     background-color: rgb(0 0 0 / 0.6);
   }
 
-  .resume-modal-object {
+  .resume-canvas-container {
     flex: 1;
     width: 100%;
-    border: none;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+
+  .resume-canvas-container :global(canvas) {
+    max-width: 100%;
+    height: auto;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
   }
 </style>
 
 <script>
+  import * as pdfjsLib from "pdfjs-dist";
+  import pdfjsWorkerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerSrc;
+
   const trigger = document.getElementById("resume-trigger");
   const modal = document.getElementById("resume-modal") as HTMLDialogElement | null;
   const closeBtn = document.getElementById("resume-modal-close");
+  const container = document.getElementById("resume-canvas-container");
 
-  trigger?.addEventListener("click", () => modal?.showModal());
+  let rendered = false;
+
+  async function renderResume() {
+    if (rendered || !container) return;
+    rendered = true;
+
+    try {
+      const pdf = await pdfjsLib.getDocument({ url: "/resume.pdf" }).promise;
+      container.innerHTML = "";
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        if (context) {
+          await page.render({ canvasContext: context, viewport, canvas }).promise;
+        }
+        container.appendChild(canvas);
+      }
+    } catch (err) {
+      console.error("resume render failed", err);
+      rendered = false;
+      if (container) {
+        container.innerHTML = `<p class="p-6 font-mono text-xs text-stone">
+          Your browser can't preview the résumé inline.
+          <a href="/resume.pdf" download class="text-moss underline">Download the résumé</a> instead.
+        </p>`;
+      }
+    }
+  }
+
+  trigger?.addEventListener("click", () => {
+    modal?.showModal();
+    renderResume();
+  });
   closeBtn?.addEventListener("click", () => modal?.close());
   modal?.addEventListener("click", (event) => {
     if (event.target === modal) modal.close();
