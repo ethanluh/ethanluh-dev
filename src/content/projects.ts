@@ -4,6 +4,7 @@ export interface ProjectEntry {
   tag: string;
   description: string;
   href: string;
+  featured?: boolean;
 }
 
 // Zero-forcing/Ehrhart repo listed first per site content plan — not yet
@@ -15,6 +16,7 @@ export const projects: ProjectEntry[] = [
     tag: "python · code coming soon",
     description: "Computational companion to the research above — polytope construction and enumeration code.",
     href: "#",
+    featured: true,
   },
   {
     number: "02",
