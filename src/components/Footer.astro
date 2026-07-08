@@ -77,6 +77,10 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
     flex-direction: column;
   }
 
+  .resume-modal[open].resume-modal--sizing {
+    visibility: hidden;
+  }
+
   .resume-modal::backdrop {
     background-color: rgb(0 0 0 / 0.6);
   }
@@ -146,18 +150,26 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
   }
 
   function fitModalWidth() {
-    const canvas = body?.querySelector("canvas");
-    if (!canvas || !modal) return;
-    requestAnimationFrame(() => {
-      const width = canvas.getBoundingClientRect().width;
-      if (width > 0) modal.style.width = `${Math.ceil(width)}px`;
+    return new Promise<void>((resolve) => {
+      const canvas = body?.querySelector("canvas");
+      if (!canvas || !modal) {
+        resolve();
+        return;
+      }
+      requestAnimationFrame(() => {
+        const width = canvas.getBoundingClientRect().width;
+        if (width > 0) modal.style.width = `${Math.ceil(width)}px`;
+        resolve();
+      });
     });
   }
 
   trigger?.addEventListener("click", async () => {
+    modal?.classList.add("resume-modal--sizing");
     modal?.showModal();
     await renderResume();
-    fitModalWidth();
+    await fitModalWidth();
+    modal?.classList.remove("resume-modal--sizing");
   });
   closeBtn?.addEventListener("click", () => modal?.close());
   modal?.addEventListener("click", (event) => {
