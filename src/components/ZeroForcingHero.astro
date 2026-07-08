@@ -1,28 +1,168 @@
 ---
-// Semi-abstract zero forcing graph: two seed-colored vertices force their
-// uncolored neighbors to color in turn, one edge at a time.
+// Composite zero forcing graph: a spider (hub + three legs), a small tree,
+// and a 5-cycle, bridged into one connected graph. The forcing order below
+// is computed from the actual color change rule (a colored vertex with
+// exactly one uncolored neighbor forces it) rather than hand-tuned delays,
+// so editing the topology or seed set here stays correct automatically.
+
+interface Node {
+  id: string;
+  x: number;
+  y: number;
+}
+type Edge = [string, string];
+
+const nodes: Node[] = [
+  { id: "hub", x: 110, y: 180 },
+  { id: "leg1a", x: 80, y: 120 },
+  { id: "leg1b", x: 50, y: 70 },
+  { id: "leg2a", x: 60, y: 230 },
+  { id: "leg2b", x: 30, y: 280 },
+  { id: "leg3a", x: 160, y: 110 },
+  { id: "leg3b", x: 190, y: 60 },
+  { id: "troot", x: 190, y: 170 },
+  { id: "tc1", x: 240, y: 130 },
+  { id: "tc2", x: 240, y: 210 },
+  { id: "tl1", x: 280, y: 100 },
+  { id: "tl2", x: 280, y: 160 },
+  { id: "c1", x: 290, y: 230 },
+  { id: "c2", x: 340, y: 210 },
+  { id: "c3", x: 370, y: 250 },
+  { id: "c4", x: 350, y: 300 },
+  { id: "c5", x: 300, y: 290 },
+];
+
+const edges: Edge[] = [
+  ["hub", "leg1a"],
+  ["leg1a", "leg1b"],
+  ["hub", "leg2a"],
+  ["leg2a", "leg2b"],
+  ["hub", "leg3a"],
+  ["leg3a", "leg3b"],
+  ["hub", "troot"],
+  ["troot", "tc1"],
+  ["troot", "tc2"],
+  ["tc1", "tl1"],
+  ["tc1", "tl2"],
+  ["tc2", "c1"],
+  ["c1", "c2"],
+  ["c2", "c3"],
+  ["c3", "c4"],
+  ["c4", "c5"],
+  ["c5", "c1"],
+];
+
+// A zero forcing set: one per spider leg tip, both tree leaves, and an
+// adjacent pair on the cycle (a lone cycle seed can never force — it always
+// has two uncolored neighbors — so cycles need two adjacent seeds).
+const seeds = ["leg1b", "leg2b", "leg3b", "tl1", "tl2", "c1", "c2"];
+
+interface ForceRecord {
+  round: number;
+  via: string | null;
+}
+
+function simulateForcing(
+  allNodes: Node[],
+  allEdges: Edge[],
+  seedIds: string[],
+): Map<string, ForceRecord> {
+  const adjacency = new Map<string, string[]>();
+  for (const node of allNodes) adjacency.set(node.id, []);
+  for (const [a, b] of allEdges) {
+    adjacency.get(a)!.push(b);
+    adjacency.get(b)!.push(a);
+  }
+
+  const colored = new Set(seedIds);
+  const forcing = new Map<string, ForceRecord>();
+  for (const id of seedIds) forcing.set(id, { round: 0, via: null });
+
+  let round = 1;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const applied = new Map<string, string>();
+    for (const id of colored) {
+      const uncoloredNeighbors = adjacency
+        .get(id)!
+        .filter((n) => !colored.has(n));
+      if (uncoloredNeighbors.length === 1 && !applied.has(uncoloredNeighbors[0])) {
+        applied.set(uncoloredNeighbors[0], id);
+      }
+    }
+    for (const [target, via] of applied) {
+      colored.add(target);
+      forcing.set(target, { round, via });
+      changed = true;
+    }
+    if (changed) round++;
+  }
+
+  return forcing;
+}
+
+const forcing = simulateForcing(nodes, edges, seeds);
+
+if (forcing.size !== nodes.length) {
+  const uncolored = nodes.map((n) => n.id).filter((id) => !forcing.has(id));
+  throw new Error(
+    `ZeroForcingHero: seed set does not force the full graph (stuck at ${forcing.size}/${nodes.length}, uncolored: ${uncolored.join(", ")})`,
+  );
+}
+
+const nodeById = new Map(nodes.map((n) => [n.id, n]));
+
+const renderEdges = edges.map(([a, b], index) => {
+  const from = nodeById.get(a)!;
+  const to = nodeById.get(b)!;
+  const forceA = forcing.get(a)!;
+  const forceB = forcing.get(b)!;
+  const forcingRound =
+    forceA.via === b ? forceA.round : forceB.via === a ? forceB.round : null;
+  return { from, to, index, forcingRound };
+});
+
+const renderNodes = nodes.map((node) => ({
+  node,
+  round: forcing.get(node.id)!.round,
+}));
 ---
 
 <svg
-  class="zf-hero w-full h-auto max-w-md"
-  viewBox="0 0 320 260"
+  class="zf-hero w-full h-auto max-w-lg"
+  viewBox="0 0 400 320"
   fill="none"
   aria-hidden="true"
   focusable="false"
 >
-  <line class="zf-edge" style="--d: 0" x1="60" y1="70" x2="150" y2="40" />
-  <line class="zf-edge" style="--d: 1" x1="150" y1="40" x2="230" y2="80" />
-  <line class="zf-edge" style="--d: 2" x1="60" y1="70" x2="80" y2="160" />
-  <line class="zf-edge" style="--d: 3" x1="80" y1="160" x2="170" y2="190" />
-  <line class="zf-edge" style="--d: 4" x1="170" y1="190" x2="260" y2="160" />
-  <line class="zf-edge" style="--d: 5" x1="230" y1="80" x2="260" y2="160" />
+  {
+    renderEdges.map(({ from, to, index, forcingRound }) => (
+      <line
+        class:list={["zf-edge", forcingRound !== null && "zf-forcing"]}
+        style={{
+          "--i": index,
+          ...(forcingRound !== null ? { "--round": forcingRound } : {}),
+        }}
+        x1={from.x}
+        y1={from.y}
+        x2={to.x}
+        y2={to.y}
+      />
+    ))
+  }
 
-  <circle class="zf-node zf-seed" style="--d: 0" cx="60" cy="70" r="9" />
-  <circle class="zf-node zf-forced" style="--d: 1" cx="150" cy="40" r="9" />
-  <circle class="zf-node zf-forced" style="--d: 2" cx="80" cy="160" r="9" />
-  <circle class="zf-node zf-forced" style="--d: 3" cx="230" cy="80" r="9" />
-  <circle class="zf-node zf-forced" style="--d: 4" cx="170" cy="190" r="9" />
-  <circle class="zf-node zf-forced" style="--d: 5" cx="260" cy="160" r="9" />
+  {
+    renderNodes.map(({ node, round }) => (
+      <circle
+        class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]}
+        style={{ "--round": round }}
+        cx={node.x}
+        cy={node.y}
+        r={9}
+      />
+    ))
+  }
 </svg>
 
 <style>
@@ -30,10 +170,19 @@
     stroke: var(--color-stone);
     stroke-width: 1.5;
     stroke-linecap: round;
-    stroke-dasharray: 220;
-    stroke-dashoffset: 220;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
     animation: zf-draw var(--duration-base) var(--ease-field) forwards;
-    animation-delay: calc(var(--d) * var(--duration-stagger));
+    animation-delay: calc(var(--i) * var(--duration-stagger) / 5);
+  }
+
+  .zf-edge.zf-forcing {
+    animation:
+      zf-draw var(--duration-base) var(--ease-field) forwards,
+      zf-pulse var(--duration-base) var(--ease-field) forwards;
+    animation-delay:
+      calc(var(--i) * var(--duration-stagger) / 5),
+      calc(var(--round) * var(--duration-stagger) - 60ms);
   }
 
   .zf-node {
@@ -48,7 +197,7 @@
 
   .zf-forced {
     animation: zf-force var(--duration-base) var(--ease-field) forwards;
-    animation-delay: calc(var(--d) * var(--duration-stagger));
+    animation-delay: calc(var(--round) * var(--duration-stagger));
   }
 
   @keyframes zf-draw {
@@ -60,6 +209,20 @@
   @keyframes zf-force {
     to {
       fill: var(--color-moss);
+    }
+  }
+
+  @keyframes zf-pulse {
+    0% {
+      stroke: var(--color-stone);
+    }
+    50% {
+      stroke: var(--color-moss);
+      stroke-width: 2.5;
+    }
+    100% {
+      stroke: var(--color-stone);
+      stroke-width: 1.5;
     }
   }
 </style>
