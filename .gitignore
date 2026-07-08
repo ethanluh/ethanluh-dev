@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+dist/
+build/
+
+# C++
+cpp/build/
+
+# Claude Code local overrides
+.claude/settings.local.json
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
