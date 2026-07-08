@@ -48,16 +48,11 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
       </button>
     </div>
   </div>
-  <object
-    data="/resume.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH"
-    type="application/pdf"
-    class="resume-modal-object"
-  >
+  <div id="resume-modal-body" class="resume-modal-object">
     <p class="p-6 font-mono text-xs text-stone">
-      Your browser can't preview PDFs inline.
-      <a href="/resume.pdf" download class="text-moss underline">Download the résumé</a> instead.
+      Loading résumé…
     </p>
-  </object>
+  </div>
 </dialog>
 
 <style>
@@ -87,16 +82,67 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
   .resume-modal-object {
     flex: 1;
     width: 100%;
-    border: none;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: var(--color-stone, #ccc);
+  }
+
+  .resume-modal-object canvas {
+    max-width: 100%;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.4);
   }
 </style>
 
 <script>
+  import * as pdfjsLib from "pdfjs-dist";
+  import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+
   const trigger = document.getElementById("resume-trigger");
   const modal = document.getElementById("resume-modal") as HTMLDialogElement | null;
   const closeBtn = document.getElementById("resume-modal-close");
+  const body = document.getElementById("resume-modal-body");
 
-  trigger?.addEventListener("click", () => modal?.showModal());
+  let rendered = false;
+
+  async function renderResume() {
+    if (rendered || !body) return;
+    rendered = true;
+
+    try {
+      const pdf = await pdfjsLib.getDocument("/resume.pdf").promise;
+      body.innerHTML = "";
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const scale = (window.devicePixelRatio || 1) * 1.5;
+        const viewport = page.getViewport({ scale });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        canvas.style.width = `${viewport.width / (window.devicePixelRatio || 1)}px`;
+        const context = canvas.getContext("2d");
+        if (!context) continue;
+
+        await page.render({ canvas, canvasContext: context, viewport }).promise;
+        body.appendChild(canvas);
+      }
+    } catch {
+      rendered = false;
+      body.innerHTML = `<p class="p-6 font-mono text-xs text-stone">Couldn't render the résumé. <a href="/resume.pdf" download class="text-moss underline">Download it</a> instead.</p>`;
+    }
+  }
+
+  trigger?.addEventListener("click", () => {
+    modal?.showModal();
+    renderResume();
+  });
   closeBtn?.addEventListener("click", () => modal?.close());
   modal?.addEventListener("click", (event) => {
     if (event.target === modal) modal.close();
