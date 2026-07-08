@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-canopy: #1e241c;
-  --color-bark: #3e332a;
-  --color-moss: #6b7a5e;
-  --color-stone: #8c877e;
-  --color-parchment: #e9e4d6;
-  --color-lavender: #b7a4d1;
+  --color-canopy: #161d14;
+  --color-bark: #2e2620;
+  --color-moss: #7ca35c;
+  --color-stone: #aca599;
+  --color-parchment: #efead9;
+  --color-lavender: #c2a8de;
 
   --font-display: "Fraunces", serif;
   --font-body: "IBM Plex Sans", sans-serif;
