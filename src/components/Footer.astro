@@ -64,6 +64,8 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
     margin: auto;
     padding: 0;
     width: min(90vw, 900px);
+    max-width: 90vw;
+    min-width: 320px;
     height: 90vh;
     border: 1px solid var(--color-bark);
     background-color: var(--color-canopy);
@@ -82,18 +84,23 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
   .resume-modal-object {
     flex: 1;
     width: 100%;
-    overflow-y: auto;
+    min-height: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background-color: var(--color-stone, #ccc);
+    justify-content: center;
+    gap: 0;
+    padding: 0;
   }
 
-  .resume-modal-object canvas {
+  .resume-modal-object :global(canvas) {
     max-width: 100%;
-    box-shadow: 0 2px 12px rgb(0 0 0 / 0.4);
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
   }
 </style>
 
@@ -126,7 +133,6 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
         const canvas = document.createElement("canvas");
         canvas.width = viewport.width;
         canvas.height = viewport.height;
-        canvas.style.width = `${viewport.width / (window.devicePixelRatio || 1)}px`;
         const context = canvas.getContext("2d");
         if (!context) continue;
 
@@ -139,12 +145,25 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
     }
   }
 
-  trigger?.addEventListener("click", () => {
+  function fitModalWidth() {
+    const canvas = body?.querySelector("canvas");
+    if (!canvas || !modal) return;
+    requestAnimationFrame(() => {
+      const width = canvas.getBoundingClientRect().width;
+      if (width > 0) modal.style.width = `${Math.ceil(width)}px`;
+    });
+  }
+
+  trigger?.addEventListener("click", async () => {
     modal?.showModal();
-    renderResume();
+    await renderResume();
+    fitModalWidth();
   });
   closeBtn?.addEventListener("click", () => modal?.close());
   modal?.addEventListener("click", (event) => {
     if (event.target === modal) modal.close();
+  });
+  window.addEventListener("resize", () => {
+    if (modal?.open) fitModalWidth();
   });
 </script>
