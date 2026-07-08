@@ -7,7 +7,13 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
 <footer id="contact" class="border-t border-bark mt-16">
   <div class="max-w-3xl mx-auto px-6 py-8 font-mono text-xs text-stone flex flex-col gap-3">
     <div class="flex flex-wrap gap-4">
-      <a href="/resume.pdf" class="hover:text-moss transition-colors duration-150">Resume</a>
+      <button
+        type="button"
+        id="resume-trigger"
+        class="hover:text-moss transition-colors duration-150 cursor-pointer"
+      >
+        Resume
+      </button>
       <span aria-hidden="true">·</span>
       <a href={GITHUB_URL} class="hover:text-moss transition-colors duration-150">GitHub</a>
       <span aria-hidden="true">·</span>
@@ -21,8 +27,66 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
   </div>
 </footer>
 
+<dialog id="resume-modal" class="resume-modal" aria-labelledby="resume-modal-title">
+  <div class="flex items-center justify-between gap-4 border-b border-bark px-5 py-3">
+    <h2 id="resume-modal-title" class="font-mono text-xs uppercase tracking-widest text-stone">
+      Résumé
+    </h2>
+    <div class="flex items-center gap-4 font-mono text-xs">
+      <a href="/resume.pdf" download class="hover:text-moss transition-colors duration-150"> Download </a>
+      <button
+        type="button"
+        id="resume-modal-close"
+        aria-label="Close resume"
+        class="hover:text-moss transition-colors duration-150 cursor-pointer text-base leading-none"
+      >
+        &times;
+      </button>
+    </div>
+  </div>
+  <object data="/resume.pdf" type="application/pdf" class="resume-modal-object">
+    <p class="p-6 font-mono text-xs text-stone">
+      Your browser can't preview PDFs inline.
+      <a href="/resume.pdf" download class="text-moss underline">Download the résumé</a> instead.
+    </p>
+  </object>
+</dialog>
+
 <style>
   .footer-dot:hover {
     color: var(--color-lavender);
   }
+
+  .resume-modal {
+    display: flex;
+    flex-direction: column;
+    width: min(90vw, 900px);
+    height: 90vh;
+    padding: 0;
+    border: 1px solid var(--color-bark);
+    background-color: var(--color-canopy);
+    color: var(--color-parchment);
+  }
+
+  .resume-modal::backdrop {
+    background-color: rgb(0 0 0 / 0.6);
+  }
+
+  .resume-modal-object {
+    flex: 1;
+    width: 100%;
+    border: none;
+  }
 </style>
+
+<script>
+  const trigger = document.getElementById("resume-trigger");
+  const modal = document.getElementById("resume-modal") as HTMLDialogElement | null;
+  const closeBtn = document.getElementById("resume-modal-close");
+
+  trigger?.addEventListener("click", () => modal?.showModal());
+  closeBtn?.addEventListener("click", () => modal?.close());
+  modal?.addEventListener("click", (event) => {
+    if (event.target === modal) modal.close();
+  });
+</script>
