@@ -18,6 +18,9 @@ Astro 7, Tailwind CSS v4 (via `@tailwindcss/vite`), TypeScript. No backend, no d
 - Design tokens (colors, type, spacing) live in `src/styles/global.css` under `@theme` — don't hardcode hex values or font names in components.
 - Lavender (`--color-lavender`) is a fixed 3-spot easter egg (specimen-number hover, footer separator-dot hover, one bio word on the personal site) — never use it as a default UI color.
 
+## Pull requests
+Always base the PR body on `.github/pull_request_template.md` — don't fall back to a generic Summary/Test plan format. Fill in the `<!-- declared-direction: ... -->` marker with an actual sentence (the CI check in `quire-declared-direction.yml` fails PRs where it's blank or missing).
+
 ## Directory map
 - `src/pages/` — routes (currently a single-page site: `index.astro`)
 - `src/layouts/` — `BaseLayout.astro` (head, fonts, Nav/Footer wrapper)
