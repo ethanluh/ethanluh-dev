@@ -5,6 +5,7 @@ export interface ProjectEntry {
   description: string;
   href?: string;
   featured?: boolean;
+  image?: string;
 }
 
 // Zero-forcing/Ehrhart repo listed first per site content plan — not yet
@@ -17,6 +18,7 @@ export const projects: ProjectEntry[] = [
     description:
       "Computational companion to the research above — builds the zero forcing polytope from a graph's minimum forcing sets and enumerates its lattice points. The open problem: forcing-set enumeration blows up combinatorially past small graphs, so the code has to prune the search rather than brute-force it.",
     featured: true,
+    image: "/placeholder-project.svg",
   },
   {
     number: "02",
