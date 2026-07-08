@@ -1,0 +1,95 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SpecimenCard from "../components/SpecimenCard.astro";
+import { research } from "../content/research";
+import { projects } from "../content/projects";
+---
+
+<BaseLayout
+  title="Ethan Luh"
+  description="CS/Math/Stats student at Penn State Behrend — research and projects."
+>
+  <section class="max-w-3xl mx-auto px-6 pt-16 pb-12">
+    <h1 class="font-display text-h1 leading-tight mb-4">
+      Building at the edge of graph theory and code.
+    </h1>
+    <p class="max-w-xl text-parchment/90">
+      CS/Math/Stats student at Penn State Behrend. Currently researching zero
+      forcing polytopes and building small tools along the way.
+    </p>
+  </section>
+
+  <section id="research" class="max-w-3xl mx-auto px-6 py-10">
+    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Research</h2>
+    <div class="flex flex-col gap-4">
+      {
+        research.map((entry) => (
+          <div class="reveal">
+            <SpecimenCard
+              number={entry.number}
+              title={entry.title}
+              tag={`${entry.status} · updated ${entry.updated}`}
+              description={entry.abstract}
+              links={entry.links}
+            />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section id="projects" class="max-w-3xl mx-auto px-6 py-10">
+    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Projects</h2>
+    <div class="flex flex-col gap-4">
+      {
+        projects.map((entry) => (
+          <div class="reveal">
+            <SpecimenCard
+              number={entry.number}
+              title={entry.title}
+              tag={entry.tag}
+              description={entry.description}
+              links={[{ label: "view", href: entry.href }]}
+            />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const reveals = document.querySelectorAll<HTMLElement>(".reveal");
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (prefersReducedMotion) {
+    reveals.forEach((el) => el.classList.add("in-view"));
+  } else {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.1 },
+    );
+    reveals.forEach((el) => observer.observe(el));
+  }
+</script>
+
+<style>
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity var(--duration-base, 300ms) var(--ease-field),
+      transform var(--duration-base, 300ms) var(--ease-field);
+  }
+  .reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>

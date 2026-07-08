@@ -1,0 +1,26 @@
+---
+const links = [
+  { label: "research", href: "#research" },
+  { label: "projects", href: "#projects" },
+  { label: "contact", href: "#contact" },
+];
+---
+
+<header class="border-b border-parchment/10">
+  <nav
+    class="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-2 px-6 py-4 font-mono text-xs uppercase tracking-widest"
+  >
+    <a href="/" class="text-parchment">Ethan Luh</a>
+    <ul class="flex gap-5">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} class="text-stone hover:text-moss transition-colors duration-150">
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>

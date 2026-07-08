@@ -1,32 +1,24 @@
-# template-repo
+# ethanluh.com
 
-This is a **template repository**, not a project. It provides a starting
-point for Python/C++ (research + general software) repos: tooling, lint/type
-checks, CI, and doc scaffolding already wired up.
+Dev/professional site for Ethan Luh — bio, research, projects, resume, contact. Astro + Tailwind CSS static site, deployed on Cloudflare Pages.
 
-## Usage
+Design concept: "Field Guide" — research and projects presented as catalogued specimen entries. See the design spec for the full rationale (colors, type, the lavender easter-egg rule).
 
-Create a new repo from this template:
+## Develop
 
 ```
-gh repo create <new-repo-name> --template ethluh/template-repo --private
+npm install
+npm run dev
 ```
 
-Or use the "Use this template" button on GitHub.
+## Build
 
-Then:
+```
+npm run build
+```
 
-1. Update `pyproject.toml` (`name`, `description`) and `CLAUDE.md` (project
-   description).
-2. Run `make setup` to install dependencies and pre-commit hooks.
+Output goes to `dist/`. Cloudflare Pages builds this automatically on push (framework preset: Astro).
 
-## What to prune
+## Content
 
-- `cpp/` — delete if this is a pure-Python project.
-- `docs/decisions/0001-template.md` — replace with project-specific ADRs.
-- `LICENSE` — add one appropriate to the new project.
-
-## License
-
-No license is included by default — add one (e.g. MIT, Apache-2.0) before
-treating a derived project as open source.
+Research and project entries live in `src/content/research.ts` and `src/content/projects.ts` — add or edit entries there rather than touching page markup. `public/resume.pdf` needs to be added (not yet present in this repo).
