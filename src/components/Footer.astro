@@ -11,7 +11,7 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
       <button
         type="button"
         id="resume-trigger"
-        class="hover:text-moss transition-colors duration-150 cursor-pointer"
+        class="hover:text-parchment transition-colors duration-150 cursor-pointer"
       >
         Resume
       </button>
@@ -36,13 +36,13 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
       Résumé
     </h2>
     <div class="flex items-center gap-4 font-mono text-xs">
-      <a href="/resume.pdf" download class="hover:text-moss transition-colors duration-150"> Download </a>
-      <a href="/resume.tex" download class="hover:text-moss transition-colors duration-150"> LaTeX Source </a>
+      <a href="/resume.pdf" download class="hover:text-parchment transition-colors duration-150"> Download </a>
+      <a href="/resume.tex" download class="hover:text-parchment transition-colors duration-150"> LaTeX Source </a>
       <button
         type="button"
         id="resume-modal-close"
         aria-label="Close resume"
-        class="hover:text-moss transition-colors duration-150 cursor-pointer text-base leading-none"
+        class="hover:text-parchment transition-colors duration-150 cursor-pointer text-base leading-none"
       >
         &times;
       </button>
@@ -61,6 +61,7 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
   }
 
   .resume-modal {
+    box-sizing: border-box;
     margin: auto;
     padding: 0;
     width: min(90vw, 900px);
@@ -141,7 +142,7 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
       }
     } catch {
       rendered = false;
-      body.innerHTML = `<p class="p-6 font-mono text-xs text-stone">Couldn't render the résumé. <a href="/resume.pdf" download class="text-moss underline">Download it</a> instead.</p>`;
+      body.innerHTML = `<p class="p-6 font-mono text-xs text-stone">Couldn't render the résumé. <a href="/resume.pdf" download class="text-parchment underline">Download it</a> instead.</p>`;
     }
   }
 
