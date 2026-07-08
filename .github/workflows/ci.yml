@@ -6,43 +6,15 @@ on:
   pull_request:
 
 jobs:
-  python:
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v7
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
 
-      - name: Set up Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: uv sync --python ${{ matrix.python-version }}
-
-      - name: Lint (ruff)
-        run: uv run ruff check .
-
-      - name: Type check (mypy)
-        run: uv run mypy src
-
-      - name: Test (pytest)
-        run: uv run pytest -q
-
-  cpp:
-    runs-on: ubuntu-latest
-    if: hashFiles('cpp/**') != ''
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Configure
-        run: cmake -B cpp/build -S cpp
-
-      - name: Build
-        run: cmake --build cpp/build
-
-      - name: Test
-        run: ctest --test-dir cpp/build --output-on-failure
+      - run: npm ci
+      - run: npm run build

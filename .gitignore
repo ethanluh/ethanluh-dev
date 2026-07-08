@@ -1,16 +1,10 @@
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
-.venv/
-.mypy_cache/
-.ruff_cache/
-.pytest_cache/
+# Astro / Node
 dist/
-build/
-
-# C++
-cpp/build/
+.astro/
+node_modules/
+npm-debug.log*
+.env
+.env.production
 
 # Claude Code local overrides
 .claude/settings.local.json

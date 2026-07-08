@@ -1,28 +1,30 @@
 # CLAUDE.md
 
 ## Project
-<one-line description — fill in per-project>
+ethanluh.com — dev/professional site. Astro + Tailwind static site, "Field Guide" design concept (see `ethanluh-design-spec.md` handoff for the full spec).
 
 ## Stack
-Python 3.12 (uv), optional C++20/CMake in `cpp/`.
+Astro 7, Tailwind CSS v4 (via `@tailwindcss/vite`), TypeScript. No backend, no database.
 
 ## Commands
-- Test: `pytest -q`
-- Lint: `ruff check . && ruff format --check .`
-- Type check: `mypy src`
-- Build (C++): `cmake -B cpp/build -S cpp && cmake --build cpp/build`
+- Dev server: `npm run dev` (use `astro dev --background` for a background server; manage with `astro dev stop` / `astro dev status` / `astro dev logs`)
+- Build: `npm run build`
+- Preview build: `npm run preview`
 
 ## Conventions
 - Terse commit messages, imperative mood, no trailing period.
 - Prefer smallest adequate file format (.md over .docx, .csv over .xlsx).
 - No comments unless logic is non-obvious.
-- Type hints on all Python function signatures.
+- Design tokens (colors, type, spacing) live in `src/styles/global.css` under `@theme` — don't hardcode hex values or font names in components.
+- Lavender (`--color-lavender`) is a fixed 3-spot easter egg (specimen-number hover, footer separator-dot hover, one bio word on the personal site) — never use it as a default UI color.
 
 ## Directory map
-- `src/` — library code
-- `tests/` — pytest suite, mirrors `src/` structure
-- `cpp/` — optional native extensions / standalone C++ components
-- `docs/` — architecture notes, ADRs, setup instructions
+- `src/pages/` — routes (currently a single-page site: `index.astro`)
+- `src/layouts/` — `BaseLayout.astro` (head, fonts, Nav/Footer wrapper)
+- `src/components/` — `Nav.astro`, `Footer.astro`, `SpecimenCard.astro` (shared research/project card)
+- `src/content/` — typed data files (`research.ts`, `projects.ts`) — edit these to add entries, not the markup
+- `src/styles/` — `global.css`, Tailwind v4 `@theme` design tokens
+- `public/` — static assets, including `resume.pdf` (must be added — not yet present)
 
 ## Out of scope
 Claude Code should not modify `.github/workflows/` without explicit request.
