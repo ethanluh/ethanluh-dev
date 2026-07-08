@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-canopy: #1e241c;
-  --color-bark: #3e332a;
-  --color-moss: #6b7a5e;
-  --color-stone: #8c877e;
-  --color-parchment: #e9e4d6;
+  --color-canopy: #171c15;
+  --color-bark: #4a3d30;
+  --color-moss: #96b481;
+  --color-stone: #9a948a;
+  --color-parchment: #ece7d9;
   --color-lavender: #b7a4d1;
 
   --font-display: "Fraunces", serif;
@@ -25,6 +25,8 @@
   --spacing-5: 4rem;
 
   --ease-field: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-base: 300ms;
+  --duration-stagger: 220ms;
 }
 
 @layer base {
@@ -52,6 +54,7 @@
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
+    animation-delay: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
