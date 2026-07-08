@@ -1,0 +1,233 @@
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage{fontspec}
+\usepackage[paperwidth=8.5in,paperheight=11in,left=0pt,right=0pt,top=0.4in,bottom=0pt]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{ragged2e}
+
+\setmainfont{Carlito}
+\newfontfamily\spacedfont{Carlito}[LetterSpace=4.0]
+\newfontfamily\spacedboldfont{Carlito}[LetterSpace=2.8, UprightFont={*-Bold}]
+
+\definecolor{sidebargray}{HTML}{EFEEEC}
+\definecolor{darktext}{HTML}{2B2B2B}
+\definecolor{midgray}{HTML}{6E6E6E}
+\definecolor{rulegray}{HTML}{3D3D3D}
+\definecolor{lightrule}{HTML}{BEBEBE}
+
+\hypersetup{colorlinks=true, linkcolor=darktext, urlcolor=darktext}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+% ---- helper commands --------------------------------------------------
+\newcommand{\sechead}[1]{{\spacedboldfont\color{darktext}\fontsize{9.5}{11}\selectfont #1}\par\vspace{5pt}}
+\newcommand{\subhead}[1]{{\bfseries\color{darktext}\fontsize{9.5}{12}\selectfont #1}}
+\newcommand{\sidelabel}[1]{{\spacedfont\color{midgray}\fontsize{6.7}{9}\selectfont #1}}
+\newlist{tightlist}{itemize}{1}
+\setlist[tightlist]{leftmargin=1.0em, itemsep=1.5pt, topsep=2.5pt, parsep=0pt, label=\textbullet}
+
+\begin{document}
+
+% =========================================================================
+% BODY: sidebar (left) + main column (right)
+% main column is built into a savebox first so we can measure its exact
+% height and force the sidebar's colored panel to match it precisely
+% (eliminates leftover whitespace at the bottom of the sidebar/page).
+% =========================================================================
+\newsavebox{\maincolbox}
+\newlength{\maincolht}
+
+\begin{lrbox}{\maincolbox}
+\begin{minipage}[t]{5.55in}
+\vspace{9pt}
+\hspace{18pt}%
+\begin{minipage}[t]{5.05in}
+
+\sechead{PROFILE}
+{\RaggedRight\fontsize{9}{13.5}\selectfont\color{darktext}
+CS/Math double major pursuing a PhD in CS Theory. Research in Ehrhart theory and lattice-polytope combinatorics under Dr.\ Derek Hanely; builds software that spans theoretical enumeration and production engineering.\par}
+
+\vspace{9pt}
+{\color{lightrule}\hrule height 0.5pt}
+\vspace{9pt}
+
+\sechead{EXPERIENCE}
+
+\subhead{Software Engineering Intern} \hfill {\fontsize{8.5}{10}\selectfont\color{midgray} Summer 2026}\\
+{\fontsize{8.7}{11.5}\selectfont\color{midgray}\textit{AgentMade}}
+\begin{tightlist}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} Built and open-sourced Quire (see Projects), a triage multiplexer for AI-generated pull requests, as the core engineering contribution of the internship.}
+\end{tightlist}
+
+\vspace{10pt}
+\subhead{Undergraduate Researcher} \hfill {\fontsize{8.5}{10}\selectfont\color{midgray} 2024--Present}\\
+{\fontsize{8.7}{11.5}\selectfont\color{midgray}\textit{Penn State Behrend --- Advisor: Dr.\ Derek Hanely}}
+\begin{tightlist}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{Applying Ehrhart theory} (IDP, $h^*$-vector unimodality, unimodular triangulations) to zero forcing polytopes on small graph families.}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{Computational enumeration} via Python; investigating connections between lattice polytope geometry and graph-theoretic parameters.}
+\end{tightlist}
+
+\vspace{9pt}
+{\color{lightrule}\hrule height 0.5pt}
+\vspace{9pt}
+
+\sechead{PROJECTS}
+
+\subhead{Quire} \hfill {\fontsize{8.5}{10}\selectfont\color{midgray} Python, TypeScript \ \textbullet\ Open Source}\\
+{\fontsize{8.7}{11.5}\selectfont\color{midgray}\textit{Triage multiplexer for AI-generated pull requests}}
+\begin{tightlist}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{Groups PRs by declared product direction} into bundles, cutting reviewer decision load from one-per-PR to one-per-bundle.}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{Multi-tenant architecture} with fully isolated per-team state and disk-based JSON persistence in place of a database.}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{Direction-drift detection}: flags PRs whose changes silently exceed their declared scope.}
+\end{tightlist}
+
+\vspace{10pt}
+\subhead{PreferenceLayer} \hfill {\fontsize{8.5}{10}\selectfont\color{midgray} Python, FastAPI}\\
+{\fontsize{8.7}{11.5}\selectfont\color{midgray}\textit{Portable preference credentials + server-side quality intelligence for agentic shopping}}
+\begin{tightlist}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{PTP: user-owned credentials} --- Ed25519-signed W3C Verifiable-Credential envelope with local differential-privacy updates and an OAuth device flow for cross-platform sync.}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{QIL: Bayesian quality aggregation} --- hierarchical Beta-Binomial aggregation over product failure rates plus Gaussian Process modeling for continuous dimensions, served via FastAPI and MCP tool bindings.}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{Preference/quality blending}: learns an $\alpha$-weighted combination of PTP credentials and QIL posteriors into item scores, evaluated via NDCG/transfer experiments.}
+\end{tightlist}
+
+\vspace{10pt}
+\subhead{market-sentiment-predictor} \hfill {\fontsize{8.5}{10}\selectfont\color{midgray} Python \ \textbullet\ Open Source}\\
+{\fontsize{8.7}{11.5}\selectfont\color{midgray}\textit{News-driven quantile stock-return prediction pipeline}}
+\begin{tightlist}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{Multi-source ingestion \& FinBERT sentiment}: fuses price/volume, news, SEC filings, and Reddit signals into continuous sentiment scores weighted by source credibility and recency decay.}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{Graph diffusion for impact timing}: heat kernel over a directed actor-category graph (SEC/Corp $\to$ Institutional $\to$ Press $\to$ Retail) estimates the lag before price impact, with edges calibrated from historical events.}
+\item {\fontsize{8.8}{12.3}\selectfont\color{darktext} \textbf{Quantile regression \& backtesting}: predicts P10/P50/P90 log-returns across horizons conditioned on VIX regime; benchmarked against momentum/ARIMA/GARCH baselines in a walk-forward backtest, served via FastAPI.}
+\end{tightlist}
+
+\end{minipage}
+\end{minipage}
+\end{lrbox}
+
+\settoheight{\maincolht}{\usebox{\maincolbox}}
+\addtolength{\maincolht}{\dp\maincolbox}
+
+\newsavebox{\sidebarbox}
+\newlength{\sidebarht}
+
+\begin{lrbox}{\sidebarbox}
+\begin{minipage}[t]{2.55in}
+\vspace{16pt}
+\hspace{14pt}%
+\begin{minipage}[t]{2.16in}
+
+\sechead{CONTACT}
+\sidelabel{PHONE}\\
+{\fontsize{8.8}{12}\selectfont\color{darktext} (650) 660-1907}\\[7pt]
+\sidelabel{EMAIL}\\
+{\fontsize{8.8}{12}\selectfont\color{darktext} \href{mailto:ethanluh@gmail.com}{ethanluh@gmail.com}}\\[7pt]
+\sidelabel{PERSONAL SITE}\\
+{\fontsize{8.8}{12}\selectfont\color{darktext} \href{https://ethanluh.com}{ethanluh.com}}
+
+\vspace{16pt}
+{\color{lightrule}\hrule height 0.5pt}
+\vspace{14pt}
+
+\sechead{EDUCATION}
+{\fontsize{8.8}{13}\selectfont\color{midgray} B.S. Computer Science\\ \& Mathematics}\\[3pt]
+\subhead{\fontsize{9}{11}\selectfont Penn State Behrend}\\[2pt]
+{\fontsize{8.3}{11.5}\selectfont\color{midgray} Expected May 2028}
+
+\vspace{16pt}
+{\color{lightrule}\hrule height 0.5pt}
+\vspace{14pt}
+
+\sechead{SKILLS}
+{\fontsize{8.8}{11}\selectfont\color{darktext}
+\textbf{Languages}
+\begin{tightlist}
+\item Python
+\item C++
+\item C
+\item LaTeX
+\end{tightlist}
+\vspace{5pt}
+\textbf{Areas}
+\begin{tightlist}
+\item Graph algorithms
+\item Machine learning
+\item NLP
+\item Statistical modeling
+\item Lattice polytopes
+\item Combinatorics
+\end{tightlist}
+\vspace{5pt}
+\textbf{Tools}
+\begin{tightlist}
+\item Git
+\item NumPy
+\item PyTorch
+\item scikit-learn
+\item OpenCV
+\end{tightlist}
+}
+
+\vspace{10pt}
+{\color{lightrule}\hrule height 0.5pt}
+\vspace{14pt}
+
+\sechead{ACTIVITIES}
+{\fontsize{8.8}{12}\selectfont\color{darktext}
+\textbf{President, Volleyball Club}\\
+{\fontsize{8.3}{11.5}\selectfont\color{midgray} Penn State Behrend \ \textbullet\ 2024--Present}\\[9pt]
+\textbf{Peer Tutor}\\
+{\fontsize{8.3}{11.5}\selectfont\color{midgray} CS \& Math \ \textbullet\ 2023--Present}\\[9pt]
+\textbf{Math Tutor}\\
+{\fontsize{8.3}{11.5}\selectfont\color{midgray} Mathnasium \ \textbullet\ 2021--2023}
+}
+
+\end{minipage}
+\end{minipage}
+\end{lrbox}
+
+\settoheight{\sidebarht}{\usebox{\sidebarbox}}
+\addtolength{\sidebarht}{\dp\sidebarbox}
+
+% ---- Header, boxed so we can measure its exact height ------------------
+\newsavebox{\headerbox}
+\newlength{\headerht}
+
+\begin{lrbox}{\headerbox}
+\begin{minipage}{\paperwidth}
+\begin{center}
+\vspace{0.06in}
+{\fontsize{27}{29}\selectfont\spacedfont\color{darktext} ETHAN LUH}\\[7pt]
+{\spacedfont\fontsize{9.5}{12}\selectfont\color{midgray} COMPUTER SCIENCE \ \textbullet\ MATHEMATICS}
+\end{center}
+\vspace{0.26in}
+{\color{lightrule}\hrule height 0.6pt}
+\end{minipage}
+\end{lrbox}
+
+\settoheight{\headerht}{\usebox{\headerbox}}
+\addtolength{\headerht}{\dp\headerbox}
+
+% ---- Column height: the visible gray/white panels extend all the way to
+% the true bottom of the page (bottom margin is 0pt). Text content itself
+% is checked against a smaller budget that reserves 1in of clear space
+% above that edge, so the last line of text always sits an inch above the
+% bottom of the page even though the panel color continues past it. ------
+\newlength{\colht}
+\setlength{\colht}{\textheight}
+\addtolength{\colht}{-\headerht}
+\addtolength{\colht}{-2pt}
+
+\newlength{\contentbudget}
+\setlength{\contentbudget}{\colht}
+\addtolength{\contentbudget}{-1in}
+
+
+\usebox{\headerbox}\par\nointerlineskip
+
+\noindent%
+\colorbox{sidebargray}{\begin{minipage}[t][\colht][t]{2.55in}\usebox{\sidebarbox}\end{minipage}}%
+\hspace{0pt}%
+\begin{minipage}[t][\colht][t]{5.55in}\usebox{\maincolbox}\end{minipage}
+
+\end{document}
