@@ -64,6 +64,8 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
     margin: auto;
     padding: 0;
     width: min(90vw, 900px);
+    max-width: 90vw;
+    min-width: 320px;
     height: 90vh;
     border: 1px solid var(--color-bark);
     background-color: var(--color-canopy);
@@ -147,12 +149,25 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
     }
   }
 
-  trigger?.addEventListener("click", () => {
+  function fitModalWidth() {
+    const canvas = container?.querySelector("canvas");
+    if (!canvas || !modal) return;
+    requestAnimationFrame(() => {
+      const width = canvas.getBoundingClientRect().width;
+      if (width > 0) modal.style.width = `${Math.ceil(width)}px`;
+    });
+  }
+
+  trigger?.addEventListener("click", async () => {
     modal?.showModal();
-    renderResume();
+    await renderResume();
+    fitModalWidth();
   });
   closeBtn?.addEventListener("click", () => modal?.close());
   modal?.addEventListener("click", (event) => {
     if (event.target === modal) modal.close();
+  });
+  window.addEventListener("resize", () => {
+    if (modal?.open) fitModalWidth();
   });
 </script>
