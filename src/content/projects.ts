@@ -3,19 +3,19 @@ export interface ProjectEntry {
   title: string;
   tag: string;
   description: string;
-  href: string;
+  href?: string;
   featured?: boolean;
 }
 
 // Zero-forcing/Ehrhart repo listed first per site content plan — not yet
-// pushed to GitHub, so it links nowhere until that changes.
+// pushed to GitHub, so it has no link until that changes.
 export const projects: ProjectEntry[] = [
   {
     number: "01",
     title: "Zero Forcing Polytopes",
     tag: "python · code coming soon",
-    description: "Computational companion to the research above — polytope construction and enumeration code.",
-    href: "#",
+    description:
+      "Computational companion to the research above — builds the zero forcing polytope from a graph's minimum forcing sets and enumerates its lattice points. The open problem: forcing-set enumeration blows up combinatorially past small graphs, so the code has to prune the search rather than brute-force it.",
     featured: true,
   },
   {

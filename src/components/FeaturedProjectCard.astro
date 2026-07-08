@@ -4,7 +4,7 @@ interface Props {
   title: string;
   tag: string;
   description: string;
-  href: string;
+  href?: string;
 }
 
 const { number, title, tag, description, href } = Astro.props;
@@ -19,8 +19,14 @@ const { number, title, tag, description, href } = Astro.props;
     <h3 class="font-display text-2xl mb-2">{title}</h3>
     <p class="font-mono text-xs text-stone mb-3">{tag}</p>
     <p class="text-parchment/90 mb-3">{description}</p>
-    <div class="flex gap-4 font-mono text-xs">
-      <a href={href} class="text-moss hover:text-parchment transition-colors duration-150">view</a>
-    </div>
+    {
+      href && (
+        <div class="flex gap-4 font-mono text-xs">
+          <a href={href} class="text-moss hover:text-parchment transition-colors duration-150">
+            view
+          </a>
+        </div>
+      )
+    }
   </div>
 </article>
