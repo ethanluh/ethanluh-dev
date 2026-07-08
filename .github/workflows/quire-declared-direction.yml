@@ -1,0 +1,18 @@
+name: Quire declared-direction check
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  check-declared-direction:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify declared-direction marker
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if ! printf '%s' "$PR_BODY" | grep -qP '<!--\s*declared-direction:\s*\S.*-->'; then
+            echo "::error::PR body is missing a <!-- declared-direction: ... --> marker. Quire will still triage this PR, but on its own instead of grouped with related work."
+            exit 1
+          fi
