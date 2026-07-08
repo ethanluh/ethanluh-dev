@@ -7,12 +7,12 @@ const links = [
 ];
 ---
 
-<header class="border-b border-bark">
+<header id="site-header" class="border-b border-bark sticky top-0 z-20 bg-canopy/85 backdrop-blur">
   <nav
     class="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-2 px-6 py-3 font-mono text-xs uppercase tracking-widest"
   >
     <a href="/" class="text-parchment/80 hover:text-moss transition-colors duration-150">Ethan Luh</a>
-    <ul class="flex gap-5">
+    <ul class="nav-links flex gap-5">
       {
         links.map((link) => (
           <li>
@@ -25,3 +25,54 @@ const links = [
     </ul>
   </nav>
 </header>
+
+<style>
+  #site-header {
+    transition:
+      transform var(--duration-base) var(--ease-field),
+      box-shadow var(--duration-base) var(--ease-field);
+  }
+  #site-header.nav-hidden {
+    transform: translateY(-100%);
+  }
+  #site-header.nav-scrolled {
+    box-shadow: 0 4px 12px -6px rgb(0 0 0 / 0.4);
+  }
+
+  .nav-links {
+    counter-reset: item;
+  }
+  .nav-links li {
+    counter-increment: item;
+  }
+  .nav-links li a::before {
+    content: "0" counter(item) ". ";
+    color: var(--color-moss);
+  }
+</style>
+
+<script>
+  const header = document.getElementById("site-header");
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (header && !prefersReducedMotion) {
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        const currentScrollY = window.scrollY;
+        header.classList.toggle("nav-scrolled", currentScrollY > 4);
+
+        if (currentScrollY > lastScrollY && currentScrollY > 120) {
+          header.classList.add("nav-hidden");
+        } else {
+          header.classList.remove("nav-hidden");
+        }
+
+        lastScrollY = currentScrollY;
+      },
+      { passive: true },
+    );
+  }
+</script>
