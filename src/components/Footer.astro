@@ -48,8 +48,8 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
       </button>
     </div>
   </div>
-  <div id="resume-canvas-container" class="resume-canvas-container">
-    <p class="p-6 font-mono text-xs text-stone" id="resume-canvas-fallback">
+  <div id="resume-modal-body" class="resume-modal-object">
+    <p class="p-6 font-mono text-xs text-stone">
       Loading résumé…
     </p>
   </div>
@@ -81,7 +81,7 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
     background-color: rgb(0 0 0 / 0.6);
   }
 
-  .resume-canvas-container {
+  .resume-modal-object {
     flex: 1;
     width: 100%;
     min-height: 0;
@@ -94,7 +94,7 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
     padding: 0;
   }
 
-  .resume-canvas-container :global(canvas) {
+  .resume-modal-object :global(canvas) {
     max-width: 100%;
     max-height: 100%;
     width: auto;
@@ -106,51 +106,47 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
 
 <script>
   import * as pdfjsLib from "pdfjs-dist";
-  import pdfjsWorkerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+  import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
-  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerSrc;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
   const trigger = document.getElementById("resume-trigger");
   const modal = document.getElementById("resume-modal") as HTMLDialogElement | null;
   const closeBtn = document.getElementById("resume-modal-close");
-  const container = document.getElementById("resume-canvas-container");
+  const body = document.getElementById("resume-modal-body");
 
   let rendered = false;
 
   async function renderResume() {
-    if (rendered || !container) return;
+    if (rendered || !body) return;
     rendered = true;
 
     try {
-      const pdf = await pdfjsLib.getDocument({ url: "/resume.pdf" }).promise;
-      container.innerHTML = "";
+      const pdf = await pdfjsLib.getDocument("/resume.pdf").promise;
+      body.innerHTML = "";
 
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page = await pdf.getPage(pageNum);
-        const viewport = page.getViewport({ scale: 2 });
+        const scale = (window.devicePixelRatio || 1) * 1.5;
+        const viewport = page.getViewport({ scale });
+
         const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
         canvas.width = viewport.width;
         canvas.height = viewport.height;
-        if (context) {
-          await page.render({ canvasContext: context, viewport, canvas }).promise;
-        }
-        container.appendChild(canvas);
+        const context = canvas.getContext("2d");
+        if (!context) continue;
+
+        await page.render({ canvas, canvasContext: context, viewport }).promise;
+        body.appendChild(canvas);
       }
-    } catch (err) {
-      console.error("resume render failed", err);
+    } catch {
       rendered = false;
-      if (container) {
-        container.innerHTML = `<p class="p-6 font-mono text-xs text-stone">
-          Your browser can't preview the résumé inline.
-          <a href="/resume.pdf" download class="text-moss underline">Download the résumé</a> instead.
-        </p>`;
-      }
+      body.innerHTML = `<p class="p-6 font-mono text-xs text-stone">Couldn't render the résumé. <a href="/resume.pdf" download class="text-moss underline">Download it</a> instead.</p>`;
     }
   }
 
   function fitModalWidth() {
-    const canvas = container?.querySelector("canvas");
+    const canvas = body?.querySelector("canvas");
     if (!canvas || !modal) return;
     requestAnimationFrame(() => {
       const width = canvas.getBoundingClientRect().width;
