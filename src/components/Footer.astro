@@ -37,6 +37,7 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
     </h2>
     <div class="flex items-center gap-4 font-mono text-xs">
       <a href="/resume.pdf" download class="hover:text-moss transition-colors duration-150"> Download </a>
+      <a href="/resume.tex" download class="hover:text-moss transition-colors duration-150"> LaTeX Source </a>
       <button
         type="button"
         id="resume-modal-close"
@@ -61,14 +62,18 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
   }
 
   .resume-modal {
-    display: flex;
-    flex-direction: column;
+    margin: auto;
+    padding: 0;
     width: min(90vw, 900px);
     height: 90vh;
-    padding: 0;
     border: 1px solid var(--color-bark);
     background-color: var(--color-canopy);
     color: var(--color-parchment);
+  }
+
+  .resume-modal[open] {
+    display: flex;
+    flex-direction: column;
   }
 
   .resume-modal::backdrop {
