@@ -57,7 +57,7 @@ const neighborSet = new Set(
       const cls = i === activeIndex ? "node-active" : neighborSet.has(i) ? "node-neighbor" : "node-dim";
       const r = i === activeIndex ? 4 : neighborSet.has(i) ? 3 : 2;
       const above = cy > height / 2;
-      const tooltipWidth = 150;
+      const tooltipWidth = 200;
       const tooltipHeight = 42;
       const tooltipX = Math.min(Math.max(cx - tooltipWidth / 2, -padding), width + padding - tooltipWidth);
       const tooltipY = above ? cy - tooltipHeight - 10 : cy + 10;
