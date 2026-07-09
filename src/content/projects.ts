@@ -41,8 +41,9 @@ export const projects: ProjectEntry[] = [
     slug: "market-sentiment-predictor",
     number: "04",
     title: "market-sentiment-predictor",
-    tag: "python",
-    description: "Graph theory based market sentiment predictor.",
+    tag: "python · graph diffusion",
+    description:
+      "Models how a signal (an 8-K, a press release) propagates through the market's information hierarchy — sec_corp → institutional → fin_press → informed_retail → uninformed_retail — as a continuous-time heat kernel on the graph Laplacian, then feeds the diffusion lag into 9 quantile-regression models predicting P10/P50/P90 forward returns at three horizons. The gotcha: diffusion has to run on the Laplacian transpose, or the signal propagates backwards against edge direction.",
     href: "https://github.com/ethanluh/market-sentiment-predictor",
   },
 ];
