@@ -11,6 +11,7 @@ import { coursework } from "../content/coursework";
 import { CONTENT_POINTS } from "../data/content-points";
 import { peelLayers } from "../lib/geometry/hull";
 import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
+import { buildAdjacency, findMinimumZeroForcingSet } from "../lib/zeroForcing";
 
 // --- Unified Work stream: Research + Projects + Experience, one adapter shape ---
 type WorkEntry = {
@@ -94,6 +95,13 @@ function relatedFor(slug: string) {
 function delaunayFor(slug: string) {
   return { points: CONTENT_POINTS, edges: delaunayEdges, activeSlug: slug };
 }
+
+// --- Zero forcing hero stats, for the colophon note (same graph the hero renders) ---
+const zfGraph = buildAdjacency(
+  CONTENT_POINTS.map((p) => p.slug),
+  delaunayEdges.map(([a, b]) => [CONTENT_POINTS[a].slug, CONTENT_POINTS[b].slug]),
+);
+const zfSeeds = findMinimumZeroForcingSet(zfGraph);
 ---
 
 <BaseLayout
@@ -200,6 +208,23 @@ function delaunayFor(slug: string) {
   <section id="colophon" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Colophon</h2>
     <div class="flex flex-col gap-8">
+      <div id="colophon-zero-forcing" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
+        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
+          {zfSeeds.length} seed{zfSeeds.length === 1 ? "" : "s"} · {CONTENT_POINTS.length} nodes
+        </p>
+        <p class="text-parchment/90 max-w-md">
+          The hero graph at the top of the page is this site's actual content
+          — the same {CONTENT_POINTS.length} items listed below, connected by
+          the same Delaunay edges used for "related" — animated by{" "}
+          <strong>zero forcing</strong>, the color-change rule from the
+          research area above: a colored vertex with exactly one uncolored
+          neighbor forces it to color. The {zfSeeds.length} moss-colored
+          seeds on load are a real computed minimum zero forcing set, not a
+          hand-picked example; everything else propagates in the order the
+          rule actually forces it. It's a live instance of the math, not an
+          illustration of it — hover a node for its title, click to visit.
+        </p>
+      </div>
       <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
         <HStarMotif vectorId="cube4" mode="bar" width={160} height={40} class="shrink-0" />
         <p class="text-parchment/90 max-w-md">

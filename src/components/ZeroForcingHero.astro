@@ -90,14 +90,33 @@ const renderNodes = nodes.map((node) => ({
     }
 
     {
-      renderNodes.map(({ node, round }) => (
-        <a href={node.href} class="zf-node-link" tabindex="-1">
-          <circle class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]} style={{ "--round": round }} cx={node.x} cy={node.y} r={9} />
-          <title>{node.title}</title>
-        </a>
-      ))
+      renderNodes.map(({ node, round }) => {
+        // Flip/anchor the label away from whichever viewBox edge the node is
+        // near, so the halo text doesn't clip against the SVG boundary.
+        const labelBelow = node.y - pad < 24;
+        const labelY = labelBelow ? node.y + 22 : node.y - 16;
+        const edgeMargin = 60;
+        const textAnchor = node.x > width - pad - edgeMargin ? "end" : node.x < pad + edgeMargin ? "start" : "middle";
+        const labelX = textAnchor === "end" ? node.x + 12 : textAnchor === "start" ? node.x - 12 : node.x;
+        return (
+          <a href={node.href} class="zf-node-link" tabindex="-1">
+            <circle class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]} style={{ "--round": round }} cx={node.x} cy={node.y} r={9} />
+            <text x={labelX} y={labelY} text-anchor={textAnchor} class="zf-node-label zf-node-label-halo" aria-hidden="true">
+              {node.title}
+            </text>
+            <text x={labelX} y={labelY} text-anchor={textAnchor} class="zf-node-label" aria-hidden="true">
+              {node.title}
+            </text>
+            <title>{node.title}</title>
+          </a>
+        );
+      })
     }
   </svg>
+
+  <p class="zf-hero-caption font-mono text-xs text-stone">
+    Hover a node to see what it is, click to visit — <a href="#colophon-zero-forcing" class="text-moss hover:text-parchment transition-colors duration-150">how this graph works ↓</a>
+  </p>
 
   <ul class="sr-only">
     {
@@ -138,6 +157,11 @@ const renderNodes = nodes.map((node) => ({
     stroke: var(--color-stone);
     stroke-width: 1.5;
     fill: var(--color-canopy);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 150ms var(--ease-field),
+      filter 150ms var(--ease-field);
   }
 
   .zf-seed {
@@ -147,6 +171,45 @@ const renderNodes = nodes.map((node) => ({
   .zf-forced {
     animation: zf-force var(--duration-base) var(--ease-field) forwards;
     animation-delay: calc(var(--round) * var(--duration-stagger));
+  }
+
+  .zf-node-link:hover .zf-node,
+  .zf-node-link:focus-visible .zf-node {
+    transform: scale(1.4);
+    stroke: var(--color-moss);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--color-moss) 55%, transparent));
+  }
+
+  .zf-node-label,
+  .zf-node-label-halo {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 150ms var(--ease-field);
+  }
+
+  .zf-node-label {
+    fill: var(--color-parchment);
+  }
+
+  .zf-node-label-halo {
+    fill: none;
+    stroke: var(--color-canopy);
+    stroke-width: 4;
+    stroke-linejoin: round;
+    paint-order: stroke;
+  }
+
+  .zf-node-link:hover .zf-node-label,
+  .zf-node-link:hover .zf-node-label-halo,
+  .zf-node-link:focus-visible .zf-node-label,
+  .zf-node-link:focus-visible .zf-node-label-halo {
+    opacity: 1;
+  }
+
+  .zf-hero-caption {
+    margin-top: 0.5rem;
   }
 
   @keyframes zf-draw {
@@ -181,6 +244,11 @@ const renderNodes = nodes.map((node) => ({
     .zf-forced {
       animation-duration: 0s !important;
       animation-delay: 0s !important;
+    }
+
+    .zf-node-link:hover .zf-node,
+    .zf-node-link:focus-visible .zf-node {
+      transform: none;
     }
   }
 </style>
