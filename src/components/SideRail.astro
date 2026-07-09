@@ -21,7 +21,7 @@ const { orientation, themeToggle } = props;
     props.variant === "email" ? (
       <a
         href={`mailto:${props.email}`}
-        class="side-rail-email font-mono text-xs tracking-widest text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150"
+        class="side-rail-email font-mono text-xs tracking-widest text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150 p-2 -m-2"
       >
         {props.email}
       </a>
@@ -34,7 +34,7 @@ const { orientation, themeToggle } = props;
               target="_blank"
               rel="noopener noreferrer"
               aria-label={link.label}
-              class="text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150 inline-block"
+              class="text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150 inline-block p-2 -m-2"
             >
               <span class="font-mono text-[0.65rem] tracking-widest">{link.label}</span>
             </a>
@@ -44,7 +44,7 @@ const { orientation, themeToggle } = props;
           <button
             type="button"
             id="resume-trigger"
-            class="text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150 inline-block cursor-pointer font-mono text-[0.65rem] tracking-widest"
+            class="text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150 inline-block cursor-pointer font-mono text-[0.65rem] tracking-widest p-2 -m-2"
           >
             Resume
           </button>
@@ -54,7 +54,7 @@ const { orientation, themeToggle } = props;
           <a
             href={props.personalSite.href}
             aria-label={props.personalSite.label}
-            class="text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150 inline-block"
+            class="text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150 inline-block p-2 -m-2"
           >
             <span class="font-mono text-[0.65rem] tracking-widest">{props.personalSite.label}</span>
           </a>
