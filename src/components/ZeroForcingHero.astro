@@ -20,7 +20,8 @@ const slugEdges: [string, string][] = indexEdges.map(([a, b]) => [
   CONTENT_POINTS[b].slug,
 ]);
 
-// Banner-scale canvas — everything below (padding, node radius, stroke
+// Card-scale canvas, sized for sitting next to the heading rather than
+// spanning the page — everything below (padding, node radius, stroke
 // widths, label offsets) is derived from this so resizing it again later
 // stays proportional instead of needing a second round of magic numbers.
 //
@@ -29,12 +30,9 @@ const slugEdges: [string, string][] = indexEdges.map(([a, b]) => [
 // as docs/hull-peeling-nav.md's hull/display-coordinate mismatch bug. To
 // actually read as the same graph as DelaunayMotif.astro (not just use the
 // same edge list), the canvas has to reproduce its aspect ratio and padding
-// proportions too — a single `pad` value that's fine on a near-square
-// canvas becomes wildly asymmetric once stretched to a wide banner (it ate
-// most of the vertical range while barely denting the horizontal one),
-// which visibly distorted the triangulation. Derive height and per-axis
-// padding from DelaunayMotif's own 140×90 canvas / 10px padding instead.
-const width = 1200;
+// proportions too. Derive height and per-axis padding from DelaunayMotif's
+// own 140×90 canvas / 10px padding instead of picking new numbers.
+const width = 400;
 const motifWidth = 140;
 const motifHeight = 90;
 const motifPadding = 10;
@@ -42,15 +40,27 @@ const height = Math.round((width / motifWidth) * motifHeight);
 const padX = (motifPadding / motifWidth) * width;
 const padY = (motifPadding / motifHeight) * height;
 const scale = width / 400;
-const nodeRadius = 9 * scale * 0.25;
+const nodeRadius = 9 * scale;
 
-const nodes = CONTENT_POINTS.map((p) => ({
-  slug: p.slug,
-  title: p.title,
-  href: `#content-${p.slug}`,
-  x: padX + p.topic * (width - padX * 2),
-  y: padY + (1 - p.recency) * (height - padY * 2),
-}));
+// Pull every node 20% closer to the plot's center, so the graph reads as
+// slightly more compact/clustered without changing the canvas or the
+// triangulation's proportions (still an affine transform, so it stays
+// planar — see the note above).
+const spacingScale = 0.8;
+const centerX = width / 2;
+const centerY = height / 2;
+
+const nodes = CONTENT_POINTS.map((p) => {
+  const rawX = padX + p.topic * (width - padX * 2);
+  const rawY = padY + (1 - p.recency) * (height - padY * 2);
+  return {
+    slug: p.slug,
+    title: p.title,
+    href: `#content-${p.slug}`,
+    x: centerX + (rawX - centerX) * spacingScale,
+    y: centerY + (rawY - centerY) * spacingScale,
+  };
+});
 const nodeBySlug = new Map(nodes.map((n) => [n.slug, n]));
 
 const graph = buildAdjacency(
