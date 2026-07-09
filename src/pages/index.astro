@@ -8,9 +8,51 @@ import { research } from "../content/research";
 import { projects } from "../content/projects";
 import { experience } from "../content/experience";
 import { coursework } from "../content/coursework";
+import { CONTENT_POINTS } from "../data/content-points";
+import { peelLayers } from "../lib/geometry/hull";
+import { relatedIndices, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
 
-const featuredProject = projects.find((p) => p.featured) ?? projects[0];
-const restProjects = projects.filter((p) => p !== featuredProject);
+// --- Featured-project selection: convex-hull peeling over (recency, depth) ---
+// layers[0] is the Pareto-extreme set (not dominated on both axes by any
+// other single project) — this replaces a hand-set `featured` flag.
+const projectPoints = CONTENT_POINTS.filter((p) => p.kind === "project");
+const projectLayers = peelLayers(projectPoints, (p) => [p.recency, p.depth]);
+const byWeight = (p: (typeof projectPoints)[number]) => p.recency + p.depth;
+
+const FALLBACK_FEATURED_SLUGS = ["zero-forcing-polytopes", "preference-layer"];
+const layer0 = projectLayers[0] ?? [];
+const outerSlugsOrdered =
+  layer0.length >= 2
+    ? [...layer0].sort((a, b) => byWeight(b) - byWeight(a)).map((p) => p.slug)
+    : FALLBACK_FEATURED_SLUGS;
+
+const deeperSlugsOrdered = projectLayers
+  .slice(1)
+  .flatMap((layer) => [...layer].sort((a, b) => byWeight(b) - byWeight(a)))
+  .map((p) => p.slug)
+  .filter((slug) => !outerSlugsOrdered.includes(slug));
+
+const projectBySlug = new Map(projects.map((p) => [p.slug, p]));
+const featuredProject = projectBySlug.get(outerSlugsOrdered[0]) ?? projects[0];
+const restProjects = [...outerSlugsOrdered.slice(1), ...deeperSlugsOrdered]
+  .map((slug) => projectBySlug.get(slug))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p));
+
+// --- Related-content: Delaunay triangulation over (topic, recency) ---
+// Gated on MIN_POINTS_FOR_DELAUNAY — below that, neighbors are near-arbitrary.
+const contentIndexBySlug = new Map(CONTENT_POINTS.map((p, i) => [p.slug, i]));
+const neighborIndices = relatedIndices(CONTENT_POINTS.map((p) => [p.topic, p.recency]));
+const delaunayActive = CONTENT_POINTS.length >= MIN_POINTS_FOR_DELAUNAY;
+
+function relatedFor(slug: string) {
+  if (!delaunayActive) return [];
+  const i = contentIndexBySlug.get(slug);
+  if (i === undefined) return [];
+  return neighborIndices[i].map((j) => {
+    const p = CONTENT_POINTS[j];
+    return { title: p.title, href: p.href };
+  });
+}
 ---
 
 <BaseLayout
@@ -37,11 +79,13 @@ const restProjects = projects.filter((p) => p !== featuredProject);
         research.map((entry) => (
           <div class="reveal">
             <SpecimenCard
+              id={`content-${entry.slug}`}
               number={entry.number}
               title={entry.title}
               tag={`${entry.status} · updated ${entry.updated}`}
               description={entry.abstract}
               links={entry.links}
+              related={relatedFor(entry.slug)}
             />
           </div>
         ))
@@ -58,24 +102,28 @@ const restProjects = projects.filter((p) => p !== featuredProject);
     <div class="flex flex-col gap-4">
       <div class="reveal">
         <FeaturedProjectCard
+          id={`content-${featuredProject.slug}`}
           number={featuredProject.number}
           title={featuredProject.title}
           tag={featuredProject.tag}
           description={featuredProject.description}
           href={featuredProject.href}
           image={featuredProject.image}
+          related={relatedFor(featuredProject.slug)}
         />
       </div>
       {
         restProjects.map((entry) => (
           <div class="reveal">
             <SpecimenCard
+              id={`content-${entry.slug}`}
               number={entry.number}
               title={entry.title}
               tag={entry.tag}
               description={entry.description}
               links={entry.href ? [{ label: "view", href: entry.href }] : []}
               pills
+              related={relatedFor(entry.slug)}
             />
           </div>
         ))
@@ -94,6 +142,7 @@ const restProjects = projects.filter((p) => p !== featuredProject);
         experience.map((entry) => (
           <div class="reveal">
             <SpecimenCard
+              id={`content-${entry.slug}`}
               number={entry.number}
               title={entry.role}
               tag={`${entry.org} · ${entry.dates}`}
@@ -156,15 +205,44 @@ const restProjects = projects.filter((p) => p !== featuredProject);
 
   <section id="colophon" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Colophon</h2>
-    <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-      <HStarMotif vectorId="cube4" mode="bar" width={160} height={40} class="shrink-0" />
-      <p class="text-parchment/90 max-w-md">
-        The bars above are the h*-vector of the 4-cube, <span class="font-mono text-xs text-stone">(1, 11, 11, 1)</span> —
-        an Eulerian number sequence from Ehrhart theory. Its silhouette is the
-        recurring shape behind this site's dividers and hover states. Once the
-        zero forcing polytope result with Hanely is finalized, this slot gets
-        reassigned to that h*-vector specifically.
-      </p>
+    <div class="flex flex-col gap-8">
+      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+        <HStarMotif vectorId="cube4" mode="bar" width={160} height={40} class="shrink-0" />
+        <p class="text-parchment/90 max-w-md">
+          The bars above are the h*-vector of the 4-cube, <span class="font-mono text-xs text-stone">(1, 11, 11, 1)</span> —
+          an Eulerian number sequence from Ehrhart theory. Its silhouette is the
+          recurring shape behind this site's dividers and hover states. Once the
+          zero forcing polytope result with Hanely is finalized, this slot gets
+          reassigned to that h*-vector specifically.
+        </p>
+      </div>
+      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
+          layer 0: {outerSlugsOrdered.length} project{outerSlugsOrdered.length === 1 ? "" : "s"}
+        </p>
+        <p class="text-parchment/90 max-w-md">
+          The Featured project above wasn't hand-picked — it's the top of a
+          convex-hull peel over every project's (recency, depth) coordinates.
+          The hull's outer layer is the Pareto-extreme set: not dominated on
+          both axes by any other single project. The nav bar up top is peeled
+          the same way, over (depth, recency) per section, using the same
+          <code class="text-xs">convexHull</code> function — sections in an
+          inner layer render slightly dimmer.
+        </p>
+      </div>
+      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
+          {CONTENT_POINTS.length} points{delaunayActive ? "" : " (below threshold)"}
+        </p>
+        <p class="text-parchment/90 max-w-md">
+          Each "related" list under Research/Projects/Experience comes from a
+          Delaunay triangulation over hand-placed (topic, recency)
+          coordinates — real geometric adjacency instead of manually curated
+          "see also" links. Below {MIN_POINTS_FOR_DELAUNAY} points the
+          triangulation gets arbitrary, so the feature stays off until there's
+          enough content to make it mean something.
+        </p>
+      </div>
     </div>
   </section>
 </BaseLayout>

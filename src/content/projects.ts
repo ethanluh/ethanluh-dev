@@ -1,26 +1,28 @@
 export interface ProjectEntry {
+  slug: string;
   number: string;
   title: string;
   tag: string;
   description: string;
   href?: string;
-  featured?: boolean;
   image?: string;
 }
 
-// Zero-forcing/Ehrhart repo listed first per site content plan — not yet
-// pushed to GitHub, so it has no link until that changes.
+// Featured status and display order are computed at build time via hull
+// peeling over each entry's ContentPoint (src/data/content-points.ts) — see
+// index.astro. Don't add a manual `featured` flag back here.
 export const projects: ProjectEntry[] = [
   {
+    slug: "zero-forcing-polytopes",
     number: "01",
     title: "Zero Forcing Polytopes",
     tag: "python · code coming soon",
     description:
       "Computational companion to the research above — builds the zero forcing polytope from a graph's minimum forcing sets and enumerates its lattice points. The open problem: forcing-set enumeration blows up combinatorially past small graphs, so the code has to prune the search rather than brute-force it.",
-    featured: true,
     image: "/placeholder-project.svg",
   },
   {
+    slug: "preference-layer",
     number: "02",
     title: "preference-layer",
     tag: "python",
@@ -28,6 +30,7 @@ export const projects: ProjectEntry[] = [
     href: "https://github.com/ethanluh/preference-layer",
   },
   {
+    slug: "quire",
     number: "03",
     title: "quire",
     tag: "typescript",
@@ -35,6 +38,7 @@ export const projects: ProjectEntry[] = [
     href: "https://github.com/ethanluh/quire",
   },
   {
+    slug: "market-sentiment-predictor",
     number: "04",
     title: "market-sentiment-predictor",
     tag: "python",

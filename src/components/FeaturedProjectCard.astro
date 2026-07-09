@@ -2,19 +2,21 @@
 import HStarMotif from "./HStarMotif.astro";
 
 interface Props {
+  id?: string;
   number: string;
   title: string;
   tag: string;
   description: string;
   href?: string;
   image?: string;
+  related?: { title: string; href: string }[];
 }
 
-const { number, title, tag, description, href, image } = Astro.props;
+const { id, number, title, tag, description, href, image, related = [] } = Astro.props;
 const tags = tag.split(" · ");
 ---
 
-<article class="featured-specimen card-lift bg-bark border border-moss/30 border-l-[3px] border-l-moss rounded-r-sm p-9 sm:p-10 shadow-lg shadow-canopy/40 grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-6 sm:items-center">
+<article id={id} class="featured-specimen card-lift bg-bark border border-moss/30 border-l-[3px] border-l-moss rounded-r-sm p-9 sm:p-10 shadow-lg shadow-canopy/40 grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-6 sm:items-center scroll-mt-24">
   <div class="flex gap-6 sm:items-baseline">
     <div class="font-mono text-lg text-parchment shrink-0">
       {number}
@@ -38,6 +40,21 @@ const tags = tag.split(" · ");
       <ul class="tech-tags flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-stone mt-auto pt-2">
         {tags.map((entry) => <li>{entry}</li>)}
       </ul>
+      {
+        related.length > 0 && (
+          <p class="font-mono text-xs text-stone mt-2">
+            related (Delaunay):{" "}
+            {related.map((r, i) => (
+              <>
+                {i > 0 && ", "}
+                <a href={r.href} class="text-moss hover:text-parchment transition-colors duration-150">
+                  {r.title}
+                </a>
+              </>
+            ))}
+          </p>
+        )
+      }
     </div>
   </div>
   {
