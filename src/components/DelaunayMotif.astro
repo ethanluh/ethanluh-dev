@@ -56,10 +56,21 @@ const neighborSet = new Set(
       const [cx, cy] = pos(p);
       const cls = i === activeIndex ? "node-active" : neighborSet.has(i) ? "node-neighbor" : "node-dim";
       const r = i === activeIndex ? 4 : neighborSet.has(i) ? 3 : 2;
+      const above = cy > height / 2;
+      const tooltipWidth = 200;
+      const tooltipHeight = 42;
+      const tooltipX = Math.min(Math.max(cx - tooltipWidth / 2, 0), Math.max(width - tooltipWidth, 0));
+      const tooltipY = above ? cy - tooltipHeight - 10 : cy + 10;
       return (
-        <circle cx={cx} cy={cy} r={r} class={cls}>
-          <title>{p.title}</title>
-        </circle>
+        <g class="node-group">
+          <circle cx={cx} cy={cy} r={r + 4} class="node-hit" />
+          <circle cx={cx} cy={cy} r={r} class={cls} />
+          <foreignObject x={tooltipX} y={tooltipY} width={tooltipWidth} height={tooltipHeight} class="node-tooltip-anchor">
+            <div class="node-tooltip-wrap">
+              <div class="node-tooltip font-mono">{p.title}</div>
+            </div>
+          </foreignObject>
+        </g>
       );
     })
   }
@@ -86,6 +97,41 @@ const neighborSet = new Set(
   }
   .node-active {
     fill: var(--color-moss);
+    opacity: 1;
+  }
+  .node-hit {
+    fill: transparent;
+  }
+  .delaunay-motif {
+    overflow: visible;
+  }
+  .node-tooltip-anchor {
+    overflow: visible;
+    pointer-events: none;
+  }
+  .node-tooltip-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+  .node-tooltip {
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.7rem;
+    line-height: 1.3;
+    text-align: center;
+    overflow-wrap: break-word;
+    color: var(--color-parchment);
+    background: var(--color-canopy);
+    border: 1px solid color-mix(in srgb, var(--color-moss) 30%, transparent);
+    border-radius: 0.25rem;
+    box-shadow: 0 8px 16px -8px rgb(0 0 0 / 0.5);
+    opacity: 0;
+    transition: opacity 120ms var(--ease-field);
+  }
+  .node-group:hover .node-tooltip {
     opacity: 1;
   }
 </style>
