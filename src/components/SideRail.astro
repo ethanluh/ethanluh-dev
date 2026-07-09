@@ -7,6 +7,7 @@ interface EmailRail {
 interface SocialRail {
   variant: "social";
   links: { label: string; href: string }[];
+  personalSite: { label: string; href: string };
 }
 
 type Props = (EmailRail | SocialRail) & { orientation: "left" | "right" };
@@ -39,6 +40,25 @@ const { orientation } = props;
             </a>
           </li>
         ))}
+        <li>
+          <button
+            type="button"
+            id="resume-trigger"
+            class="text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150 inline-block cursor-pointer font-mono text-[0.65rem] tracking-widest"
+          >
+            Resume
+          </button>
+        </li>
+        <li class="flex flex-col items-center gap-2">
+          <span class="side-rail-dot transition-colors duration-150" aria-hidden="true">&middot;</span>
+          <a
+            href={props.personalSite.href}
+            aria-label={props.personalSite.label}
+            class="text-stone hover:text-moss hover:-translate-y-1 transition-all duration-150 inline-block"
+          >
+            <span class="font-mono text-[0.65rem] tracking-widest">{props.personalSite.label}</span>
+          </a>
+        </li>
       </ul>
     )
   }
@@ -57,6 +77,9 @@ const { orientation } = props;
   }
   .side-rail-email {
     writing-mode: vertical-rl;
+  }
+  .side-rail-dot:hover {
+    color: var(--color-lavender);
   }
   @media (max-width: 1400px) {
     .side-rail--left {

@@ -1,35 +1,3 @@
----
-const GITHUB_URL = "https://github.com/ethanluh";
-const LINKEDIN_URL = "https://linkedin.com/in/ethanluh";
-const CONTACT_EMAIL = "ethan@ethanluh.com";
-const PERSONAL_SITE_URL = "https://me.ethanluh.com";
----
-
-<footer id="contact" class="border-t border-bark mt-16">
-  <div class="max-w-3xl mx-auto px-6 py-8 font-mono text-xs text-stone flex flex-col gap-3">
-    <div class="flex flex-wrap gap-4">
-      <button
-        type="button"
-        id="resume-trigger"
-        class="hover:text-parchment transition-colors duration-150 cursor-pointer"
-      >
-        Resume
-      </button>
-      <span aria-hidden="true">·</span>
-      <a href={GITHUB_URL} class="hover:text-moss transition-colors duration-150">GitHub</a>
-      <span aria-hidden="true">·</span>
-      <a href={LINKEDIN_URL} class="hover:text-moss transition-colors duration-150">LinkedIn</a>
-      <span aria-hidden="true">·</span>
-      <a href={`mailto:${CONTACT_EMAIL}`} class="hover:text-moss transition-colors duration-150">Contact</a>
-    </div>
-    <div>
-      Ethan Luh
-      <span class="footer-dot mx-1 transition-colors duration-150" aria-hidden="true">&middot;</span>
-      <a href={PERSONAL_SITE_URL} class="hover:text-moss transition-colors duration-150">me</a>
-    </div>
-  </div>
-</footer>
-
 <dialog id="resume-modal" class="resume-modal" aria-labelledby="resume-modal-title">
   <div class="flex items-center justify-between gap-4 border-b border-bark px-5 py-3">
     <h2 id="resume-modal-title" class="font-mono text-xs uppercase tracking-widest text-stone">
@@ -56,10 +24,6 @@ const PERSONAL_SITE_URL = "https://me.ethanluh.com";
 </dialog>
 
 <style>
-  .footer-dot:hover {
-    color: var(--color-lavender);
-  }
-
   .resume-modal {
     box-sizing: border-box;
     margin: auto;
