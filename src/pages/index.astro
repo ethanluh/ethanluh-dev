@@ -71,6 +71,7 @@ const restProjects = projects.filter((p) => p !== featuredProject);
               tag={entry.tag}
               description={entry.description}
               links={entry.href ? [{ label: "view", href: entry.href }] : []}
+              pills
             />
           </div>
         ))
@@ -82,13 +83,24 @@ const restProjects = projects.filter((p) => p !== featuredProject);
 
   <section id="about" class="max-w-3xl mx-auto px-6 py-10">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">About</h2>
-    <div class="reveal max-w-xl text-parchment/90">
-      <!-- placeholder copy — swap in real bio detail before launch -->
-      <p>
-        Still writing this section. For now: CS/Math/Stats at Penn State
-        Behrend, spending most of my time between graph theory proofs and the
-        code that tests them.
-      </p>
+    <div class="reveal grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-10 items-start">
+      <div class="max-w-xl text-parchment/90">
+        <!-- placeholder copy — swap in real bio detail before launch -->
+        <p>
+          Still writing this section. For now: CS/Math/Stats at Penn State
+          Behrend, spending most of my time between graph theory proofs and the
+          code that tests them.
+        </p>
+      </div>
+      <div class="about-photo-frame relative max-w-[220px]">
+        <div class="about-photo-border absolute inset-0 border-2 border-moss rounded-sm" aria-hidden="true"></div>
+        <img
+          src="/placeholder-headshot.svg"
+          alt=""
+          class="about-photo relative rounded-sm w-full h-auto block"
+          loading="lazy"
+        />
+      </div>
     </div>
   </section>
 </BaseLayout>
@@ -126,5 +138,27 @@ const restProjects = projects.filter((p) => p !== featuredProject);
   .reveal.in-view {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  .about-photo {
+    filter: grayscale(100%) contrast(1) brightness(90%);
+    transition:
+      transform var(--duration-base) var(--ease-field),
+      filter var(--duration-base) var(--ease-field);
+  }
+  .about-photo-border {
+    transform: translate(10px, 10px);
+    transition: transform var(--duration-base) var(--ease-field);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .about-photo-frame:hover .about-photo,
+    .about-photo-frame:focus-within .about-photo {
+      transform: translate(-4px, -4px);
+      filter: none;
+    }
+    .about-photo-frame:hover .about-photo-border,
+    .about-photo-frame:focus-within .about-photo-border {
+      transform: translate(14px, 14px);
+    }
   }
 </style>
