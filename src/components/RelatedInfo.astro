@@ -23,24 +23,23 @@ const { related, delaunay } = Astro.props;
         ⓘ {related.length} related
       </button>
       <span class="related-popover" role="note">
-        <DelaunayMotif
-          points={delaunay.points}
-          edges={delaunay.edges}
-          activeSlug={delaunay.activeSlug}
-          width={160}
-          height={100}
-        />
-        <span class="related-popover-title font-mono text-[0.65rem] uppercase tracking-widest text-stone">
-          Delaunay neighbors
+        <span class="related-popover-graph">
+          <DelaunayMotif
+            points={delaunay.points}
+            edges={delaunay.edges}
+            activeSlug={delaunay.activeSlug}
+            width={220}
+            height={150}
+          />
+          <span class="related-popover-title font-mono text-[0.65rem] uppercase tracking-widest text-stone">
+            Delaunay neighbors
+          </span>
         </span>
         <span class="related-links font-mono text-xs">
-          {related.map((r, i) => (
-            <>
-              {i > 0 && ", "}
-              <a href={r.href} class="text-moss hover:text-parchment transition-colors duration-150">
-                {r.title}
-              </a>
-            </>
+          {related.map((r) => (
+            <a href={r.href} class="related-link text-moss hover:text-parchment transition-colors duration-150">
+              {r.title}
+            </a>
           ))}
         </span>
       </span>
@@ -73,10 +72,11 @@ const { related, delaunay } = Astro.props;
     bottom: calc(100% + 8px);
     left: 0;
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.75rem;
     width: max-content;
-    max-width: 220px;
+    max-width: 380px;
     padding: 0.75rem;
     background: var(--color-canopy);
     border: 1px solid color-mix(in srgb, var(--color-moss) 30%, transparent);
@@ -85,6 +85,21 @@ const { related, delaunay } = Astro.props;
     opacity: 0;
     pointer-events: none;
     transition: opacity 160ms var(--ease-field);
+  }
+  .related-popover-graph {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+  .related-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-top: 0.1rem;
+  }
+  .related-link {
+    white-space: nowrap;
   }
   .related-info:hover .related-popover,
   .related-info:focus-within .related-popover {
