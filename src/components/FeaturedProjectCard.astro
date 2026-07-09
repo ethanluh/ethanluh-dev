@@ -5,33 +5,48 @@ interface Props {
   tag: string;
   description: string;
   href?: string;
+  image?: string;
 }
 
-const { number, title, tag, description, href } = Astro.props;
+const { number, title, tag, description, href, image } = Astro.props;
 const tags = tag.split(" · ");
 ---
 
-<article class="featured-specimen card-lift bg-bark border border-moss/30 border-l-[3px] border-l-moss rounded-r-sm p-9 sm:p-10 shadow-lg shadow-canopy/40 flex flex-col sm:flex-row gap-6 sm:items-baseline">
-  <div class="font-mono text-lg text-parchment shrink-0">
-    {number}
+<article class="featured-specimen card-lift bg-bark border border-moss/30 border-l-[3px] border-l-moss rounded-r-sm p-9 sm:p-10 shadow-lg shadow-canopy/40 grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-6 sm:items-center">
+  <div class="flex gap-6 sm:items-baseline">
+    <div class="font-mono text-lg text-parchment shrink-0">
+      {number}
+    </div>
+    <div class="flex flex-col flex-1">
+      <p class="font-mono text-xs uppercase tracking-widest text-moss mb-2">Featured</p>
+      <h3 class="font-display text-2xl mb-2">{title}</h3>
+      <p class="text-parchment/90 mb-3">{description}</p>
+      {
+        href && (
+          <div class="flex gap-4 font-mono text-xs mb-3">
+            <a href={href} class="text-moss hover:text-parchment transition-colors duration-150">
+              view
+            </a>
+          </div>
+        )
+      }
+      <ul class="tech-tags flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-stone mt-auto pt-2">
+        {tags.map((entry) => <li>{entry}</li>)}
+      </ul>
+    </div>
   </div>
-  <div class="flex flex-col flex-1">
-    <p class="font-mono text-xs uppercase tracking-widest text-moss mb-2">Featured</p>
-    <h3 class="font-display text-2xl mb-2">{title}</h3>
-    <p class="text-parchment/90 mb-3">{description}</p>
-    {
-      href && (
-        <div class="flex gap-4 font-mono text-xs mb-3">
-          <a href={href} class="text-moss hover:text-parchment transition-colors duration-150">
-            view
-          </a>
-        </div>
-      )
-    }
-    <ul class="tech-tags flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-stone mt-auto pt-2">
-      {tags.map((entry) => <li>{entry}</li>)}
-    </ul>
-  </div>
+  {
+    image && (
+      <a
+        href={href ?? "#"}
+        class="featured-image-link relative block rounded-sm overflow-hidden"
+        tabindex={href ? 0 : -1}
+        aria-hidden={href ? undefined : "true"}
+      >
+        <img src={image} alt="" class="featured-image w-full h-auto block" loading="lazy" />
+      </a>
+    )
+  }
 </article>
 
 <style>
@@ -46,5 +61,29 @@ const tags = tag.split(" · ");
       transform: translateY(-4px);
       box-shadow: 0 12px 24px -12px rgb(0 0 0 / 0.5);
     }
+  }
+  .featured-image-link {
+    background-color: var(--color-canopy);
+  }
+  .featured-image-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-canopy);
+    mix-blend-mode: screen;
+    transition: opacity var(--duration-base) var(--ease-field);
+    z-index: 1;
+  }
+  .featured-image {
+    filter: grayscale(100%) contrast(1) brightness(90%);
+    transition: filter var(--duration-base) var(--ease-field);
+  }
+  .featured-image-link:hover::before,
+  .featured-image-link:focus-visible::before {
+    opacity: 0;
+  }
+  .featured-image-link:hover .featured-image,
+  .featured-image-link:focus-visible .featured-image {
+    filter: none;
   }
 </style>
