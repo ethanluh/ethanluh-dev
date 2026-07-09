@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
-import Footer from "../components/Footer.astro";
+import ResumeModal from "../components/ResumeModal.astro";
 import SideRail from "../components/SideRail.astro";
 
 interface Props {
@@ -16,6 +16,7 @@ const SOCIAL_LINKS = [
   { label: "GitHub", href: "https://github.com/ethanluh" },
   { label: "LinkedIn", href: "https://linkedin.com/in/ethanluh" },
 ];
+const PERSONAL_SITE = { label: "me", href: "https://me.ethanluh.com" };
 
 const personSchema = {
   "@context": "https://schema.org",
@@ -60,11 +61,11 @@ const personSchema = {
   </head>
   <body class="min-h-screen flex flex-col">
     <Nav />
-    <SideRail orientation="left" variant="social" links={SOCIAL_LINKS} />
+    <SideRail orientation="left" variant="social" links={SOCIAL_LINKS} personalSite={PERSONAL_SITE} />
     <SideRail orientation="right" variant="email" email={CONTACT_EMAIL} />
     <main class="flex-1">
       <slot />
     </main>
-    <Footer />
+    <ResumeModal />
   </body>
 </html>
