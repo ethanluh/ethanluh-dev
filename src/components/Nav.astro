@@ -12,7 +12,10 @@ const links = [
   <nav
     class="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-2 px-6 py-3 font-mono text-xs uppercase tracking-widest"
   >
-    <a href="/" class="text-parchment/80 hover:text-moss transition-colors duration-150">Ethan Luh</a>
+    <a href="/" class="flex flex-col leading-tight text-parchment/80 hover:text-moss transition-colors duration-150">
+      <span>Ethan Luh</span>
+      <span class="text-[0.65rem] tracking-normal normal-case text-stone">field notes from graph theory & code</span>
+    </a>
     <ul class="nav-links flex gap-5">
       {
         links.map((link) => (
