@@ -5,13 +5,10 @@ export type HStarEntry = {
   dim: number;
 };
 
-export const HSTAR_VECTORS: HStarEntry[] = [
-  { id: "square", label: "2-cube", hstar: [1, 1], dim: 2 },
-  { id: "cube3", label: "3-cube", hstar: [1, 4, 1], dim: 3 },
-  { id: "cube4", label: "4-cube", hstar: [1, 11, 11, 1], dim: 4 },
-  { id: "diamond", label: "cross-polytope (2D)", hstar: [1, 2, 1], dim: 2 },
-  { id: "octa", label: "cross-polytope (3D)", hstar: [1, 3, 3, 1], dim: 3 },
-];
+// Kept as a single, explicitly-labeled classical Ehrhart theory example in
+// the colophon — the h*-vector motif system it used to power (dividers,
+// hover states, loaders) is deprecated in favor of the zero forcing hero.
+export const HSTAR_VECTORS: HStarEntry[] = [{ id: "cube4", label: "4-cube", hstar: [1, 11, 11, 1], dim: 4 }];
 
 export function getHStarEntry(id: string): HStarEntry {
   const entry = HSTAR_VECTORS.find((v) => v.id === id);

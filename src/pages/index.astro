@@ -11,6 +11,7 @@ import { coursework } from "../content/coursework";
 import { CONTENT_POINTS } from "../data/content-points";
 import { peelLayers } from "../lib/geometry/hull";
 import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
+import { buildAdjacency, findMinimumZeroForcingSet } from "../lib/zeroForcing";
 
 // --- Unified Work stream: Research + Projects + Experience, one adapter shape ---
 type WorkEntry = {
@@ -94,14 +95,21 @@ function relatedFor(slug: string) {
 function delaunayFor(slug: string) {
   return { points: CONTENT_POINTS, edges: delaunayEdges, activeSlug: slug };
 }
+
+// --- Zero forcing hero stats, for the colophon note (same graph the hero renders) ---
+const zfGraph = buildAdjacency(
+  CONTENT_POINTS.map((p) => p.slug),
+  delaunayEdges.map(([a, b]) => [CONTENT_POINTS[a].slug, CONTENT_POINTS[b].slug]),
+);
+const zfSeeds = findMinimumZeroForcingSet(zfGraph);
 ---
 
 <BaseLayout
   title="Ethan Luh"
   description="CS/Math/Stats student at Penn State Behrend — research and projects."
 >
-  <section class="max-w-3xl mx-auto px-6 pt-12 pb-10 grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-10 items-center">
-    <div>
+  <section class="max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16 pt-12 pb-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
+    <div class="max-w-2xl">
       <h1 class="font-display text-h1 leading-tight mb-4">
         Building at the edge of graph theory and code.
       </h1>
@@ -110,10 +118,12 @@ function delaunayFor(slug: string) {
         polytopes.
       </p>
     </div>
-    <ZeroForcingHero />
+    <div class="w-full lg:w-[30vw] lg:shrink-0">
+      <ZeroForcingHero />
+    </div>
   </section>
 
-  <section id="work" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
+  <section id="work" class="max-w-3xl mx-auto px-6 pt-2 pb-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Work</h2>
     <p class="font-mono text-xs text-stone mb-6">
       Research, projects, and experience — ordered by convex-hull peel layer over
@@ -156,10 +166,6 @@ function delaunayFor(slug: string) {
     </div>
   </section>
 
-  <div class="flex justify-center py-6 reveal">
-    <HStarMotif vectorId="cube3" mode="smooth" height={40} opacity={0.5} animateDraw class="w-full max-w-md h-auto" />
-  </div>
-
   <section id="coursework" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Coursework</h2>
     <div class="flex flex-col gap-4">
@@ -177,10 +183,6 @@ function delaunayFor(slug: string) {
       }
     </div>
   </section>
-
-  <div class="flex justify-center py-6 reveal">
-    <HStarMotif vectorId="octa" mode="smooth" height={40} opacity={0.5} animateDraw flip class="w-full max-w-md h-auto" />
-  </div>
 
   <section id="about" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">About</h2>
@@ -208,13 +210,31 @@ function delaunayFor(slug: string) {
   <section id="colophon" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Colophon</h2>
     <div class="flex flex-col gap-8">
+      <div id="colophon-zero-forcing" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
+        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
+          {zfSeeds.length} seed{zfSeeds.length === 1 ? "" : "s"} · {CONTENT_POINTS.length} nodes
+        </p>
+        <p class="text-parchment/90 max-w-md">
+          The hero graph at the top of the page is this site's actual content
+          — the same {CONTENT_POINTS.length} items listed below, connected by
+          the same Delaunay edges used for "related" — animated by{" "}
+          <strong>zero forcing</strong>, the color-change rule from the
+          research area above: a colored vertex with exactly one uncolored
+          neighbor forces it to color. The {zfSeeds.length} moss-colored
+          seeds on load are a real computed minimum zero forcing set, not a
+          hand-picked example; everything else propagates in the order the
+          rule actually forces it. It's a live instance of the math, not an
+          illustration of it — hover a node for its title, click to visit.
+        </p>
+      </div>
       <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
         <HStarMotif vectorId="cube4" mode="bar" width={160} height={40} class="shrink-0" />
         <p class="text-parchment/90 max-w-md">
           The bars above are the h*-vector of the 4-cube, <span class="font-mono text-xs text-stone">(1, 11, 11, 1)</span> —
-          an Eulerian number sequence from Ehrhart theory. Its silhouette is the
-          recurring shape behind this site's dividers and hover states. Once the
-          zero forcing polytope result with Hanely is finalized, this slot gets
+          a classical Ehrhart theory example (an Eulerian number sequence),
+          kept here purely as a textbook illustration, distinct from the zero
+          forcing hero above, which renders real content data. Once the zero
+          forcing polytope result with Hanely is finalized, this slot gets
           reassigned to that h*-vector specifically.
         </p>
       </div>

@@ -1,177 +1,182 @@
 ---
-// Composite zero forcing graph: a spider (hub + three legs), a small tree,
-// and a 5-cycle, bridged into one connected graph. The forcing order below
-// is computed from the actual color change rule (a colored vertex with
-// exactly one uncolored neighbor forces it) rather than hand-tuned delays,
-// so editing the topology or seed set here stays correct automatically.
+// The hero is a live rendering of the site's actual content as a graph,
+// animated by the zero forcing color-change rule from the zero forcing
+// polytopes research area. Nodes are CONTENT_POINTS (the same data driving
+// the Work section and hull-peeling order), edges are the Delaunay
+// triangulation already computed for the related-content system — this view
+// has no data model of its own. The minimum zero forcing set and forcing
+// order are computed here at build time; no zero forcing logic ships to the
+// client, it only plays back the precomputed sequence via CSS.
+import { CONTENT_POINTS } from "../data/content-points";
+import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
+import { buildAdjacency, findMinimumZeroForcingSet, simulateForcing } from "../lib/zeroForcing";
 
-interface Node {
-  id: string;
-  x: number;
-  y: number;
-}
-type Edge = [string, string];
+const delaunayActive = CONTENT_POINTS.length >= MIN_POINTS_FOR_DELAUNAY;
+const neighborIndices = relatedIndices(CONTENT_POINTS.map((p) => [p.topic, p.recency]));
+const indexEdges = delaunayActive ? edgesFromNeighbors(neighborIndices) : [];
 
-const nodes: Node[] = [
-  { id: "hub", x: 110, y: 180 },
-  { id: "leg1a", x: 80, y: 120 },
-  { id: "leg1b", x: 50, y: 70 },
-  { id: "leg2a", x: 60, y: 230 },
-  { id: "leg2b", x: 30, y: 280 },
-  { id: "leg3a", x: 160, y: 110 },
-  { id: "leg3b", x: 190, y: 60 },
-  { id: "troot", x: 190, y: 170 },
-  { id: "tc1", x: 240, y: 130 },
-  { id: "tc2", x: 240, y: 210 },
-  { id: "tl1", x: 280, y: 100 },
-  { id: "tl2", x: 280, y: 160 },
-  { id: "c1", x: 290, y: 230 },
-  { id: "c2", x: 340, y: 210 },
-  { id: "c3", x: 370, y: 250 },
-  { id: "c4", x: 350, y: 300 },
-  { id: "c5", x: 300, y: 290 },
-];
+const slugEdges: [string, string][] = indexEdges.map(([a, b]) => [
+  CONTENT_POINTS[a].slug,
+  CONTENT_POINTS[b].slug,
+]);
 
-const edges: Edge[] = [
-  ["hub", "leg1a"],
-  ["leg1a", "leg1b"],
-  ["hub", "leg2a"],
-  ["leg2a", "leg2b"],
-  ["hub", "leg3a"],
-  ["leg3a", "leg3b"],
-  ["hub", "troot"],
-  ["troot", "tc1"],
-  ["troot", "tc2"],
-  ["tc1", "tl1"],
-  ["tc1", "tl2"],
-  ["tc2", "c1"],
-  ["c1", "c2"],
-  ["c2", "c3"],
-  ["c3", "c4"],
-  ["c4", "c5"],
-  ["c5", "c1"],
-];
+// Card-scale canvas, sized for sitting next to the heading rather than
+// spanning the page — everything below (padding, node radius, stroke
+// widths, label offsets) is derived from this so resizing it again later
+// stays proportional instead of needing a second round of magic numbers.
+//
+// A Delaunay triangulation is only planar (no crossing edges) when drawn on
+// the same coordinates it was computed from (topic, recency) — same lesson
+// as docs/hull-peeling-nav.md's hull/display-coordinate mismatch bug. To
+// actually read as the same graph as DelaunayMotif.astro (not just use the
+// same edge list), the canvas has to reproduce its aspect ratio and padding
+// proportions too. Derive height and per-axis padding from DelaunayMotif's
+// own 140×90 canvas / 10px padding instead of picking new numbers.
+const width = 400;
+const motifWidth = 140;
+const motifHeight = 90;
+const motifPadding = 10;
+const height = Math.round((width / motifWidth) * motifHeight);
+const padX = (motifPadding / motifWidth) * width;
+const padY = (motifPadding / motifHeight) * height;
+const scale = width / 400;
+const nodeRadius = 9 * scale;
 
-// A zero forcing set: one per spider leg tip, both tree leaves, and an
-// adjacent pair on the cycle (a lone cycle seed can never force — it always
-// has two uncolored neighbors — so cycles need two adjacent seeds).
-const seeds = ["leg1b", "leg2b", "leg3b", "tl1", "tl2", "c1", "c2"];
+// Pull every node 20% closer to the plot's center, so the graph reads as
+// slightly more compact/clustered without changing the canvas or the
+// triangulation's proportions (still an affine transform, so it stays
+// planar — see the note above).
+const spacingScale = 0.8;
+const centerX = width / 2;
+const centerY = height / 2;
 
-interface ForceRecord {
-  round: number;
-  via: string | null;
-}
+const nodes = CONTENT_POINTS.map((p) => {
+  const rawX = padX + p.topic * (width - padX * 2);
+  const rawY = padY + (1 - p.recency) * (height - padY * 2);
+  return {
+    slug: p.slug,
+    title: p.title,
+    href: `#content-${p.slug}`,
+    x: centerX + (rawX - centerX) * spacingScale,
+    y: centerY + (rawY - centerY) * spacingScale,
+  };
+});
+const nodeBySlug = new Map(nodes.map((n) => [n.slug, n]));
 
-function simulateForcing(
-  allNodes: Node[],
-  allEdges: Edge[],
-  seedIds: string[],
-): Map<string, ForceRecord> {
-  const adjacency = new Map<string, string[]>();
-  for (const node of allNodes) adjacency.set(node.id, []);
-  for (const [a, b] of allEdges) {
-    adjacency.get(a)!.push(b);
-    adjacency.get(b)!.push(a);
-  }
+const graph = buildAdjacency(
+  CONTENT_POINTS.map((p) => p.slug),
+  slugEdges,
+);
+const seeds = findMinimumZeroForcingSet(graph);
+const forcing = simulateForcing(graph, seeds);
 
-  const colored = new Set(seedIds);
-  const forcing = new Map<string, ForceRecord>();
-  for (const id of seedIds) forcing.set(id, { round: 0, via: null });
-
-  let round = 1;
-  let changed = true;
-  while (changed) {
-    changed = false;
-    const applied = new Map<string, string>();
-    for (const id of colored) {
-      const uncoloredNeighbors = adjacency
-        .get(id)!
-        .filter((n) => !colored.has(n));
-      if (uncoloredNeighbors.length === 1 && !applied.has(uncoloredNeighbors[0])) {
-        applied.set(uncoloredNeighbors[0], id);
-      }
-    }
-    for (const [target, via] of applied) {
-      colored.add(target);
-      forcing.set(target, { round, via });
-      changed = true;
-    }
-    if (changed) round++;
-  }
-
-  return forcing;
-}
-
-const forcing = simulateForcing(nodes, edges, seeds);
-
-if (forcing.size !== nodes.length) {
-  const uncolored = nodes.map((n) => n.id).filter((id) => !forcing.has(id));
-  throw new Error(
-    `ZeroForcingHero: seed set does not force the full graph (stuck at ${forcing.size}/${nodes.length}, uncolored: ${uncolored.join(", ")})`,
-  );
-}
-
-const nodeById = new Map(nodes.map((n) => [n.id, n]));
-
-const renderEdges = edges.map(([a, b], index) => {
-  const from = nodeById.get(a)!;
-  const to = nodeById.get(b)!;
-  const forceA = forcing.get(a)!;
-  const forceB = forcing.get(b)!;
-  const forcingRound =
-    forceA.via === b ? forceA.round : forceB.via === a ? forceB.round : null;
-  return { from, to, index, forcingRound };
+const renderEdges = slugEdges.map(([a, b], index) => {
+  const forceA = forcing.get(a);
+  const forceB = forcing.get(b);
+  const forcingRound = forceA?.via === b ? forceA.round : forceB?.via === a ? forceB.round : null;
+  return { from: nodeBySlug.get(a)!, to: nodeBySlug.get(b)!, index, forcingRound };
 });
 
 const renderNodes = nodes.map((node) => ({
   node,
-  round: forcing.get(node.id)!.round,
+  round: forcing.get(node.slug)?.round ?? 0,
 }));
+
+// Longer than any possible edge, so the draw-in stroke-dasharray always
+// covers the full line regardless of canvas size.
+const edgeDash = Math.ceil(Math.hypot(width, height));
+
+// Estimate a monospace label's rendered width and clamp its centered x so it
+// never overflows the viewBox — titles vary a lot in length ("quire" vs.
+// "Zero Forcing Polytopes (research)"), so a fixed edge margin isn't enough.
+// Font size is intentionally not tied to `scale` (that's for node/stroke
+// weight) — a small caption-sized label reads as a tooltip, a `scale`d one
+// reads as a second heading.
+const labelFontSize = 13;
+const estCharWidth = labelFontSize * 0.62;
+const labelSafeMargin = 16;
+function clampLabelX(centerX: number, title: string): number {
+  const halfWidth = (title.length * estCharWidth) / 2;
+  const min = labelSafeMargin + halfWidth;
+  const max = width - labelSafeMargin - halfWidth;
+  if (min > max) return width / 2;
+  return Math.min(Math.max(centerX, min), max);
+}
 ---
 
-<svg
-  class="zf-hero w-full h-auto max-w-lg"
-  viewBox="0 0 400 320"
-  fill="none"
-  aria-hidden="true"
-  focusable="false"
->
-  {
-    renderEdges.map(({ from, to, index, forcingRound }) => (
-      <line
-        class:list={["zf-edge", forcingRound !== null && "zf-forcing"]}
-        style={{
-          "--i": index,
-          ...(forcingRound !== null ? { "--round": forcingRound } : {}),
-        }}
-        x1={from.x}
-        y1={from.y}
-        x2={to.x}
-        y2={to.y}
-      />
-    ))
+<div class="zf-hero-wrap">
+  <svg class="zf-hero w-full h-auto" viewBox={`0 0 ${width} ${height}`} fill="none" aria-hidden="true" focusable="false">
+    {
+      renderEdges.map(({ from, to, index, forcingRound }) => (
+        <line
+          class:list={["zf-edge", forcingRound !== null && "zf-forcing"]}
+          style={{
+            "--i": index,
+            ...(forcingRound !== null ? { "--round": forcingRound } : {}),
+          }}
+          x1={from.x}
+          y1={from.y}
+          x2={to.x}
+          y2={to.y}
+        />
+      ))
+    }
+
+    {
+      renderNodes.map(({ node, round }) => {
+        // Flip the label below the node when it's near the top edge so the
+        // halo text doesn't clip against the viewBox boundary.
+        const labelBelow = node.y - padY < 24;
+        const labelY = labelBelow ? node.y + 20 : node.y - 14;
+        const labelX = clampLabelX(node.x, node.title);
+        return (
+          <a href={node.href} class="zf-node-link" tabindex="-1">
+            <circle
+              class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]}
+              style={{ "--round": round }}
+              cx={node.x}
+              cy={node.y}
+              r={nodeRadius}
+            />
+            <text x={labelX} y={labelY} text-anchor="middle" class="zf-node-label zf-node-label-halo" aria-hidden="true">
+              {node.title}
+            </text>
+            <text x={labelX} y={labelY} text-anchor="middle" class="zf-node-label" aria-hidden="true">
+              {node.title}
+            </text>
+            <title>{node.title}</title>
+          </a>
+        );
+      })
+    }
+  </svg>
+
+  <p class="zf-hero-caption font-mono text-xs text-stone">
+    Hover a node to see what it is, click to visit — <a href="#colophon-zero-forcing" class="text-moss hover:text-parchment transition-colors duration-150">how this graph works ↓</a>
+  </p>
+
+  <ul class="sr-only">
+    {
+      nodes.map((node) => (
+        <li>
+          <a href={node.href}>{node.title}</a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style define:vars={{ scale, edgeDash, labelFontSize }}>
+  .zf-hero {
+    overflow: visible;
   }
 
-  {
-    renderNodes.map(({ node, round }) => (
-      <circle
-        class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]}
-        style={{ "--round": round }}
-        cx={node.x}
-        cy={node.y}
-        r={9}
-      />
-    ))
-  }
-</svg>
-
-<style>
   .zf-edge {
     stroke: var(--color-stone);
-    stroke-width: 1.5;
+    stroke-width: calc(1.5 * var(--scale));
     stroke-linecap: round;
-    stroke-dasharray: 500;
-    stroke-dashoffset: 500;
+    stroke-dasharray: var(--edgeDash);
+    stroke-dashoffset: var(--edgeDash);
     animation: zf-draw var(--duration-base) var(--ease-field) forwards;
     animation-delay: calc(var(--i) * var(--duration-stagger) / 5);
   }
@@ -185,10 +190,19 @@ const renderNodes = nodes.map((node) => ({
       calc(var(--round) * var(--duration-stagger) - 60ms);
   }
 
+  .zf-node-link {
+    cursor: pointer;
+  }
+
   .zf-node {
     stroke: var(--color-stone);
-    stroke-width: 1.5;
+    stroke-width: calc(1.5 * var(--scale));
     fill: var(--color-canopy);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 150ms var(--ease-field),
+      filter 150ms var(--ease-field);
   }
 
   .zf-seed {
@@ -198,6 +212,45 @@ const renderNodes = nodes.map((node) => ({
   .zf-forced {
     animation: zf-force var(--duration-base) var(--ease-field) forwards;
     animation-delay: calc(var(--round) * var(--duration-stagger));
+  }
+
+  .zf-node-link:hover .zf-node,
+  .zf-node-link:focus-visible .zf-node {
+    transform: scale(1.4);
+    stroke: var(--color-moss);
+    filter: drop-shadow(0 0 calc(4px * var(--scale)) color-mix(in srgb, var(--color-moss) 55%, transparent));
+  }
+
+  .zf-node-label,
+  .zf-node-label-halo {
+    font-family: var(--font-mono);
+    font-size: calc(var(--labelFontSize) * 1px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 150ms var(--ease-field);
+  }
+
+  .zf-node-label {
+    fill: var(--color-parchment);
+  }
+
+  .zf-node-label-halo {
+    fill: none;
+    stroke: var(--color-canopy);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    paint-order: stroke;
+  }
+
+  .zf-node-link:hover .zf-node-label,
+  .zf-node-link:hover .zf-node-label-halo,
+  .zf-node-link:focus-visible .zf-node-label,
+  .zf-node-link:focus-visible .zf-node-label-halo {
+    opacity: 1;
+  }
+
+  .zf-hero-caption {
+    margin-top: 0.5rem;
   }
 
   @keyframes zf-draw {
@@ -218,11 +271,25 @@ const renderNodes = nodes.map((node) => ({
     }
     50% {
       stroke: var(--color-moss);
-      stroke-width: 2.5;
+      stroke-width: calc(2.5 * var(--scale));
     }
     100% {
       stroke: var(--color-stone);
-      stroke-width: 1.5;
+      stroke-width: calc(1.5 * var(--scale));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zf-edge,
+    .zf-edge.zf-forcing,
+    .zf-forced {
+      animation-duration: 0s !important;
+      animation-delay: 0s !important;
+    }
+
+    .zf-node-link:hover .zf-node,
+    .zf-node-link:focus-visible .zf-node {
+      transform: none;
     }
   }
 </style>
