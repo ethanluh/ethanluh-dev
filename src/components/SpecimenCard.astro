@@ -1,4 +1,6 @@
 ---
+import HStarMotif from "./HStarMotif.astro";
+
 interface Props {
   number: string;
   title: string;
@@ -20,7 +22,10 @@ const tags = pills ? tag.split(" · ") : [];
     </span>
   </div>
   <div class="flex flex-col flex-1">
-    <h3 class="font-display text-xl mb-1">{title}</h3>
+    <h3 class="font-display text-xl mb-1 flex items-center gap-2">
+      {title}
+      <HStarMotif vectorId="diamond" mode="smooth" width={32} height={10} class="specimen-hover-motif" />
+    </h3>
     {!pills && <p class="font-mono text-xs text-stone mb-2">{tag}</p>}
     <p class="text-parchment/90 mb-2">{description}</p>
     {
@@ -48,6 +53,14 @@ const tags = pills ? tag.split(" · ") : [];
   .specimen-num:hover .flower {
     opacity: 1;
     transition: opacity var(--ease-field) 250ms;
+  }
+  .specimen-hover-motif {
+    opacity: 0;
+    transition: opacity 180ms var(--ease-field);
+  }
+  .card-lift:hover .specimen-hover-motif,
+  .card-lift:focus-within .specimen-hover-motif {
+    opacity: 1;
   }
   .card-lift {
     transition:

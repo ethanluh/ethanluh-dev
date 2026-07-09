@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SpecimenCard from "../components/SpecimenCard.astro";
 import FeaturedProjectCard from "../components/FeaturedProjectCard.astro";
 import ZeroForcingHero from "../components/ZeroForcingHero.astro";
-import GraphDivider from "../components/GraphDivider.astro";
+import HStarMotif from "../components/HStarMotif.astro";
 import { research } from "../content/research";
 import { projects } from "../content/projects";
 import { experience } from "../content/experience";
@@ -49,7 +49,9 @@ const restProjects = projects.filter((p) => p !== featuredProject);
     </div>
   </section>
 
-  <GraphDivider />
+  <div class="flex justify-center py-6">
+    <HStarMotif vectorId="cube3" mode="smooth" opacity={0.2} class="w-full max-w-md h-auto" />
+  </div>
 
   <section id="projects" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Projects</h2>
@@ -81,7 +83,9 @@ const restProjects = projects.filter((p) => p !== featuredProject);
     </div>
   </section>
 
-  <GraphDivider flip />
+  <div class="flex justify-center py-6">
+    <HStarMotif vectorId="octa" mode="smooth" opacity={0.2} flip class="w-full max-w-md h-auto" />
+  </div>
 
   <section id="experience" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Experience</h2>
@@ -101,7 +105,9 @@ const restProjects = projects.filter((p) => p !== featuredProject);
     </div>
   </section>
 
-  <GraphDivider />
+  <div class="flex justify-center py-6">
+    <HStarMotif vectorId="cube3" mode="smooth" opacity={0.2} class="w-full max-w-md h-auto" />
+  </div>
 
   <section id="coursework" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Coursework</h2>
@@ -121,7 +127,9 @@ const restProjects = projects.filter((p) => p !== featuredProject);
     </div>
   </section>
 
-  <GraphDivider flip />
+  <div class="flex justify-center py-6">
+    <HStarMotif vectorId="octa" mode="smooth" opacity={0.2} flip class="w-full max-w-md h-auto" />
+  </div>
 
   <section id="about" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">About</h2>
@@ -143,6 +151,20 @@ const restProjects = projects.filter((p) => p !== featuredProject);
           loading="lazy"
         />
       </div>
+    </div>
+  </section>
+
+  <section id="colophon" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
+    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Colophon</h2>
+    <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+      <HStarMotif vectorId="cube4" mode="bar" width={160} height={40} class="shrink-0" />
+      <p class="text-parchment/90 max-w-md">
+        The bars above are the h*-vector of the 4-cube, <span class="font-mono text-xs text-stone">(1, 11, 11, 1)</span> —
+        an Eulerian number sequence from Ehrhart theory. Its silhouette is the
+        recurring shape behind this site's dividers and hover states. Once the
+        zero forcing polytope result with Hanely is finalized, this slot gets
+        reassigned to that h*-vector specifically.
+      </p>
     </div>
   </section>
 </BaseLayout>

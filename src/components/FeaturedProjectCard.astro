@@ -1,4 +1,6 @@
 ---
+import HStarMotif from "./HStarMotif.astro";
+
 interface Props {
   number: string;
   title: string;
@@ -19,7 +21,10 @@ const tags = tag.split(" · ");
     </div>
     <div class="flex flex-col flex-1">
       <p class="font-mono text-xs uppercase tracking-widest text-moss mb-2">Featured</p>
-      <h3 class="font-display text-2xl mb-2">{title}</h3>
+      <h3 class="font-display text-2xl mb-2 flex items-center gap-2">
+        {title}
+        <HStarMotif vectorId="diamond" mode="smooth" width={32} height={10} class="specimen-hover-motif" />
+      </h3>
       <p class="text-parchment/90 mb-3">{description}</p>
       {
         href && (
@@ -54,6 +59,14 @@ const tags = tag.split(" · ");
     transition:
       transform var(--duration-base) var(--ease-field),
       box-shadow var(--duration-base) var(--ease-field);
+  }
+  .specimen-hover-motif {
+    opacity: 0;
+    transition: opacity 180ms var(--ease-field);
+  }
+  .card-lift:hover .specimen-hover-motif,
+  .card-lift:focus-within .specimen-hover-motif {
+    opacity: 1;
   }
   @media (prefers-reduced-motion: no-preference) {
     .card-lift:hover,
