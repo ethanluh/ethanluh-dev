@@ -23,22 +23,33 @@ const slugEdges: [string, string][] = indexEdges.map(([a, b]) => [
 // Banner-scale canvas — everything below (padding, node radius, stroke
 // widths, label offsets) is derived from this so resizing it again later
 // stays proportional instead of needing a second round of magic numbers.
-const width = 1200;
-const height = 420;
-const scale = width / 400;
-const pad = 44 * scale;
+//
 // A Delaunay triangulation is only planar (no crossing edges) when drawn on
 // the same coordinates it was computed from (topic, recency) — same lesson
-// as docs/hull-peeling-nav.md's hull/display-coordinate mismatch bug. Match
-// DelaunayMotif.astro's mapping exactly so this reads as the same graph.
+// as docs/hull-peeling-nav.md's hull/display-coordinate mismatch bug. To
+// actually read as the same graph as DelaunayMotif.astro (not just use the
+// same edge list), the canvas has to reproduce its aspect ratio and padding
+// proportions too — a single `pad` value that's fine on a near-square
+// canvas becomes wildly asymmetric once stretched to a wide banner (it ate
+// most of the vertical range while barely denting the horizontal one),
+// which visibly distorted the triangulation. Derive height and per-axis
+// padding from DelaunayMotif's own 140×90 canvas / 10px padding instead.
+const width = 1200;
+const motifWidth = 140;
+const motifHeight = 90;
+const motifPadding = 10;
+const height = Math.round((width / motifWidth) * motifHeight);
+const padX = (motifPadding / motifWidth) * width;
+const padY = (motifPadding / motifHeight) * height;
+const scale = width / 400;
 const nodeRadius = 9 * scale * 0.25;
 
 const nodes = CONTENT_POINTS.map((p) => ({
   slug: p.slug,
   title: p.title,
   href: `#content-${p.slug}`,
-  x: pad + p.topic * (width - pad * 2),
-  y: pad + (1 - p.recency) * (height - pad * 2),
+  x: padX + p.topic * (width - padX * 2),
+  y: padY + (1 - p.recency) * (height - padY * 2),
 }));
 const nodeBySlug = new Map(nodes.map((n) => [n.slug, n]));
 
@@ -68,9 +79,12 @@ const edgeDash = Math.ceil(Math.hypot(width, height));
 // Estimate a monospace label's rendered width and clamp its centered x so it
 // never overflows the viewBox — titles vary a lot in length ("quire" vs.
 // "Zero Forcing Polytopes (research)"), so a fixed edge margin isn't enough.
-const labelFontSize = 11 * scale;
+// Font size is intentionally not tied to `scale` (that's for node/stroke
+// weight) — a small caption-sized label reads as a tooltip, a `scale`d one
+// reads as a second heading.
+const labelFontSize = 13;
 const estCharWidth = labelFontSize * 0.62;
-const labelSafeMargin = 16 * scale;
+const labelSafeMargin = 16;
 function clampLabelX(centerX: number, title: string): number {
   const halfWidth = (title.length * estCharWidth) / 2;
   const min = labelSafeMargin + halfWidth;
@@ -102,8 +116,8 @@ function clampLabelX(centerX: number, title: string): number {
       renderNodes.map(({ node, round }) => {
         // Flip the label below the node when it's near the top edge so the
         // halo text doesn't clip against the viewBox boundary.
-        const labelBelow = node.y - pad < 24 * scale;
-        const labelY = labelBelow ? node.y + 22 * scale : node.y - 16 * scale;
+        const labelBelow = node.y - padY < 24;
+        const labelY = labelBelow ? node.y + 20 : node.y - 14;
         const labelX = clampLabelX(node.x, node.title);
         return (
           <a href={node.href} class="zf-node-link" tabindex="-1">
@@ -142,7 +156,7 @@ function clampLabelX(centerX: number, title: string): number {
   </ul>
 </div>
 
-<style define:vars={{ scale, edgeDash }}>
+<style define:vars={{ scale, edgeDash, labelFontSize }}>
   .zf-hero {
     overflow: visible;
   }
@@ -200,7 +214,7 @@ function clampLabelX(centerX: number, title: string): number {
   .zf-node-label,
   .zf-node-label-halo {
     font-family: var(--font-mono);
-    font-size: calc(11px * var(--scale));
+    font-size: calc(var(--labelFontSize) * 1px);
     pointer-events: none;
     opacity: 0;
     transition: opacity 150ms var(--ease-field);
@@ -213,7 +227,7 @@ function clampLabelX(centerX: number, title: string): number {
   .zf-node-label-halo {
     fill: none;
     stroke: var(--color-canopy);
-    stroke-width: calc(4px * var(--scale));
+    stroke-width: 3px;
     stroke-linejoin: round;
     paint-order: stroke;
   }
