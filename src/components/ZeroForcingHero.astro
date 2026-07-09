@@ -37,9 +37,14 @@ const n = CONTENT_POINTS.length;
 const xRanks = ranks(CONTENT_POINTS.map((p) => p.recency));
 const yRanks = ranks(CONTENT_POINTS.map((p) => p.depth));
 
-const width = 400;
-const height = 320;
-const pad = 44;
+// Banner-scale canvas — everything below (padding, node radius, stroke
+// widths, label offsets) is derived from this so resizing it again later
+// stays proportional instead of needing a second round of magic numbers.
+const width = 1200;
+const height = 420;
+const scale = width / 400;
+const pad = 44 * scale;
+const nodeRadius = 9 * scale;
 const spread = (rank: number) => (n > 1 ? rank / (n - 1) : 0.5);
 
 const nodes = CONTENT_POINTS.map((p, i) => ({
@@ -69,10 +74,28 @@ const renderNodes = nodes.map((node) => ({
   node,
   round: forcing.get(node.slug)?.round ?? 0,
 }));
+
+// Longer than any possible edge, so the draw-in stroke-dasharray always
+// covers the full line regardless of canvas size.
+const edgeDash = Math.ceil(Math.hypot(width, height));
+
+// Estimate a monospace label's rendered width and clamp its centered x so it
+// never overflows the viewBox — titles vary a lot in length ("quire" vs.
+// "Zero Forcing Polytopes (research)"), so a fixed edge margin isn't enough.
+const labelFontSize = 11 * scale;
+const estCharWidth = labelFontSize * 0.62;
+const labelSafeMargin = 16 * scale;
+function clampLabelX(centerX: number, title: string): number {
+  const halfWidth = (title.length * estCharWidth) / 2;
+  const min = labelSafeMargin + halfWidth;
+  const max = width - labelSafeMargin - halfWidth;
+  if (min > max) return width / 2;
+  return Math.min(Math.max(centerX, min), max);
+}
 ---
 
 <div class="zf-hero-wrap">
-  <svg class="zf-hero w-full h-auto max-w-lg" viewBox={`0 0 ${width} ${height}`} fill="none" aria-hidden="true" focusable="false">
+  <svg class="zf-hero w-full h-auto" viewBox={`0 0 ${width} ${height}`} fill="none" aria-hidden="true" focusable="false">
     {
       renderEdges.map(({ from, to, index, forcingRound }) => (
         <line
@@ -91,20 +114,24 @@ const renderNodes = nodes.map((node) => ({
 
     {
       renderNodes.map(({ node, round }) => {
-        // Flip/anchor the label away from whichever viewBox edge the node is
-        // near, so the halo text doesn't clip against the SVG boundary.
-        const labelBelow = node.y - pad < 24;
-        const labelY = labelBelow ? node.y + 22 : node.y - 16;
-        const edgeMargin = 60;
-        const textAnchor = node.x > width - pad - edgeMargin ? "end" : node.x < pad + edgeMargin ? "start" : "middle";
-        const labelX = textAnchor === "end" ? node.x + 12 : textAnchor === "start" ? node.x - 12 : node.x;
+        // Flip the label below the node when it's near the top edge so the
+        // halo text doesn't clip against the viewBox boundary.
+        const labelBelow = node.y - pad < 24 * scale;
+        const labelY = labelBelow ? node.y + 22 * scale : node.y - 16 * scale;
+        const labelX = clampLabelX(node.x, node.title);
         return (
           <a href={node.href} class="zf-node-link" tabindex="-1">
-            <circle class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]} style={{ "--round": round }} cx={node.x} cy={node.y} r={9} />
-            <text x={labelX} y={labelY} text-anchor={textAnchor} class="zf-node-label zf-node-label-halo" aria-hidden="true">
+            <circle
+              class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]}
+              style={{ "--round": round }}
+              cx={node.x}
+              cy={node.y}
+              r={nodeRadius}
+            />
+            <text x={labelX} y={labelY} text-anchor="middle" class="zf-node-label zf-node-label-halo" aria-hidden="true">
               {node.title}
             </text>
-            <text x={labelX} y={labelY} text-anchor={textAnchor} class="zf-node-label" aria-hidden="true">
+            <text x={labelX} y={labelY} text-anchor="middle" class="zf-node-label" aria-hidden="true">
               {node.title}
             </text>
             <title>{node.title}</title>
@@ -129,13 +156,17 @@ const renderNodes = nodes.map((node) => ({
   </ul>
 </div>
 
-<style>
+<style define:vars={{ scale, edgeDash }}>
+  .zf-hero {
+    overflow: visible;
+  }
+
   .zf-edge {
     stroke: var(--color-stone);
-    stroke-width: 1.5;
+    stroke-width: calc(1.5 * var(--scale));
     stroke-linecap: round;
-    stroke-dasharray: 500;
-    stroke-dashoffset: 500;
+    stroke-dasharray: var(--edgeDash);
+    stroke-dashoffset: var(--edgeDash);
     animation: zf-draw var(--duration-base) var(--ease-field) forwards;
     animation-delay: calc(var(--i) * var(--duration-stagger) / 5);
   }
@@ -155,7 +186,7 @@ const renderNodes = nodes.map((node) => ({
 
   .zf-node {
     stroke: var(--color-stone);
-    stroke-width: 1.5;
+    stroke-width: calc(1.5 * var(--scale));
     fill: var(--color-canopy);
     transform-box: fill-box;
     transform-origin: center;
@@ -177,13 +208,13 @@ const renderNodes = nodes.map((node) => ({
   .zf-node-link:focus-visible .zf-node {
     transform: scale(1.4);
     stroke: var(--color-moss);
-    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--color-moss) 55%, transparent));
+    filter: drop-shadow(0 0 calc(4px * var(--scale)) color-mix(in srgb, var(--color-moss) 55%, transparent));
   }
 
   .zf-node-label,
   .zf-node-label-halo {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: calc(11px * var(--scale));
     pointer-events: none;
     opacity: 0;
     transition: opacity 150ms var(--ease-field);
@@ -196,7 +227,7 @@ const renderNodes = nodes.map((node) => ({
   .zf-node-label-halo {
     fill: none;
     stroke: var(--color-canopy);
-    stroke-width: 4;
+    stroke-width: calc(4px * var(--scale));
     stroke-linejoin: round;
     paint-order: stroke;
   }
@@ -230,11 +261,11 @@ const renderNodes = nodes.map((node) => ({
     }
     50% {
       stroke: var(--color-moss);
-      stroke-width: 2.5;
+      stroke-width: calc(2.5 * var(--scale));
     }
     100% {
       stroke: var(--color-stone);
-      stroke-width: 1.5;
+      stroke-width: calc(1.5 * var(--scale));
     }
   }
 
