@@ -20,23 +20,6 @@ const slugEdges: [string, string][] = indexEdges.map(([a, b]) => [
   CONTENT_POINTS[b].slug,
 ]);
 
-// Raw recency/depth values cluster badly at pixel scale (same lesson noted
-// in docs/hull-peeling-nav.md for the shelved hull concept) — rank each axis
-// independently so the layout spreads without changing the underlying data
-// or the peel-layer/Delaunay computations, which operate on raw values.
-function ranks(values: number[]): number[] {
-  const order = values.map((_, i) => i).sort((a, b) => values[a] - values[b] || a - b);
-  const r = new Array<number>(values.length);
-  order.forEach((originalIndex, rank) => {
-    r[originalIndex] = rank;
-  });
-  return r;
-}
-
-const n = CONTENT_POINTS.length;
-const xRanks = ranks(CONTENT_POINTS.map((p) => p.recency));
-const yRanks = ranks(CONTENT_POINTS.map((p) => p.depth));
-
 // Banner-scale canvas — everything below (padding, node radius, stroke
 // widths, label offsets) is derived from this so resizing it again later
 // stays proportional instead of needing a second round of magic numbers.
@@ -44,15 +27,18 @@ const width = 1200;
 const height = 420;
 const scale = width / 400;
 const pad = 44 * scale;
-const nodeRadius = 9 * scale;
-const spread = (rank: number) => (n > 1 ? rank / (n - 1) : 0.5);
+// A Delaunay triangulation is only planar (no crossing edges) when drawn on
+// the same coordinates it was computed from (topic, recency) — same lesson
+// as docs/hull-peeling-nav.md's hull/display-coordinate mismatch bug. Match
+// DelaunayMotif.astro's mapping exactly so this reads as the same graph.
+const nodeRadius = 9 * scale * 0.25;
 
-const nodes = CONTENT_POINTS.map((p, i) => ({
+const nodes = CONTENT_POINTS.map((p) => ({
   slug: p.slug,
   title: p.title,
-  href: p.href,
-  x: pad + spread(xRanks[i]) * (width - pad * 2),
-  y: pad + (1 - spread(yRanks[i])) * (height - pad * 2),
+  href: `#content-${p.slug}`,
+  x: pad + p.topic * (width - pad * 2),
+  y: pad + (1 - p.recency) * (height - pad * 2),
 }));
 const nodeBySlug = new Map(nodes.map((n) => [n.slug, n]));
 
