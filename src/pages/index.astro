@@ -7,6 +7,7 @@ import GraphDivider from "../components/GraphDivider.astro";
 import { research } from "../content/research";
 import { projects } from "../content/projects";
 import { experience } from "../content/experience";
+import { coursework } from "../content/coursework";
 
 const featuredProject = projects.find((p) => p.featured) ?? projects[0];
 const restProjects = projects.filter((p) => p !== featuredProject);
@@ -102,6 +103,26 @@ const restProjects = projects.filter((p) => p !== featuredProject);
 
   <GraphDivider />
 
+  <section id="coursework" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
+    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Coursework</h2>
+    <div class="flex flex-col gap-4">
+      {
+        coursework.map((entry) => (
+          <div class="reveal">
+            <SpecimenCard
+              number={entry.number}
+              title={entry.title}
+              tag={entry.tag}
+              description={entry.description}
+            />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <GraphDivider flip />
+
   <section id="about" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">About</h2>
     <div class="reveal grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-10 items-start">
@@ -110,9 +131,7 @@ const restProjects = projects.filter((p) => p !== featuredProject);
         <p>
           Still writing this section. For now: CS/Math/Stats at Penn State
           Behrend, spending most of my time between graph theory proofs and the
-          code that tests them. [PLACEHOLDER: outside-of-CS hobby/interest
-          goes here.] [PLACEHOLDER: a specific quirk or offbeat fact goes
-          here.]
+          code that tests them.
         </p>
       </div>
       <div class="about-photo-frame relative max-w-[220px]">
