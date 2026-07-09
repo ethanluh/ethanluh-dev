@@ -34,6 +34,14 @@ const personSchema = {
 
 <html lang="en">
   <head>
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem("theme");
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
+      })();
+    </script>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
@@ -62,7 +70,7 @@ const personSchema = {
   <body class="min-h-screen flex flex-col">
     <Nav />
     <SideRail orientation="left" variant="social" links={SOCIAL_LINKS} personalSite={PERSONAL_SITE} />
-    <SideRail orientation="right" variant="email" email={CONTACT_EMAIL} />
+    <SideRail orientation="right" variant="email" email={CONTACT_EMAIL} themeToggle />
     <main class="flex-1">
       <slot />
     </main>
