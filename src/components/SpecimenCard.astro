@@ -1,5 +1,13 @@
 ---
 import HStarMotif from "./HStarMotif.astro";
+import DelaunayMotif from "./DelaunayMotif.astro";
+
+interface DelaunayPoint {
+  slug: string;
+  title: string;
+  topic: number;
+  recency: number;
+}
 
 interface Props {
   id?: string;
@@ -9,10 +17,23 @@ interface Props {
   description: string;
   links?: { label: string; href: string }[];
   pills?: boolean;
+  kindLabel?: string;
   related?: { title: string; href: string }[];
+  delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
 }
 
-const { id, number, title, tag, description, links = [], pills = false, related = [] } = Astro.props;
+const {
+  id,
+  number,
+  title,
+  tag,
+  description,
+  links = [],
+  pills = false,
+  kindLabel,
+  related = [],
+  delaunay,
+} = Astro.props;
 const tags = pills ? tag.split(" · ") : [];
 ---
 
@@ -24,6 +45,7 @@ const tags = pills ? tag.split(" · ") : [];
     </span>
   </div>
   <div class="flex flex-col flex-1">
+    {kindLabel && <p class="font-mono text-xs uppercase tracking-widest text-moss mb-1">{kindLabel}</p>}
     <h3 class="font-display text-xl mb-1 flex items-center gap-2">
       {title}
       <HStarMotif vectorId="diamond" mode="smooth" width={36} height={14} animateDraw class="specimen-hover-motif" />
@@ -49,18 +71,21 @@ const tags = pills ? tag.split(" · ") : [];
       )
     }
     {
-      related.length > 0 && (
-        <p class="font-mono text-xs text-stone mt-2">
-          related (Delaunay):{" "}
-          {related.map((r, i) => (
-            <>
-              {i > 0 && ", "}
-              <a href={r.href} class="text-moss hover:text-parchment transition-colors duration-150">
-                {r.title}
-              </a>
-            </>
-          ))}
-        </p>
+      related.length > 0 && delaunay && (
+        <div class="related-block flex items-center gap-3 mt-2">
+          <DelaunayMotif points={delaunay.points} edges={delaunay.edges} activeSlug={delaunay.activeSlug} class="shrink-0" />
+          <p class="font-mono text-xs text-stone">
+            related:{" "}
+            {related.map((r, i) => (
+              <>
+                {i > 0 && ", "}
+                <a href={r.href} class="text-moss hover:text-parchment transition-colors duration-150">
+                  {r.title}
+                </a>
+              </>
+            ))}
+          </p>
+        </div>
       )
     }
   </div>

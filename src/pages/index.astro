@@ -10,38 +10,75 @@ import { experience } from "../content/experience";
 import { coursework } from "../content/coursework";
 import { CONTENT_POINTS } from "../data/content-points";
 import { peelLayers } from "../lib/geometry/hull";
-import { relatedIndices, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
+import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
 
-// --- Featured-project selection: convex-hull peeling over (recency, depth) ---
+// --- Unified Work stream: Research + Projects + Experience, one adapter shape ---
+type WorkEntry = {
+  slug: string;
+  kind: "research" | "project" | "experience";
+  number: string;
+  title: string;
+  tag: string;
+  description: string;
+  href?: string;
+  image?: string;
+  links?: { label: string; href: string }[];
+};
+
+const workEntries: WorkEntry[] = [
+  ...research.map(
+    (r): WorkEntry => ({
+      slug: r.slug,
+      kind: "research",
+      number: r.number,
+      title: r.title,
+      tag: `${r.status} · updated ${r.updated}`,
+      description: r.abstract,
+      links: r.links,
+    }),
+  ),
+  ...projects.map(
+    (p): WorkEntry => ({
+      slug: p.slug,
+      kind: "project",
+      number: p.number,
+      title: p.title,
+      tag: p.tag,
+      description: p.description,
+      href: p.href,
+      image: p.image,
+    }),
+  ),
+  ...experience.map(
+    (e): WorkEntry => ({
+      slug: e.slug,
+      kind: "experience",
+      number: e.number,
+      title: e.role,
+      tag: `${e.org} · ${e.dates}`,
+      description: e.description,
+    }),
+  ),
+];
+const workBySlug = new Map(workEntries.map((w) => [w.slug, w]));
+
+// --- Ordering: convex-hull peeling over (recency, depth), across all kinds ---
 // layers[0] is the Pareto-extreme set (not dominated on both axes by any
-// other single project) — this replaces a hand-set `featured` flag.
-const projectPoints = CONTENT_POINTS.filter((p) => p.kind === "project");
-const projectLayers = peelLayers(projectPoints, (p) => [p.recency, p.depth]);
-const byWeight = (p: (typeof projectPoints)[number]) => p.recency + p.depth;
+// other single item) — this replaces both the hand-set `featured` flag and
+// the research/projects/experience grouping. Order is layer, not type.
+const workLayers = peelLayers(CONTENT_POINTS, (p) => [p.recency, p.depth]);
+const byWeight = (p: (typeof CONTENT_POINTS)[number]) => p.recency + p.depth;
+const orderedWorkSlugs = workLayers.flatMap((layer) => [...layer].sort((a, b) => byWeight(b) - byWeight(a))).map((p) => p.slug);
+const orderedWork = orderedWorkSlugs.map((slug) => workBySlug.get(slug)).filter((w): w is WorkEntry => Boolean(w));
 
-const FALLBACK_FEATURED_SLUGS = ["zero-forcing-polytopes", "preference-layer"];
-const layer0 = projectLayers[0] ?? [];
-const outerSlugsOrdered =
-  layer0.length >= 2
-    ? [...layer0].sort((a, b) => byWeight(b) - byWeight(a)).map((p) => p.slug)
-    : FALLBACK_FEATURED_SLUGS;
-
-const deeperSlugsOrdered = projectLayers
-  .slice(1)
-  .flatMap((layer) => [...layer].sort((a, b) => byWeight(b) - byWeight(a)))
-  .map((p) => p.slug)
-  .filter((slug) => !outerSlugsOrdered.includes(slug));
-
-const projectBySlug = new Map(projects.map((p) => [p.slug, p]));
-const featuredProject = projectBySlug.get(outerSlugsOrdered[0]) ?? projects[0];
-const restProjects = [...outerSlugsOrdered.slice(1), ...deeperSlugsOrdered]
-  .map((slug) => projectBySlug.get(slug))
-  .filter((p): p is NonNullable<typeof p> => Boolean(p));
+const [featuredWork, ...restWork] = orderedWork;
+const layerIndexBySlug = new Map(workLayers.flatMap((layer, i) => layer.map((p) => [p.slug, i] as const)));
 
 // --- Related-content: Delaunay triangulation over (topic, recency) ---
 // Gated on MIN_POINTS_FOR_DELAUNAY — below that, neighbors are near-arbitrary.
 const contentIndexBySlug = new Map(CONTENT_POINTS.map((p, i) => [p.slug, i]));
 const neighborIndices = relatedIndices(CONTENT_POINTS.map((p) => [p.topic, p.recency]));
+const delaunayEdges = edgesFromNeighbors(neighborIndices);
 const delaunayActive = CONTENT_POINTS.length >= MIN_POINTS_FOR_DELAUNAY;
 
 function relatedFor(slug: string) {
@@ -52,6 +89,10 @@ function relatedFor(slug: string) {
     const p = CONTENT_POINTS[j];
     return { title: p.title, href: p.href };
   });
+}
+
+function delaunayFor(slug: string) {
+  return { points: CONTENT_POINTS, edges: delaunayEdges, activeSlug: slug };
 }
 ---
 
@@ -72,48 +113,31 @@ function relatedFor(slug: string) {
     <ZeroForcingHero />
   </section>
 
-  <section id="research" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Research</h2>
+  <section id="work" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
+    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Work</h2>
+    <p class="font-mono text-xs text-stone mb-6">
+      Research, projects, and experience — ordered by convex-hull peel layer over
+      (recency, depth), not by type. See colophon.
+    </p>
     <div class="flex flex-col gap-4">
+      {featuredWork && (
+        <div class="reveal">
+          <FeaturedProjectCard
+            id={`content-${featuredWork.slug}`}
+            number={featuredWork.number}
+            title={featuredWork.title}
+            tag={featuredWork.tag}
+            description={featuredWork.description}
+            href={featuredWork.href}
+            image={featuredWork.image}
+            kindLabel={featuredWork.kind}
+            related={relatedFor(featuredWork.slug)}
+            delaunay={delaunayFor(featuredWork.slug)}
+          />
+        </div>
+      )}
       {
-        research.map((entry) => (
-          <div class="reveal">
-            <SpecimenCard
-              id={`content-${entry.slug}`}
-              number={entry.number}
-              title={entry.title}
-              tag={`${entry.status} · updated ${entry.updated}`}
-              description={entry.abstract}
-              links={entry.links}
-              related={relatedFor(entry.slug)}
-            />
-          </div>
-        ))
-      }
-    </div>
-  </section>
-
-  <div class="flex justify-center py-6">
-    <HStarMotif vectorId="cube3" mode="smooth" height={40} opacity={0.4} class="w-full max-w-md h-auto" />
-  </div>
-
-  <section id="projects" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Projects</h2>
-    <div class="flex flex-col gap-4">
-      <div class="reveal">
-        <FeaturedProjectCard
-          id={`content-${featuredProject.slug}`}
-          number={featuredProject.number}
-          title={featuredProject.title}
-          tag={featuredProject.tag}
-          description={featuredProject.description}
-          href={featuredProject.href}
-          image={featuredProject.image}
-          related={relatedFor(featuredProject.slug)}
-        />
-      </div>
-      {
-        restProjects.map((entry) => (
+        restWork.map((entry) => (
           <div class="reveal">
             <SpecimenCard
               id={`content-${entry.slug}`}
@@ -121,32 +145,11 @@ function relatedFor(slug: string) {
               title={entry.title}
               tag={entry.tag}
               description={entry.description}
-              links={entry.href ? [{ label: "view", href: entry.href }] : []}
+              links={entry.href ? [{ label: "view", href: entry.href }] : (entry.links ?? [])}
               pills
+              kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}
               related={relatedFor(entry.slug)}
-            />
-          </div>
-        ))
-      }
-    </div>
-  </section>
-
-  <div class="flex justify-center py-6">
-    <HStarMotif vectorId="octa" mode="smooth" height={40} opacity={0.4} flip class="w-full max-w-md h-auto" />
-  </div>
-
-  <section id="experience" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Experience</h2>
-    <div class="flex flex-col gap-4">
-      {
-        experience.map((entry) => (
-          <div class="reveal">
-            <SpecimenCard
-              id={`content-${entry.slug}`}
-              number={entry.number}
-              title={entry.role}
-              tag={`${entry.org} · ${entry.dates}`}
-              description={entry.description}
+              delaunay={delaunayFor(entry.slug)}
             />
           </div>
         ))
@@ -218,16 +221,17 @@ function relatedFor(slug: string) {
       </div>
       <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
         <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
-          layer 0: {outerSlugsOrdered.length} project{outerSlugsOrdered.length === 1 ? "" : "s"}
+          {workLayers.length} layer{workLayers.length === 1 ? "" : "s"} · {orderedWork.length} items
         </p>
         <p class="text-parchment/90 max-w-md">
-          The Featured project above wasn't hand-picked — it's the top of a
-          convex-hull peel over every project's (recency, depth) coordinates.
-          The hull's outer layer is the Pareto-extreme set: not dominated on
-          both axes by any other single project. The nav bar up top is peeled
-          the same way, over (depth, recency) per section, using the same
-          <code class="text-xs">convexHull</code> function — sections in an
-          inner layer render slightly dimmer.
+          Work isn't grouped by type (research/project/experience) anymore —
+          it's ordered by convex-hull peel layer over (recency, depth). The
+          Featured card is the top of layer 0, the Pareto-extreme set not
+          dominated on both axes by any other single item; everything else
+          follows in layer order, labeled with its kind and layer number. The
+          nav bar up top is peeled the same way, over (depth, recency) per
+          section, using the same <code class="text-xs">convexHull</code>
+          function — sections in an inner layer render slightly dimmer.
         </p>
       </div>
       <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
@@ -235,12 +239,13 @@ function relatedFor(slug: string) {
           {CONTENT_POINTS.length} points{delaunayActive ? "" : " (below threshold)"}
         </p>
         <p class="text-parchment/90 max-w-md">
-          Each "related" list under Research/Projects/Experience comes from a
-          Delaunay triangulation over hand-placed (topic, recency)
-          coordinates — real geometric adjacency instead of manually curated
-          "see also" links. Below {MIN_POINTS_FOR_DELAUNAY} points the
-          triangulation gets arbitrary, so the feature stays off until there's
-          enough content to make it mean something.
+          The small node-and-edge diagram next to each "related" list is the
+          actual Delaunay triangulation over hand-placed (topic, recency)
+          coordinates — every point and edge in the full graph, with the
+          current card's node and its neighbors highlighted. Below{" "}
+          {MIN_POINTS_FOR_DELAUNAY} points the triangulation gets arbitrary,
+          so the feature stays off until there's enough content to make it
+          mean something.
         </p>
       </div>
     </div>

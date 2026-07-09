@@ -11,3 +11,20 @@ export function relatedIndices(points: Point2D[]): number[][] {
   const delaunay = Delaunay.from(points);
   return points.map((_, i) => [...delaunay.neighbors(i)]);
 }
+
+/** Dedupes a neighbor-index list into an undirected edge list, for drawing the triangulation. */
+export function edgesFromNeighbors(neighborIndices: number[][]): [number, number][] {
+  const seen = new Set<string>();
+  const edges: [number, number][] = [];
+  neighborIndices.forEach((neighbors, i) => {
+    for (const j of neighbors) {
+      const [a, b] = i < j ? [i, j] : [j, i];
+      const key = `${a}-${b}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        edges.push([a, b]);
+      }
+    }
+  });
+  return edges;
+}

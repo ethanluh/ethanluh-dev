@@ -1,0 +1,91 @@
+---
+interface DelaunayPoint {
+  slug: string;
+  title: string;
+  topic: number;
+  recency: number;
+}
+
+interface Props {
+  points: DelaunayPoint[];
+  edges: [number, number][];
+  activeSlug: string;
+  width?: number;
+  height?: number;
+  class?: string;
+}
+
+const { points, edges, activeSlug, width = 140, height = 90, class: className = "" } = Astro.props;
+
+const padding = 10;
+const scaleX = width - padding * 2;
+const scaleY = height - padding * 2;
+const pos = (p: DelaunayPoint): [number, number] => [
+  padding + p.topic * scaleX,
+  padding + (1 - p.recency) * scaleY,
+];
+
+const activeIndex = points.findIndex((p) => p.slug === activeSlug);
+const neighborSet = new Set(
+  edges.flatMap(([a, b]) => {
+    if (a === activeIndex) return [b];
+    if (b === activeIndex) return [a];
+    return [];
+  }),
+);
+---
+
+<svg
+  class:list={["delaunay-motif", className]}
+  width={width}
+  height={height}
+  viewBox={`0 0 ${width} ${height}`}
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    edges.map(([a, b]) => {
+      const [x1, y1] = pos(points[a]);
+      const [x2, y2] = pos(points[b]);
+      const active = a === activeIndex || b === activeIndex;
+      return <line x1={x1} y1={y1} x2={x2} y2={y2} class={active ? "edge-active" : "edge-dim"} />;
+    })
+  }
+  {
+    points.map((p, i) => {
+      const [cx, cy] = pos(p);
+      const cls = i === activeIndex ? "node-active" : neighborSet.has(i) ? "node-neighbor" : "node-dim";
+      const r = i === activeIndex ? 4 : neighborSet.has(i) ? 3 : 2;
+      return (
+        <circle cx={cx} cy={cy} r={r} class={cls}>
+          <title>{p.title}</title>
+        </circle>
+      );
+    })
+  }
+</svg>
+
+<style>
+  .edge-dim {
+    stroke: var(--color-stone);
+    stroke-width: 1;
+    opacity: 0.2;
+  }
+  .edge-active {
+    stroke: var(--color-moss);
+    stroke-width: 1.5;
+    opacity: 0.85;
+  }
+  .node-dim {
+    fill: var(--color-stone);
+    opacity: 0.4;
+  }
+  .node-neighbor {
+    fill: var(--color-moss);
+    opacity: 0.75;
+  }
+  .node-active {
+    fill: var(--color-moss);
+    opacity: 1;
+  }
+</style>
