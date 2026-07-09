@@ -59,7 +59,7 @@ const neighborSet = new Set(
       const above = cy > height / 2;
       const tooltipWidth = 200;
       const tooltipHeight = 42;
-      const tooltipX = Math.min(Math.max(cx - tooltipWidth / 2, -padding), width + padding - tooltipWidth);
+      const tooltipX = Math.min(Math.max(cx - tooltipWidth / 2, 0), Math.max(width - tooltipWidth, 0));
       const tooltipY = above ? cy - tooltipHeight - 10 : cy + 10;
       return (
         <g class="node-group">
@@ -101,6 +101,9 @@ const neighborSet = new Set(
   }
   .node-hit {
     fill: transparent;
+  }
+  .delaunay-motif {
+    overflow: visible;
   }
   .node-tooltip-anchor {
     overflow: visible;
