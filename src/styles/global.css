@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-canopy: #171c15;
-  --color-bark: #4a3d30;
-  --color-moss: #96b481;
-  --color-stone: #9a948a;
-  --color-parchment: #ece7d9;
-  --color-lavender: #b7a4d1;
+  --color-canopy: var(--canopy);
+  --color-bark: var(--bark);
+  --color-moss: var(--moss);
+  --color-stone: var(--stone);
+  --color-parchment: var(--parchment);
+  --color-lavender: var(--lavender);
 
   --font-display: "Fraunces", serif;
   --font-body: "IBM Plex Sans", sans-serif;
@@ -27,6 +27,52 @@
   --ease-field: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-base: 300ms;
   --duration-stagger: 220ms;
+}
+
+:root {
+  color-scheme: dark;
+
+  --canopy: #171c15;
+  --bark: #4a3d30;
+  --moss: #96b481;
+  --stone: #9a948a;
+  --parchment: #ece7d9;
+  --lavender: #b7a4d1;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+
+    --canopy: #f4f1e8;
+    --bark: #ddd4c0;
+    --moss: #5b7a45;
+    --stone: #6b6558;
+    --parchment: #201c14;
+    --lavender: #7c66a0;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --canopy: #171c15;
+  --bark: #4a3d30;
+  --moss: #96b481;
+  --stone: #9a948a;
+  --parchment: #ece7d9;
+  --lavender: #b7a4d1;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --canopy: #f4f1e8;
+  --bark: #ddd4c0;
+  --moss: #5b7a45;
+  --stone: #6b6558;
+  --parchment: #201c14;
+  --lavender: #7c66a0;
 }
 
 @layer base {
