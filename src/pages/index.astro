@@ -146,7 +146,6 @@ function delaunayFor(slug: string) {
               tag={entry.tag}
               description={entry.description}
               links={entry.href ? [{ label: "view", href: entry.href }] : (entry.links ?? [])}
-              pills
               kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}
               related={relatedFor(entry.slug)}
               delaunay={delaunayFor(entry.slug)}
@@ -157,8 +156,8 @@ function delaunayFor(slug: string) {
     </div>
   </section>
 
-  <div class="flex justify-center py-6">
-    <HStarMotif vectorId="cube3" mode="smooth" height={40} opacity={0.4} class="w-full max-w-md h-auto" />
+  <div class="flex justify-center py-6 reveal">
+    <HStarMotif vectorId="cube3" mode="smooth" height={40} opacity={0.5} animateDraw class="w-full max-w-md h-auto" />
   </div>
 
   <section id="coursework" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
@@ -179,8 +178,8 @@ function delaunayFor(slug: string) {
     </div>
   </section>
 
-  <div class="flex justify-center py-6">
-    <HStarMotif vectorId="octa" mode="smooth" height={40} opacity={0.4} flip class="w-full max-w-md h-auto" />
+  <div class="flex justify-center py-6 reveal">
+    <HStarMotif vectorId="octa" mode="smooth" height={40} opacity={0.5} animateDraw flip class="w-full max-w-md h-auto" />
   </div>
 
   <section id="about" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
@@ -285,6 +284,16 @@ function delaunayFor(slug: string) {
   .reveal.in-view {
     opacity: 1;
     transform: translateY(0);
+  }
+  .reveal.in-view :global(.hstar-draw .hstar-stroke) {
+    stroke-dashoffset: 0;
+  }
+  .reveal.in-view :global(.hstar-draw .hstar-dot) {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .reveal.in-view :global(.hstar-draw .hstar-fill) {
+    opacity: 1;
   }
 
   .about-photo {

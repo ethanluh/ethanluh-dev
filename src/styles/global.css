@@ -114,3 +114,13 @@
     scroll-behavior: auto !important;
   }
 }
+
+@layer components {
+  /* Small rounded tag used in the Work-card meta row (research/project/experience). */
+  .chip {
+    display: inline-block;
+    background-color: color-mix(in srgb, var(--color-canopy) 60%, transparent);
+    border-radius: 999px;
+    padding: 0.125rem 0.6rem;
+  }
+}

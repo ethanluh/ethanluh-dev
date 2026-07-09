@@ -1,6 +1,6 @@
 ---
 import HStarMotif from "./HStarMotif.astro";
-import DelaunayMotif from "./DelaunayMotif.astro";
+import RelatedInfo from "./RelatedInfo.astro";
 
 interface DelaunayPoint {
   slug: string;
@@ -32,9 +32,13 @@ const tags = tag.split(" · ");
       {number}
     </div>
     <div class="flex flex-col flex-1">
-      <p class="font-mono text-xs uppercase tracking-widest text-moss mb-2">
-        Featured{kindLabel && ` · ${kindLabel}`}
-      </p>
+      <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-2">
+        <span class="uppercase tracking-widest text-moss">Featured{kindLabel && ` · ${kindLabel}`}</span>
+        <span class="text-stone" aria-hidden="true">·</span>
+        {tags.map((entry) => (
+          <span class="chip text-stone">{entry}</span>
+        ))}
+      </div>
       <h3 class="font-display text-2xl mb-2 flex items-center gap-2">
         {title}
         <HStarMotif vectorId="diamond" mode="smooth" width={36} height={14} animateDraw class="specimen-hover-motif" />
@@ -49,24 +53,10 @@ const tags = tag.split(" · ");
           </div>
         )
       }
-      <ul class="tech-tags flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-stone mt-auto pt-2">
-        {tags.map((entry) => <li>{entry}</li>)}
-      </ul>
       {
-        related.length > 0 && delaunay && (
-          <div class="related-block flex items-center gap-3 mt-2">
-            <DelaunayMotif points={delaunay.points} edges={delaunay.edges} activeSlug={delaunay.activeSlug} class="shrink-0" />
-            <p class="font-mono text-xs text-stone">
-              related:{" "}
-              {related.map((r, i) => (
-                <>
-                  {i > 0 && ", "}
-                  <a href={r.href} class="text-moss hover:text-parchment transition-colors duration-150">
-                    {r.title}
-                  </a>
-                </>
-              ))}
-            </p>
+        delaunay && (
+          <div class="mt-auto pt-2">
+            <RelatedInfo related={related} delaunay={delaunay} />
           </div>
         )
       }

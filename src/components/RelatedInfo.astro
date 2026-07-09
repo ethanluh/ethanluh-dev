@@ -1,0 +1,106 @@
+---
+import DelaunayMotif from "./DelaunayMotif.astro";
+
+interface DelaunayPoint {
+  slug: string;
+  title: string;
+  topic: number;
+  recency: number;
+}
+
+interface Props {
+  related: { title: string; href: string }[];
+  delaunay: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
+}
+
+const { related, delaunay } = Astro.props;
+---
+
+{
+  related.length > 0 && (
+    <span class="related-info">
+      <button type="button" class="related-trigger font-mono text-xs">
+        ⓘ {related.length} related
+      </button>
+      <span class="related-popover" role="note">
+        <DelaunayMotif
+          points={delaunay.points}
+          edges={delaunay.edges}
+          activeSlug={delaunay.activeSlug}
+          width={160}
+          height={100}
+        />
+        <span class="related-popover-title font-mono text-[0.65rem] uppercase tracking-widest text-stone">
+          Delaunay neighbors
+        </span>
+        <span class="related-links font-mono text-xs">
+          {related.map((r, i) => (
+            <>
+              {i > 0 && ", "}
+              <a href={r.href} class="text-moss hover:text-parchment transition-colors duration-150">
+                {r.title}
+              </a>
+            </>
+          ))}
+        </span>
+      </span>
+    </span>
+  )
+}
+
+<style>
+  .related-info {
+    position: relative;
+    display: inline-flex;
+  }
+  .related-trigger {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-stone);
+    border-bottom: 1px dotted var(--color-stone);
+    cursor: help;
+    transition: color var(--ease-field) 150ms, border-color var(--ease-field) 150ms;
+  }
+  .related-trigger:hover,
+  .related-trigger:focus-visible {
+    color: var(--color-moss);
+    border-color: var(--color-moss);
+  }
+  .related-popover {
+    position: absolute;
+    z-index: 20;
+    bottom: calc(100% + 8px);
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: max-content;
+    max-width: 220px;
+    padding: 0.75rem;
+    background: var(--color-canopy);
+    border: 1px solid color-mix(in srgb, var(--color-moss) 30%, transparent);
+    border-radius: 0.25rem;
+    box-shadow: 0 12px 24px -12px rgb(0 0 0 / 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 160ms var(--ease-field);
+  }
+  .related-info:hover .related-popover,
+  .related-info:focus-within .related-popover {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .related-popover {
+      transform: translateY(4px);
+      transition:
+        opacity 160ms var(--ease-field),
+        transform 160ms var(--ease-field);
+    }
+    .related-info:hover .related-popover,
+    .related-info:focus-within .related-popover {
+      transform: translateY(0);
+    }
+  }
+</style>
