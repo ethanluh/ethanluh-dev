@@ -3,15 +3,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SpecimenCard from "../components/SpecimenCard.astro";
 import FeaturedProjectCard from "../components/FeaturedProjectCard.astro";
 import ZeroForcingHero from "../components/ZeroForcingHero.astro";
-import HStarMotif from "../components/HStarMotif.astro";
 import { research } from "../content/research";
 import { projects } from "../content/projects";
 import { experience } from "../content/experience";
-import { coursework } from "../content/coursework";
 import { CONTENT_POINTS } from "../data/content-points";
 import { peelLayers } from "../lib/geometry/hull";
 import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
-import { buildAdjacency, findMinimumZeroForcingSet } from "../lib/zeroForcing";
 
 // --- Unified Work stream: Research + Projects + Experience, one adapter shape ---
 type WorkEntry = {
@@ -95,13 +92,6 @@ function relatedFor(slug: string) {
 function delaunayFor(slug: string) {
   return { points: CONTENT_POINTS, edges: delaunayEdges, activeSlug: slug };
 }
-
-// --- Zero forcing hero stats, for the colophon note (same graph the hero renders) ---
-const zfGraph = buildAdjacency(
-  CONTENT_POINTS.map((p) => p.slug),
-  delaunayEdges.map(([a, b]) => [CONTENT_POINTS[a].slug, CONTENT_POINTS[b].slug]),
-);
-const zfSeeds = findMinimumZeroForcingSet(zfGraph);
 ---
 
 <BaseLayout
@@ -135,7 +125,7 @@ const zfSeeds = findMinimumZeroForcingSet(zfGraph);
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Work</h2>
     <p class="font-mono text-xs text-stone mb-6">
       Research, projects, and experience — ordered by convex-hull peel layer over
-      (recency, depth), not by type. See colophon.
+      (recency, depth), not by type. See <a href="/how-it-works" class="text-moss hover:text-parchment transition-colors duration-150">how this site works</a>.
     </p>
     <div class="flex flex-col gap-4">
       {featuredWork && (
@@ -167,24 +157,6 @@ const zfSeeds = findMinimumZeroForcingSet(zfGraph);
               kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}
               related={relatedFor(entry.slug)}
               delaunay={delaunayFor(entry.slug)}
-            />
-          </div>
-        ))
-      }
-    </div>
-  </section>
-
-  <section id="coursework" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Coursework</h2>
-    <div class="flex flex-col gap-4">
-      {
-        coursework.map((entry) => (
-          <div class="reveal">
-            <SpecimenCard
-              number={entry.number}
-              title={entry.title}
-              tag={entry.tag}
-              description={entry.description}
             />
           </div>
         ))
@@ -226,68 +198,6 @@ const zfSeeds = findMinimumZeroForcingSet(zfGraph);
     </div>
   </section>
 
-  <section id="colophon" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Colophon</h2>
-    <div class="flex flex-col gap-8">
-      <div id="colophon-zero-forcing" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
-        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
-          {zfSeeds.length} seed{zfSeeds.length === 1 ? "" : "s"} · {CONTENT_POINTS.length} nodes
-        </p>
-        <p class="text-parchment/90 max-w-md">
-          The hero graph at the top of the page is this site's actual content
-          — the same {CONTENT_POINTS.length} items listed below, connected by
-          the same Delaunay edges used for "related" — animated by{" "}
-          <strong>zero forcing</strong>, the color-change rule from the
-          research area above: a colored vertex with exactly one uncolored
-          neighbor forces it to color. The {zfSeeds.length} moss-colored
-          seeds on load are a real computed minimum zero forcing set, not a
-          hand-picked example; everything else propagates in the order the
-          rule actually forces it. It's a live instance of the math, not an
-          illustration of it — hover a node for its title, click to visit.
-        </p>
-      </div>
-      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-        <HStarMotif vectorId="cube4" mode="bar" width={160} height={40} class="shrink-0" />
-        <p class="text-parchment/90 max-w-md">
-          The bars above are the h*-vector of the 4-cube, <span class="font-mono text-xs text-stone">(1, 11, 11, 1)</span> —
-          a classical Ehrhart theory example (an Eulerian number sequence),
-          kept here purely as a textbook illustration, distinct from the zero
-          forcing hero above, which renders real content data. Once the zero
-          forcing polytope result with Hanely is finalized, this slot gets
-          reassigned to that h*-vector specifically.
-        </p>
-      </div>
-      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
-          {workLayers.length} layer{workLayers.length === 1 ? "" : "s"} · {orderedWork.length} items
-        </p>
-        <p class="text-parchment/90 max-w-md">
-          Work isn't grouped by type (research/project/experience) anymore —
-          it's ordered by convex-hull peel layer over (recency, depth). The
-          Featured card is the top of layer 0, the Pareto-extreme set not
-          dominated on both axes by any other single item; everything else
-          follows in layer order, labeled with its kind and layer number. The
-          nav bar up top is peeled the same way, over (depth, recency) per
-          section, using the same <code class="text-xs">convexHull</code>
-          function — sections in an inner layer render slightly dimmer.
-        </p>
-      </div>
-      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
-          {CONTENT_POINTS.length} points{delaunayActive ? "" : " (below threshold)"}
-        </p>
-        <p class="text-parchment/90 max-w-md">
-          The small node-and-edge diagram next to each "related" list is the
-          actual Delaunay triangulation over hand-placed (topic, recency)
-          coordinates — every point and edge in the full graph, with the
-          current card's node and its neighbors highlighted. Below{" "}
-          {MIN_POINTS_FOR_DELAUNAY} points the triangulation gets arbitrary,
-          so the feature stays off until there's enough content to make it
-          mean something.
-        </p>
-      </div>
-    </div>
-  </section>
 </BaseLayout>
 
 <script>
