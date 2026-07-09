@@ -8,8 +8,10 @@ interface Props {
   width?: number;
   height?: number;
   strokeOnly?: boolean;
+  dots?: boolean;
   opacity?: number;
   flip?: boolean;
+  animateDraw?: boolean;
   class?: string;
 }
 
@@ -18,14 +20,17 @@ const {
   mode = "smooth",
   width = 240,
   height = 32,
-  strokeOnly = false,
+  strokeOnly = true,
+  dots = mode === "smooth",
   opacity = 1,
   flip = false,
+  animateDraw = false,
   class: className = "",
 } = Astro.props;
 
 const entry = getHStarEntry(vectorId);
 const points = normalizedPoints(entry.hstar, width, height);
+const dotRadius = Math.max(1.5, Math.min(3, height / 10));
 
 const barGap = 0.15;
 const barWidth = points.length > 0 ? (width / points.length) * (1 - barGap) : 0;
@@ -41,7 +46,7 @@ const strokePath = mode === "smooth" ? catmullRomToBezierPath(points) : "";
 ---
 
 <svg
-  class:list={["hstar-motif", className]}
+  class:list={["hstar-motif", { "hstar-draw": animateDraw }, className]}
   width={width}
   height={height}
   viewBox={`0 0 ${width} ${height}`}
@@ -66,7 +71,9 @@ const strokePath = mode === "smooth" ? catmullRomToBezierPath(points) : "";
     ) : (
       <>
         {!strokeOnly && <path d={fillPath} class="hstar-fill" stroke="none" />}
-        <path d={strokePath} class="hstar-stroke" fill="none" />
+        <path d={strokePath} class="hstar-stroke" fill="none" pathLength="1" />
+        {dots &&
+          points.map(([x, y]) => <circle cx={x} cy={y} r={dotRadius} class="hstar-dot" />)}
       </>
     )
   }
@@ -81,5 +88,19 @@ const strokePath = mode === "smooth" ? catmullRomToBezierPath(points) : "";
     stroke: var(--color-moss);
     stroke-width: 1.5;
     stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .hstar-dot {
+    fill: var(--color-moss);
+  }
+  .hstar-draw .hstar-stroke {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 220ms var(--ease-field);
+  }
+  .hstar-draw .hstar-dot {
+    opacity: 0;
+    transition: opacity 160ms var(--ease-field);
+    transition-delay: 180ms;
   }
 </style>

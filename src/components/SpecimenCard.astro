@@ -24,7 +24,7 @@ const tags = pills ? tag.split(" · ") : [];
   <div class="flex flex-col flex-1">
     <h3 class="font-display text-xl mb-1 flex items-center gap-2">
       {title}
-      <HStarMotif vectorId="diamond" mode="smooth" width={32} height={10} class="specimen-hover-motif" />
+      <HStarMotif vectorId="diamond" mode="smooth" width={36} height={14} animateDraw class="specimen-hover-motif" />
     </h3>
     {!pills && <p class="font-mono text-xs text-stone mb-2">{tag}</p>}
     <p class="text-parchment/90 mb-2">{description}</p>
@@ -54,12 +54,12 @@ const tags = pills ? tag.split(" · ") : [];
     opacity: 1;
     transition: opacity var(--ease-field) 250ms;
   }
-  .specimen-hover-motif {
-    opacity: 0;
-    transition: opacity 180ms var(--ease-field);
+  .card-lift:hover :global(.specimen-hover-motif .hstar-stroke),
+  .card-lift:focus-within :global(.specimen-hover-motif .hstar-stroke) {
+    stroke-dashoffset: 0;
   }
-  .card-lift:hover .specimen-hover-motif,
-  .card-lift:focus-within .specimen-hover-motif {
+  .card-lift:hover :global(.specimen-hover-motif .hstar-dot),
+  .card-lift:focus-within :global(.specimen-hover-motif .hstar-dot) {
     opacity: 1;
   }
   .card-lift {
