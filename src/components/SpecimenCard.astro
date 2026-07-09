@@ -1,5 +1,4 @@
 ---
-import HStarMotif from "./HStarMotif.astro";
 import RelatedInfo from "./RelatedInfo.astro";
 
 interface DelaunayPoint {
@@ -42,7 +41,6 @@ const chips = tag.split(" · ");
     </div>
     <h3 class="font-display text-xl mb-1 flex items-center gap-2">
       {title}
-      <HStarMotif vectorId="diamond" mode="smooth" width={36} height={14} animateDraw class="specimen-hover-motif" />
     </h3>
     <p class="text-parchment/90 mb-2">{description}</p>
     {
@@ -70,14 +68,6 @@ const chips = tag.split(" · ");
   .specimen-num:hover .flower {
     opacity: 1;
     transition: opacity var(--ease-field) 250ms;
-  }
-  .card-lift:hover :global(.specimen-hover-motif .hstar-stroke),
-  .card-lift:focus-within :global(.specimen-hover-motif .hstar-stroke) {
-    stroke-dashoffset: 0;
-  }
-  .card-lift:hover :global(.specimen-hover-motif .hstar-dot),
-  .card-lift:focus-within :global(.specimen-hover-motif .hstar-dot) {
-    opacity: 1;
   }
   .card-lift {
     transition:

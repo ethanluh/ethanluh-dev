@@ -1,169 +1,114 @@
 ---
-// Composite zero forcing graph: a spider (hub + three legs), a small tree,
-// and a 5-cycle, bridged into one connected graph. The forcing order below
-// is computed from the actual color change rule (a colored vertex with
-// exactly one uncolored neighbor forces it) rather than hand-tuned delays,
-// so editing the topology or seed set here stays correct automatically.
+// The hero is a live rendering of the site's actual content as a graph,
+// animated by the zero forcing color-change rule from the zero forcing
+// polytopes research area. Nodes are CONTENT_POINTS (the same data driving
+// the Work section and hull-peeling order), edges are the Delaunay
+// triangulation already computed for the related-content system — this view
+// has no data model of its own. The minimum zero forcing set and forcing
+// order are computed here at build time; no zero forcing logic ships to the
+// client, it only plays back the precomputed sequence via CSS.
+import { CONTENT_POINTS } from "../data/content-points";
+import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
+import { buildAdjacency, findMinimumZeroForcingSet, simulateForcing } from "../lib/zeroForcing";
 
-interface Node {
-  id: string;
-  x: number;
-  y: number;
-}
-type Edge = [string, string];
+const delaunayActive = CONTENT_POINTS.length >= MIN_POINTS_FOR_DELAUNAY;
+const neighborIndices = relatedIndices(CONTENT_POINTS.map((p) => [p.topic, p.recency]));
+const indexEdges = delaunayActive ? edgesFromNeighbors(neighborIndices) : [];
 
-const nodes: Node[] = [
-  { id: "hub", x: 110, y: 180 },
-  { id: "leg1a", x: 80, y: 120 },
-  { id: "leg1b", x: 50, y: 70 },
-  { id: "leg2a", x: 60, y: 230 },
-  { id: "leg2b", x: 30, y: 280 },
-  { id: "leg3a", x: 160, y: 110 },
-  { id: "leg3b", x: 190, y: 60 },
-  { id: "troot", x: 190, y: 170 },
-  { id: "tc1", x: 240, y: 130 },
-  { id: "tc2", x: 240, y: 210 },
-  { id: "tl1", x: 280, y: 100 },
-  { id: "tl2", x: 280, y: 160 },
-  { id: "c1", x: 290, y: 230 },
-  { id: "c2", x: 340, y: 210 },
-  { id: "c3", x: 370, y: 250 },
-  { id: "c4", x: 350, y: 300 },
-  { id: "c5", x: 300, y: 290 },
-];
+const slugEdges: [string, string][] = indexEdges.map(([a, b]) => [
+  CONTENT_POINTS[a].slug,
+  CONTENT_POINTS[b].slug,
+]);
 
-const edges: Edge[] = [
-  ["hub", "leg1a"],
-  ["leg1a", "leg1b"],
-  ["hub", "leg2a"],
-  ["leg2a", "leg2b"],
-  ["hub", "leg3a"],
-  ["leg3a", "leg3b"],
-  ["hub", "troot"],
-  ["troot", "tc1"],
-  ["troot", "tc2"],
-  ["tc1", "tl1"],
-  ["tc1", "tl2"],
-  ["tc2", "c1"],
-  ["c1", "c2"],
-  ["c2", "c3"],
-  ["c3", "c4"],
-  ["c4", "c5"],
-  ["c5", "c1"],
-];
-
-// A zero forcing set: one per spider leg tip, both tree leaves, and an
-// adjacent pair on the cycle (a lone cycle seed can never force — it always
-// has two uncolored neighbors — so cycles need two adjacent seeds).
-const seeds = ["leg1b", "leg2b", "leg3b", "tl1", "tl2", "c1", "c2"];
-
-interface ForceRecord {
-  round: number;
-  via: string | null;
+// Raw recency/depth values cluster badly at pixel scale (same lesson noted
+// in docs/hull-peeling-nav.md for the shelved hull concept) — rank each axis
+// independently so the layout spreads without changing the underlying data
+// or the peel-layer/Delaunay computations, which operate on raw values.
+function ranks(values: number[]): number[] {
+  const order = values.map((_, i) => i).sort((a, b) => values[a] - values[b] || a - b);
+  const r = new Array<number>(values.length);
+  order.forEach((originalIndex, rank) => {
+    r[originalIndex] = rank;
+  });
+  return r;
 }
 
-function simulateForcing(
-  allNodes: Node[],
-  allEdges: Edge[],
-  seedIds: string[],
-): Map<string, ForceRecord> {
-  const adjacency = new Map<string, string[]>();
-  for (const node of allNodes) adjacency.set(node.id, []);
-  for (const [a, b] of allEdges) {
-    adjacency.get(a)!.push(b);
-    adjacency.get(b)!.push(a);
-  }
+const n = CONTENT_POINTS.length;
+const xRanks = ranks(CONTENT_POINTS.map((p) => p.recency));
+const yRanks = ranks(CONTENT_POINTS.map((p) => p.depth));
 
-  const colored = new Set(seedIds);
-  const forcing = new Map<string, ForceRecord>();
-  for (const id of seedIds) forcing.set(id, { round: 0, via: null });
+const width = 400;
+const height = 320;
+const pad = 44;
+const spread = (rank: number) => (n > 1 ? rank / (n - 1) : 0.5);
 
-  let round = 1;
-  let changed = true;
-  while (changed) {
-    changed = false;
-    const applied = new Map<string, string>();
-    for (const id of colored) {
-      const uncoloredNeighbors = adjacency
-        .get(id)!
-        .filter((n) => !colored.has(n));
-      if (uncoloredNeighbors.length === 1 && !applied.has(uncoloredNeighbors[0])) {
-        applied.set(uncoloredNeighbors[0], id);
-      }
-    }
-    for (const [target, via] of applied) {
-      colored.add(target);
-      forcing.set(target, { round, via });
-      changed = true;
-    }
-    if (changed) round++;
-  }
+const nodes = CONTENT_POINTS.map((p, i) => ({
+  slug: p.slug,
+  title: p.title,
+  href: p.href,
+  x: pad + spread(xRanks[i]) * (width - pad * 2),
+  y: pad + (1 - spread(yRanks[i])) * (height - pad * 2),
+}));
+const nodeBySlug = new Map(nodes.map((n) => [n.slug, n]));
 
-  return forcing;
-}
+const graph = buildAdjacency(
+  CONTENT_POINTS.map((p) => p.slug),
+  slugEdges,
+);
+const seeds = findMinimumZeroForcingSet(graph);
+const forcing = simulateForcing(graph, seeds);
 
-const forcing = simulateForcing(nodes, edges, seeds);
-
-if (forcing.size !== nodes.length) {
-  const uncolored = nodes.map((n) => n.id).filter((id) => !forcing.has(id));
-  throw new Error(
-    `ZeroForcingHero: seed set does not force the full graph (stuck at ${forcing.size}/${nodes.length}, uncolored: ${uncolored.join(", ")})`,
-  );
-}
-
-const nodeById = new Map(nodes.map((n) => [n.id, n]));
-
-const renderEdges = edges.map(([a, b], index) => {
-  const from = nodeById.get(a)!;
-  const to = nodeById.get(b)!;
-  const forceA = forcing.get(a)!;
-  const forceB = forcing.get(b)!;
-  const forcingRound =
-    forceA.via === b ? forceA.round : forceB.via === a ? forceB.round : null;
-  return { from, to, index, forcingRound };
+const renderEdges = slugEdges.map(([a, b], index) => {
+  const forceA = forcing.get(a);
+  const forceB = forcing.get(b);
+  const forcingRound = forceA?.via === b ? forceA.round : forceB?.via === a ? forceB.round : null;
+  return { from: nodeBySlug.get(a)!, to: nodeBySlug.get(b)!, index, forcingRound };
 });
 
 const renderNodes = nodes.map((node) => ({
   node,
-  round: forcing.get(node.id)!.round,
+  round: forcing.get(node.slug)?.round ?? 0,
 }));
 ---
 
-<svg
-  class="zf-hero w-full h-auto max-w-lg"
-  viewBox="0 0 400 320"
-  fill="none"
-  aria-hidden="true"
-  focusable="false"
->
-  {
-    renderEdges.map(({ from, to, index, forcingRound }) => (
-      <line
-        class:list={["zf-edge", forcingRound !== null && "zf-forcing"]}
-        style={{
-          "--i": index,
-          ...(forcingRound !== null ? { "--round": forcingRound } : {}),
-        }}
-        x1={from.x}
-        y1={from.y}
-        x2={to.x}
-        y2={to.y}
-      />
-    ))
-  }
+<div class="zf-hero-wrap">
+  <svg class="zf-hero w-full h-auto max-w-lg" viewBox={`0 0 ${width} ${height}`} fill="none" aria-hidden="true" focusable="false">
+    {
+      renderEdges.map(({ from, to, index, forcingRound }) => (
+        <line
+          class:list={["zf-edge", forcingRound !== null && "zf-forcing"]}
+          style={{
+            "--i": index,
+            ...(forcingRound !== null ? { "--round": forcingRound } : {}),
+          }}
+          x1={from.x}
+          y1={from.y}
+          x2={to.x}
+          y2={to.y}
+        />
+      ))
+    }
 
-  {
-    renderNodes.map(({ node, round }) => (
-      <circle
-        class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]}
-        style={{ "--round": round }}
-        cx={node.x}
-        cy={node.y}
-        r={9}
-      />
-    ))
-  }
-</svg>
+    {
+      renderNodes.map(({ node, round }) => (
+        <a href={node.href} class="zf-node-link" tabindex="-1">
+          <circle class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]} style={{ "--round": round }} cx={node.x} cy={node.y} r={9} />
+          <title>{node.title}</title>
+        </a>
+      ))
+    }
+  </svg>
+
+  <ul class="sr-only">
+    {
+      nodes.map((node) => (
+        <li>
+          <a href={node.href}>{node.title}</a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
 
 <style>
   .zf-edge {
@@ -183,6 +128,10 @@ const renderNodes = nodes.map((node) => ({
     animation-delay:
       calc(var(--i) * var(--duration-stagger) / 5),
       calc(var(--round) * var(--duration-stagger) - 60ms);
+  }
+
+  .zf-node-link {
+    cursor: pointer;
   }
 
   .zf-node {
@@ -223,6 +172,15 @@ const renderNodes = nodes.map((node) => ({
     100% {
       stroke: var(--color-stone);
       stroke-width: 1.5;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zf-edge,
+    .zf-edge.zf-forcing,
+    .zf-forced {
+      animation-duration: 0s !important;
+      animation-delay: 0s !important;
     }
   }
 </style>
