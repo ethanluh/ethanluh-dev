@@ -1,0 +1,145 @@
+---
+import { getHStarEntry } from "../data/hstar";
+import { catmullRomToBezierPath, normalizedPoints } from "../lib/hstarPath";
+
+interface Props {
+  vectorId: string;
+  mode?: "bar" | "smooth";
+  width?: number;
+  height?: number;
+  strokeOnly?: boolean;
+  dots?: boolean;
+  opacity?: number;
+  flip?: boolean;
+  animateDraw?: boolean;
+  class?: string;
+}
+
+const {
+  vectorId,
+  mode = "smooth",
+  width = 240,
+  height = 32,
+  strokeOnly = false,
+  dots = mode === "smooth",
+  opacity = 1,
+  flip = false,
+  animateDraw = false,
+  class: className = "",
+} = Astro.props;
+
+const entry = getHStarEntry(vectorId);
+const maxVal = Math.max(...entry.hstar);
+
+// Dot radius scales with the h*-value it marks — bigger coefficients read as
+// bigger nodes, so the silhouette carries the data instead of just its outline.
+const dotRadiusFor = (value: number) => {
+  const minR = Math.max(1.5, height / 14);
+  const maxR = Math.max(minR + 1.5, height / 5);
+  return minR + (maxR - minR) * (value / maxVal);
+};
+
+// Reserve top/bottom margin equal to the largest dot radius so extreme
+// values (which land exactly at y=0 or y=height) don't get clipped by the
+// viewBox edge.
+const dotPadding = mode === "smooth" && dots ? dotRadiusFor(maxVal) : 0;
+const drawHeight = Math.max(1, height - dotPadding * 2);
+const points = normalizedPoints(entry.hstar, width, drawHeight).map(
+  ([x, y]) => [x, y + dotPadding] as [number, number],
+);
+
+const gradientId = `hstar-grad-${vectorId}-${mode}-${Math.round(Math.random() * 1e6)}`;
+
+const barGap = 0.15;
+const barWidth = points.length > 0 ? (width / points.length) * (1 - barGap) : 0;
+
+let fillPath = "";
+if (mode === "smooth" && !strokeOnly) {
+  const curve = catmullRomToBezierPath(points);
+  const last = points[points.length - 1];
+  const first = points[0];
+  fillPath = `${curve} L ${last[0]} ${height} L ${first[0]} ${height} Z`;
+}
+const strokePath = mode === "smooth" ? catmullRomToBezierPath(points) : "";
+---
+
+<svg
+  class:list={["hstar-motif", { "hstar-draw": animateDraw }, className]}
+  width={width}
+  height={height}
+  viewBox={`0 0 ${width} ${height}`}
+  fill="none"
+  opacity={opacity}
+  aria-hidden="true"
+  focusable="false"
+  style={flip ? "transform: scaleX(-1)" : undefined}
+  data-vector-id={vectorId}
+>
+  <defs>
+    <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--color-moss)" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="var(--color-moss)" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  {
+    mode === "bar" ? (
+      points.map(([x, y], i) => (
+        <rect
+          x={x - barWidth / 2}
+          y={y}
+          width={barWidth}
+          height={height - y}
+          rx={Math.min(3, barWidth / 4)}
+          class="hstar-bar"
+        />
+      ))
+    ) : (
+      <>
+        {!strokeOnly && <path d={fillPath} class="hstar-fill" fill={`url(#${gradientId})`} stroke="none" />}
+        <path d={strokePath} class="hstar-stroke" fill="none" pathLength="1" />
+        {dots &&
+          points.map(([x, y], i) => (
+            <circle cx={x} cy={y} r={dotRadiusFor(entry.hstar[i])} class="hstar-dot" />
+          ))}
+      </>
+    )
+  }
+</svg>
+
+<style>
+  .hstar-bar {
+    fill: var(--color-moss);
+  }
+  .hstar-stroke {
+    stroke: var(--color-moss);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--color-moss) 45%, transparent));
+  }
+  .hstar-dot {
+    fill: var(--color-moss);
+    stroke: var(--color-canopy);
+    stroke-width: 1;
+  }
+  .hstar-draw .hstar-stroke {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 260ms var(--ease-field);
+  }
+  .hstar-draw .hstar-fill {
+    opacity: 0;
+    transition: opacity 300ms var(--ease-field);
+    transition-delay: 100ms;
+  }
+  .hstar-draw .hstar-dot {
+    opacity: 0;
+    transform-origin: center;
+    transform-box: fill-box;
+    transform: scale(0.4);
+    transition:
+      opacity 160ms var(--ease-field),
+      transform 220ms var(--ease-field);
+    transition-delay: 200ms;
+  }
+</style>

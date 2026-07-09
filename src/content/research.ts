@@ -1,4 +1,5 @@
 export interface ResearchEntry {
+  slug: string;
   number: string;
   title: string;
   status: string;
@@ -9,6 +10,7 @@ export interface ResearchEntry {
 
 export const research: ResearchEntry[] = [
   {
+    slug: "zero-forcing-polytopes-research",
     number: "01",
     title: "Zero Forcing Polytopes",
     status: "in progress",

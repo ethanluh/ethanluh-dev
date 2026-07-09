@@ -1,25 +1,48 @@
 ---
+import HStarMotif from "./HStarMotif.astro";
+import RelatedInfo from "./RelatedInfo.astro";
+
+interface DelaunayPoint {
+  slug: string;
+  title: string;
+  topic: number;
+  recency: number;
+}
+
 interface Props {
+  id?: string;
   number: string;
   title: string;
   tag: string;
   description: string;
   href?: string;
   image?: string;
+  kindLabel?: string;
+  related?: { title: string; href: string }[];
+  delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
 }
 
-const { number, title, tag, description, href, image } = Astro.props;
+const { id, number, title, tag, description, href, image, kindLabel, related = [], delaunay } = Astro.props;
 const tags = tag.split(" · ");
 ---
 
-<article class="featured-specimen card-lift bg-bark border border-moss/30 border-l-[3px] border-l-moss rounded-r-sm p-9 sm:p-10 shadow-lg shadow-canopy/40 grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-6 sm:items-center">
+<article id={id} class="featured-specimen card-lift bg-bark border border-moss/30 border-l-[3px] border-l-moss rounded-r-sm p-9 sm:p-10 shadow-lg shadow-canopy/40 grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-6 sm:items-center scroll-mt-24">
   <div class="flex gap-6 sm:items-baseline">
     <div class="font-mono text-lg text-parchment shrink-0">
       {number}
     </div>
     <div class="flex flex-col flex-1">
-      <p class="font-mono text-xs uppercase tracking-widest text-moss mb-2">Featured</p>
-      <h3 class="font-display text-2xl mb-2">{title}</h3>
+      <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-2">
+        <span class="uppercase tracking-widest text-moss">Featured{kindLabel && ` · ${kindLabel}`}</span>
+        <span class="text-stone" aria-hidden="true">·</span>
+        {tags.map((entry) => (
+          <span class="chip text-stone">{entry}</span>
+        ))}
+      </div>
+      <h3 class="font-display text-2xl mb-2 flex items-center gap-2">
+        {title}
+        <HStarMotif vectorId="diamond" mode="smooth" width={36} height={14} animateDraw class="specimen-hover-motif" />
+      </h3>
       <p class="text-parchment/90 mb-3">{description}</p>
       {
         href && (
@@ -30,9 +53,13 @@ const tags = tag.split(" · ");
           </div>
         )
       }
-      <ul class="tech-tags flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-stone mt-auto pt-2">
-        {tags.map((entry) => <li>{entry}</li>)}
-      </ul>
+      {
+        delaunay && (
+          <div class="mt-auto pt-2">
+            <RelatedInfo related={related} delaunay={delaunay} />
+          </div>
+        )
+      }
     </div>
   </div>
   {
@@ -54,6 +81,14 @@ const tags = tag.split(" · ");
     transition:
       transform var(--duration-base) var(--ease-field),
       box-shadow var(--duration-base) var(--ease-field);
+  }
+  .card-lift:hover :global(.specimen-hover-motif .hstar-stroke),
+  .card-lift:focus-within :global(.specimen-hover-motif .hstar-stroke) {
+    stroke-dashoffset: 0;
+  }
+  .card-lift:hover :global(.specimen-hover-motif .hstar-dot),
+  .card-lift:focus-within :global(.specimen-hover-motif .hstar-dot) {
+    opacity: 1;
   }
   @media (prefers-reduced-motion: no-preference) {
     .card-lift:hover,

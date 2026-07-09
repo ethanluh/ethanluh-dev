@@ -1,18 +1,31 @@
 ---
+import HStarMotif from "./HStarMotif.astro";
+import RelatedInfo from "./RelatedInfo.astro";
+
+interface DelaunayPoint {
+  slug: string;
+  title: string;
+  topic: number;
+  recency: number;
+}
+
 interface Props {
+  id?: string;
   number: string;
   title: string;
   tag: string;
   description: string;
   links?: { label: string; href: string }[];
-  pills?: boolean;
+  kindLabel?: string;
+  related?: { title: string; href: string }[];
+  delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
 }
 
-const { number, title, tag, description, links = [], pills = false } = Astro.props;
-const tags = pills ? tag.split(" · ") : [];
+const { id, number, title, tag, description, links = [], kindLabel, related = [], delaunay } = Astro.props;
+const chips = tag.split(" · ");
 ---
 
-<article class="specimen card-lift bg-bark border-l-[3px] border-moss rounded-r-sm p-7 shadow-lg shadow-canopy/40 flex gap-5 items-baseline">
+<article id={id} class="specimen card-lift bg-bark border-l-[3px] border-moss rounded-r-sm p-7 shadow-lg shadow-canopy/40 flex gap-5 items-baseline scroll-mt-24">
   <div class="specimen-num font-mono text-lg text-parchment relative shrink-0">
     {number}
     <span class="flower absolute -top-0.5 left-full ml-1.5 text-lavender text-sm opacity-0" aria-hidden="true">
@@ -20,8 +33,17 @@ const tags = pills ? tag.split(" · ") : [];
     </span>
   </div>
   <div class="flex flex-col flex-1">
-    <h3 class="font-display text-xl mb-1">{title}</h3>
-    {!pills && <p class="font-mono text-xs text-stone mb-2">{tag}</p>}
+    <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-2">
+      {kindLabel && <span class="uppercase tracking-widest text-moss">{kindLabel}</span>}
+      {kindLabel && <span class="text-stone" aria-hidden="true">·</span>}
+      {chips.map((entry) => (
+        <span class="chip text-stone">{entry}</span>
+      ))}
+    </div>
+    <h3 class="font-display text-xl mb-1 flex items-center gap-2">
+      {title}
+      <HStarMotif vectorId="diamond" mode="smooth" width={36} height={14} animateDraw class="specimen-hover-motif" />
+    </h3>
     <p class="text-parchment/90 mb-2">{description}</p>
     {
       links.length > 0 && (
@@ -35,10 +57,10 @@ const tags = pills ? tag.split(" · ") : [];
       )
     }
     {
-      pills && (
-        <ul class="tech-tags flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-stone mt-auto pt-1">
-          {tags.map((entry) => <li>{entry}</li>)}
-        </ul>
+      delaunay && (
+        <div class="mt-1">
+          <RelatedInfo related={related} delaunay={delaunay} />
+        </div>
       )
     }
   </div>
@@ -48,6 +70,14 @@ const tags = pills ? tag.split(" · ") : [];
   .specimen-num:hover .flower {
     opacity: 1;
     transition: opacity var(--ease-field) 250ms;
+  }
+  .card-lift:hover :global(.specimen-hover-motif .hstar-stroke),
+  .card-lift:focus-within :global(.specimen-hover-motif .hstar-stroke) {
+    stroke-dashoffset: 0;
+  }
+  .card-lift:hover :global(.specimen-hover-motif .hstar-dot),
+  .card-lift:focus-within :global(.specimen-hover-motif .hstar-dot) {
+    opacity: 1;
   }
   .card-lift {
     transition:
