@@ -1,0 +1,126 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HStarMotif from "../components/HStarMotif.astro";
+import { CONTENT_POINTS } from "../data/content-points";
+import { peelLayers } from "../lib/geometry/hull";
+import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
+import { buildAdjacency, findMinimumZeroForcingSet } from "../lib/zeroForcing";
+
+const workLayers = peelLayers(CONTENT_POINTS, (p) => [p.recency, p.depth]);
+const orderedWorkCount = workLayers.reduce((n, layer) => n + layer.length, 0);
+
+const delaunayEdges = edgesFromNeighbors(relatedIndices(CONTENT_POINTS.map((p) => [p.topic, p.recency])));
+const delaunayActive = CONTENT_POINTS.length >= MIN_POINTS_FOR_DELAUNAY;
+
+const zfGraph = buildAdjacency(
+  CONTENT_POINTS.map((p) => p.slug),
+  delaunayEdges.map(([a, b]) => [CONTENT_POINTS[a].slug, CONTENT_POINTS[b].slug]),
+);
+const zfSeeds = findMinimumZeroForcingSet(zfGraph);
+---
+
+<BaseLayout
+  title="How This Site Works — Ethan Luh"
+  description="Notes on the math and geometry driving this site: zero forcing, convex hull peeling, and Delaunay triangulation."
+>
+  <section class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
+    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">How This Site Works</h2>
+    <p class="font-mono text-xs text-stone mb-6">
+      Notes on the math driving the layout and animation of this site — not a project write-up, just what's
+      actually running under the hood.
+    </p>
+    <div class="flex flex-col gap-8">
+      <div id="zero-forcing" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
+        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
+          {zfSeeds.length} seed{zfSeeds.length === 1 ? "" : "s"} · {CONTENT_POINTS.length} nodes
+        </p>
+        <p class="text-parchment/90 max-w-md">
+          The hero graph on the homepage is this site's actual content — the same {CONTENT_POINTS.length} items,
+          connected by the same Delaunay edges used for "related" — animated by <strong>zero forcing</strong>, the
+          color-change rule from the zero forcing research: a colored vertex with exactly one uncolored neighbor
+          forces it to color. The {zfSeeds.length} moss-colored seeds on load are a real computed minimum zero
+          forcing set, not a hand-picked example; everything else propagates in the order the rule actually forces
+          it. It's a live instance of the math, not an illustration of it — hover a node for its title, click to
+          visit.
+        </p>
+      </div>
+      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+        <HStarMotif vectorId="cube4" mode="bar" width={160} height={40} class="shrink-0" />
+        <p class="text-parchment/90 max-w-md">
+          The bars above are the h*-vector of the 4-cube, <span class="font-mono text-xs text-stone">(1, 11, 11, 1)</span> —
+          a classical Ehrhart theory example (an Eulerian number sequence), kept here purely as a textbook
+          illustration, distinct from the zero forcing hero above, which renders real content data. Once the zero
+          forcing polytope result with Hanely is finalized, this slot gets reassigned to that h*-vector specifically.
+        </p>
+      </div>
+      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
+          {workLayers.length} layer{workLayers.length === 1 ? "" : "s"} · {orderedWorkCount} items
+        </p>
+        <p class="text-parchment/90 max-w-md">
+          Work on the homepage isn't grouped by type (research/project/experience) — it's ordered by convex-hull
+          peel layer over (recency, depth). The Featured card is the top of layer 0, the Pareto-extreme set not
+          dominated on both axes by any other single item; everything else follows in layer order, labeled with its
+          kind and layer number.
+        </p>
+      </div>
+      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+        <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
+          {CONTENT_POINTS.length} points{delaunayActive ? "" : " (below threshold)"}
+        </p>
+        <p class="text-parchment/90 max-w-md">
+          The small node-and-edge diagram next to each "related" list is the actual Delaunay triangulation over
+          hand-placed (topic, recency) coordinates — every point and edge in the full graph, with the current
+          card's node and its neighbors highlighted. Below {MIN_POINTS_FOR_DELAUNAY} points the triangulation gets
+          arbitrary, so the feature stays off until there's enough content to make it mean something.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const reveals = document.querySelectorAll<HTMLElement>(".reveal");
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (prefersReducedMotion) {
+    reveals.forEach((el) => el.classList.add("in-view"));
+  } else {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.1 },
+    );
+    reveals.forEach((el) => observer.observe(el));
+  }
+</script>
+
+<style>
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity var(--duration-base, 300ms) var(--ease-field),
+      transform var(--duration-base, 300ms) var(--ease-field);
+  }
+  .reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal.in-view :global(.hstar-draw .hstar-stroke) {
+    stroke-dashoffset: 0;
+  }
+  .reveal.in-view :global(.hstar-draw .hstar-dot) {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .reveal.in-view :global(.hstar-draw .hstar-fill) {
+    opacity: 1;
+  }
+</style>
