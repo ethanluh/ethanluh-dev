@@ -1,0 +1,198 @@
+---
+import { resume } from "../content/resume";
+---
+
+<div class="resume-sheet bg-white text-resume-dark font-resume">
+  <header class="text-center pt-8 pb-6 px-8">
+    <h1 class="resume-name text-[1.9rem] tracking-[0.12em] font-normal m-0">{resume.name}</h1>
+    <p class="resume-tagline text-resume-mid text-xs tracking-[0.2em] uppercase mt-2 mb-0">
+      {resume.tagline}
+    </p>
+  </header>
+  <div class="border-t border-resume-rule-light"></div>
+
+  <div class="flex flex-col md:flex-row">
+    <aside class="resume-sidebar bg-resume-sidebar w-full md:w-[32%] px-6 py-7 flex flex-col gap-6">
+      <section>
+        <h2 class="resume-head">Contact</h2>
+        <p class="resume-sidelabel">Phone</p>
+        <p class="resume-value">{resume.contact.phone}</p>
+        <p class="resume-sidelabel mt-2">Email</p>
+        <p class="resume-value">{resume.contact.email}</p>
+        <p class="resume-sidelabel mt-2">Personal site</p>
+        <p class="resume-value">{resume.contact.site}</p>
+      </section>
+
+      <div class="border-t border-resume-rule-light"></div>
+
+      <section>
+        <h2 class="resume-head">Education</h2>
+        <p class="resume-value text-resume-mid">{resume.education.degree}</p>
+        <p class="resume-subhead mt-1">{resume.education.school}</p>
+        <p class="resume-meta">{resume.education.detail}</p>
+      </section>
+
+      <div class="border-t border-resume-rule-light"></div>
+
+      <section>
+        <h2 class="resume-head">Skills</h2>
+        <div class="flex flex-col gap-3">
+          {
+            Object.entries(resume.skills).map(([label, items]) => (
+              <div>
+                <p class="resume-value font-bold mb-1">{label}</p>
+                <ul class="resume-list">
+                  {items.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <div class="border-t border-resume-rule-light"></div>
+
+      <section>
+        <h2 class="resume-head">Activities</h2>
+        <div class="flex flex-col gap-3">
+          {
+            resume.activities.map((activity) => (
+              <div>
+                <p class="resume-value font-bold">{activity.title}</p>
+                <p class="resume-meta">{activity.meta}</p>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+    </aside>
+
+    <main class="resume-main w-full md:w-[68%] px-8 py-7 flex flex-col gap-6">
+      <section>
+        <h2 class="resume-head">Profile</h2>
+        <p class="resume-body">{resume.profile}</p>
+      </section>
+
+      <div class="border-t border-resume-rule-light"></div>
+
+      <section>
+        <h2 class="resume-head">Experience</h2>
+        <div class="flex flex-col gap-4">
+          {
+            resume.experience.map((entry) => (
+              <div>
+                <div class="flex justify-between items-baseline flex-wrap gap-x-3">
+                  <p class="resume-subhead">{entry.title}</p>
+                  <p class="resume-meta">{entry.meta}</p>
+                </div>
+                <p class="resume-italic">{entry.subtitle}</p>
+                <ul class="resume-list mt-1">
+                  {entry.bullets.map((b) => (
+                    <li>
+                      {b.bold && <span class="font-bold">{b.bold}</span>}
+                      {b.text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <div class="border-t border-resume-rule-light"></div>
+
+      <section>
+        <h2 class="resume-head">Projects</h2>
+        <div class="flex flex-col gap-4">
+          {
+            resume.projects.map((entry) => (
+              <div>
+                <div class="flex justify-between items-baseline flex-wrap gap-x-3">
+                  <p class="resume-subhead">{entry.title}</p>
+                  <p class="resume-meta">{entry.meta}</p>
+                </div>
+                <p class="resume-italic">{entry.subtitle}</p>
+                <ul class="resume-list mt-1">
+                  {entry.bullets.map((b) => (
+                    <li>
+                      {b.bold && <span class="font-bold">{b.bold}</span>}
+                      {b.text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<style>
+  .resume-head {
+    font-family: var(--font-resume);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    color: var(--color-resume-dark);
+    margin: 0 0 0.6rem 0;
+  }
+  .resume-sidelabel {
+    font-family: var(--font-resume);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.62rem;
+    color: var(--color-resume-mid);
+    margin: 0;
+  }
+  .resume-subhead {
+    font-family: var(--font-resume);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--color-resume-dark);
+    margin: 0;
+  }
+  .resume-meta {
+    font-family: var(--font-resume);
+    font-size: 0.72rem;
+    color: var(--color-resume-mid);
+    margin: 0;
+  }
+  .resume-value {
+    font-family: var(--font-resume);
+    font-size: 0.8rem;
+    color: var(--color-resume-dark);
+    margin: 0;
+  }
+  .resume-italic {
+    font-family: var(--font-resume);
+    font-style: italic;
+    font-size: 0.78rem;
+    color: var(--color-resume-mid);
+    margin: 0.15rem 0 0 0;
+  }
+  .resume-body {
+    font-family: var(--font-resume);
+    font-size: 0.83rem;
+    line-height: 1.5;
+    color: var(--color-resume-dark);
+    margin: 0;
+  }
+  .resume-list {
+    list-style: disc;
+    padding-left: 1.1em;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .resume-list li {
+    font-family: var(--font-resume);
+    font-size: 0.79rem;
+    line-height: 1.45;
+    color: var(--color-resume-dark);
+  }
+</style>

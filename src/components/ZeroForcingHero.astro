@@ -1,0 +1,189 @@
+---
+interface Node {
+  id: number;
+  x: number;
+  y: number;
+}
+
+const nodes: Node[] = [
+  { id: 0, x: 50, y: 330 },
+  { id: 1, x: 150, y: 290 },
+  { id: 2, x: 150, y: 190 },
+  { id: 3, x: 260, y: 330 },
+  { id: 4, x: 340, y: 310 },
+  { id: 5, x: 260, y: 250 },
+  { id: 6, x: 340, y: 210 },
+  { id: 7, x: 430, y: 180 },
+  { id: 8, x: 430, y: 250 },
+  { id: 9, x: 150, y: 110 },
+  { id: 10, x: 240, y: 70 },
+  { id: 11, x: 240, y: 130 },
+];
+
+const edges: [number, number][] = [
+  [0, 1],
+  [1, 2],
+  [1, 3],
+  [3, 4],
+  [3, 5],
+  [5, 6],
+  [6, 7],
+  [6, 8],
+  [2, 9],
+  [9, 10],
+  [9, 11],
+];
+
+const seedId = 0;
+---
+
+<p class="sr-only">
+  Animated diagram of the zero forcing graph-coloring process: a seed node repeatedly forces its
+  unique white neighbor black until the whole graph is filled.
+</p>
+<div class="w-full max-w-2xl mx-auto aspect-[16/11]" aria-hidden="true">
+  <svg viewBox="0 0 480 380" class="w-full h-full" id="zf-graph">
+    <g stroke-linecap="round">
+      {
+        edges.map(([a, b]) => {
+          const na = nodes.find((n) => n.id === a)!;
+          const nb = nodes.find((n) => n.id === b)!;
+          return (
+            <line
+              data-a={a}
+              data-b={b}
+              x1={na.x}
+              y1={na.y}
+              x2={nb.x}
+              y2={nb.y}
+              class="zf-edge"
+              stroke="var(--color-stone)"
+              stroke-width="1.5"
+              opacity="0.5"
+            />
+          );
+        })
+      }
+    </g>
+    <g>
+      {
+        nodes.map((n) => (
+          <circle
+            data-id={n.id}
+            cx={n.x}
+            cy={n.y}
+            r="7"
+            class="zf-node"
+            fill={n.id === seedId ? "var(--color-moss)" : "var(--color-canopy)"}
+            stroke="var(--color-parchment)"
+            stroke-width="1.5"
+          />
+        ))
+      }
+    </g>
+  </svg>
+  <p class="font-mono text-xs text-stone text-center mt-2">zero forcing: color propagation on a graph</p>
+</div>
+
+<script define:vars={{ edgesData: edges, seedId }}>
+  const svg = document.getElementById("zf-graph");
+
+  if (svg) {
+    const nodeEls = new Map();
+    svg.querySelectorAll(".zf-node").forEach((el) => nodeEls.set(Number(el.dataset.id), el));
+
+    const edgeEls = [];
+    svg.querySelectorAll(".zf-edge").forEach((el) => {
+      edgeEls.push({ a: Number(el.dataset.a), b: Number(el.dataset.b), el });
+    });
+
+    const adjacency = new Map();
+    for (const [a, b] of edgesData) {
+      if (!adjacency.has(a)) adjacency.set(a, []);
+      if (!adjacency.has(b)) adjacency.set(b, []);
+      adjacency.get(a).push(b);
+      adjacency.get(b).push(a);
+    }
+
+    function simulate(seed) {
+      const black = new Set([seed]);
+      const order = [];
+      let changed = true;
+      while (changed) {
+        changed = false;
+        for (const v of black) {
+          const whites = (adjacency.get(v) || []).filter((n) => !black.has(n));
+          if (whites.length === 1) {
+            black.add(whites[0]);
+            order.push([v, whites[0]]);
+            changed = true;
+            break;
+          }
+        }
+      }
+      return order;
+    }
+
+    function findEdge(a, b) {
+      return edgeEls.find((e) => (e.a === a && e.b === b) || (e.a === b && e.b === a));
+    }
+
+    function reset() {
+      nodeEls.forEach((el, id) => {
+        el.setAttribute("fill", id === seedId ? "var(--color-moss)" : "var(--color-canopy)");
+      });
+      edgeEls.forEach(({ el }) => {
+        el.setAttribute("opacity", "0.5");
+        el.setAttribute("stroke", "var(--color-stone)");
+      });
+    }
+
+    function force(a, b) {
+      const edge = findEdge(a, b);
+      if (edge) {
+        edge.el.setAttribute("opacity", "1");
+        edge.el.setAttribute("stroke", "var(--color-parchment)");
+      }
+      const target = nodeEls.get(b);
+      if (target) target.setAttribute("fill", "var(--color-moss)");
+    }
+
+    const order = simulate(seedId);
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion) {
+      order.forEach(([a, b]) => force(a, b));
+    } else {
+      let i = 0;
+      const step = 550;
+
+      const tick = () => {
+        if (i < order.length) {
+          const [a, b] = order[i];
+          force(a, b);
+          i += 1;
+          setTimeout(tick, step);
+        } else {
+          setTimeout(() => {
+            reset();
+            i = 0;
+            setTimeout(tick, step);
+          }, 4800);
+        }
+      };
+
+      setTimeout(tick, 600);
+    }
+  }
+</script>
+
+<style>
+  .zf-edge {
+    transition:
+      opacity var(--ease-field) 200ms,
+      stroke var(--ease-field) 200ms;
+  }
+  .zf-node {
+    transition: fill var(--ease-field) 200ms;
+  }
+</style>

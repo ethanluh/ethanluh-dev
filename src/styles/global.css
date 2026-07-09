@@ -12,8 +12,18 @@
   --font-body: "IBM Plex Sans", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
+  /* Resume-sheet subset — scoped to the resume popup only. A print-styled
+     document rendered in the light, matching resume.tex; not part of the
+     dark-mode Field Guide palette used everywhere else. */
+  --font-resume: "Carlito", sans-serif;
+  --color-resume-sidebar: #efeeec;
+  --color-resume-dark: #2b2b2b;
+  --color-resume-mid: #6e6e6e;
+  --color-resume-rule: #3d3d3d;
+  --color-resume-rule-light: #bebebe;
+
   --text-h1: 3.5rem;
-  --text-h2: 2.25rem;
+  /* section h2 elements intentionally use --text-h3 scale, not a --text-h2 token */
   --text-h3: 1.6rem;
   --text-body: 1.0625rem;
   --text-mono: 0.875rem;

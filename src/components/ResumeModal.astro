@@ -1,0 +1,135 @@
+---
+import ResumeSheet from "./ResumeSheet.astro";
+---
+
+<div id="resume-modal" class="resume-modal fixed inset-0 z-50 hidden items-center justify-center p-4 md:p-8">
+  <div class="resume-backdrop absolute inset-0" data-resume-dismiss></div>
+  <div
+    class="resume-panel relative bg-bark border border-moss rounded-sm max-w-4xl w-full max-h-[88vh] flex flex-col"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="resume-modal-title"
+  >
+    <div
+      class="flex items-center justify-between px-5 py-3 border-b border-parchment/10 font-mono text-xs uppercase tracking-widest text-stone shrink-0"
+    >
+      <span id="resume-modal-title">Specimen &mdash; Resume</span>
+      <div class="flex items-center gap-4">
+        <a href="/resume.pdf" download class="hover:text-moss transition-colors duration-150"> download pdf </a>
+        <button
+          type="button"
+          id="resume-close"
+          class="text-stone hover:text-moss transition-colors duration-150"
+          aria-label="Close resume"
+        >
+          &#10005;
+        </button>
+      </div>
+    </div>
+    <div class="overflow-y-auto grow">
+      <ResumeSheet />
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById("resume-modal");
+  const closeBtn = document.getElementById("resume-close");
+  const triggers = document.querySelectorAll<HTMLElement>("[data-resume-trigger]");
+  const dismissTargets = document.querySelectorAll<HTMLElement>("[data-resume-dismiss]");
+  let lastFocused: HTMLElement | null = null;
+
+  let carlitoLoaded = false;
+  function loadCarlitoFont() {
+    if (carlitoLoaded) return;
+    carlitoLoaded = true;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=swap";
+    document.head.appendChild(link);
+  }
+
+  function openModal() {
+    if (!modal) return;
+    loadCarlitoFont();
+    lastFocused = document.activeElement as HTMLElement | null;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => modal.classList.add("is-open"));
+    closeBtn?.focus();
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.remove("is-open");
+    document.body.style.overflow = "";
+    const onEnd = () => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      modal.removeEventListener("transitionend", onEnd);
+    };
+    modal.addEventListener("transitionend", onEnd);
+    lastFocused?.focus();
+  }
+
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("click", (e) => {
+      e.preventDefault();
+      openModal();
+    });
+  });
+
+  dismissTargets.forEach((el) => el.addEventListener("click", closeModal));
+  closeBtn?.addEventListener("click", closeModal);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) closeModal();
+  });
+
+  modal?.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    const focusable = modal.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+</script>
+
+<style>
+  .resume-modal {
+    opacity: 0;
+    transition: opacity var(--ease-field) 200ms;
+  }
+  .resume-modal.is-open {
+    opacity: 1;
+  }
+  .resume-backdrop {
+    background: color-mix(in srgb, var(--color-canopy) 85%, transparent);
+  }
+  .resume-panel {
+    transform: translateY(8px) scale(0.98);
+    transition:
+      transform var(--ease-field) 200ms,
+      opacity var(--ease-field) 200ms;
+  }
+  .resume-modal.is-open .resume-panel {
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .resume-modal,
+    .resume-panel {
+      transition: none;
+    }
+  }
+</style>

@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SpecimenCard from "../components/SpecimenCard.astro";
+import ZeroForcingHero from "../components/ZeroForcingHero.astro";
+import GraphDivider from "../components/GraphDivider.astro";
+import ResumeModal from "../components/ResumeModal.astro";
 import { research } from "../content/research";
 import { projects } from "../content/projects";
 ---
@@ -9,7 +12,7 @@ import { projects } from "../content/projects";
   title="Ethan Luh"
   description="CS/Math/Stats student at Penn State Behrend — research and projects."
 >
-  <section class="max-w-3xl mx-auto px-6 pt-16 pb-12">
+  <section class="max-w-3xl mx-auto px-6 pt-12 pb-4">
     <h1 class="font-display text-h1 leading-tight mb-4">
       Building at the edge of graph theory and code.
     </h1>
@@ -20,21 +23,29 @@ import { projects } from "../content/projects";
     <div class="flex flex-wrap gap-3 mt-6 font-mono text-xs uppercase tracking-widest">
       <a
         href="/resume.pdf"
+        data-resume-trigger
         class="bg-moss text-canopy px-5 py-3 rounded-sm hover:bg-parchment transition-colors duration-150"
       >
         Resume
       </a>
       <a
         href="#contact"
-        class="border border-moss text-moss px-5 py-3 rounded-sm hover:bg-moss hover:text-canopy transition-colors duration-150"
+        class="border border-moss text-moss px-5 py-3 rounded-sm hover:bg-moss/20 transition-colors duration-150"
       >
         Get in touch
       </a>
     </div>
   </section>
 
+  <section class="max-w-3xl mx-auto px-6 pb-12">
+    <ZeroForcingHero />
+  </section>
+
+  <GraphDivider />
+
   <section id="research" class="max-w-3xl mx-auto px-6 py-10">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Research</h2>
+    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-2">Research</h2>
+    <p class="text-parchment/70 text-sm pl-4 mb-6">One project underway — more to come as it develops.</p>
     <div class="flex flex-col gap-4">
       {
         research.map((entry) => (
@@ -51,6 +62,8 @@ import { projects } from "../content/projects";
       }
     </div>
   </section>
+
+  <GraphDivider />
 
   <section id="projects" class="max-w-3xl mx-auto px-6 py-10">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Projects</h2>
@@ -70,6 +83,8 @@ import { projects } from "../content/projects";
       }
     </div>
   </section>
+
+  <ResumeModal />
 </BaseLayout>
 
 <script>

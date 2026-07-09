@@ -1,22 +1,27 @@
 ---
 const GITHUB_URL = "https://github.com/ethanluh";
+const LINKEDIN_URL = "https://linkedin.com/in/ethanluh";
 const CONTACT_EMAIL = "ethan@ethanluh.com";
 const PERSONAL_SITE_URL = "https://me.ethanluh.com";
 ---
 
 <footer id="contact" class="border-t border-parchment/10 mt-20">
-  <div class="max-w-3xl mx-auto px-6 py-10 font-mono text-xs text-stone flex flex-col gap-3">
-    <div class="flex flex-wrap gap-4">
-      <a href="/resume.pdf" class="hover:text-moss transition-colors duration-150">Resume</a>
-      <span aria-hidden="true">·</span>
-      <a href={GITHUB_URL} class="hover:text-moss transition-colors duration-150">GitHub</a>
-      <span aria-hidden="true">·</span>
-      <a href={`mailto:${CONTACT_EMAIL}`} class="hover:text-moss transition-colors duration-150">Contact</a>
-    </div>
-    <div>
-      Ethan Luh
-      <span class="footer-dot mx-1 transition-colors duration-150" aria-hidden="true">&middot;</span>
+  <div
+    class="max-w-3xl mx-auto px-6 py-8 flex flex-wrap items-center justify-between gap-4 font-mono text-xs uppercase tracking-widest text-stone"
+  >
+    <div class="flex items-center gap-2">
+      <span class="text-parchment normal-case tracking-normal">Ethan Luh</span>
+      <span class="footer-dot transition-colors duration-150" aria-hidden="true">&middot;</span>
       <a href={PERSONAL_SITE_URL} class="hover:text-moss transition-colors duration-150">me</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="/resume.pdf" data-resume-trigger class="hover:text-moss transition-colors duration-150">resume</a>
+      <span aria-hidden="true">&middot;</span>
+      <a href={GITHUB_URL} class="hover:text-moss transition-colors duration-150">github</a>
+      <span aria-hidden="true">&middot;</span>
+      <a href={LINKEDIN_URL} class="hover:text-moss transition-colors duration-150">linkedin</a>
+      <span aria-hidden="true">&middot;</span>
+      <a href={`mailto:${CONTACT_EMAIL}`} class="hover:text-moss transition-colors duration-150 normal-case tracking-normal">{CONTACT_EMAIL}</a>
     </div>
   </div>
 </footer>
