@@ -38,6 +38,10 @@
   --stone: #9a948a;
   --parchment: #ece7d9;
   --lavender: #b7a4d1;
+
+  /* fixed regardless of active theme — used by the theme toggle to preview the mode a click switches to */
+  --surface-dark: #171c15;
+  --surface-light: #f4f1e8;
 }
 
 @media (prefers-color-scheme: light) {
