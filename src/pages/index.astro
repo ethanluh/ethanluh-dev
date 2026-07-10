@@ -91,7 +91,7 @@ function relatedFor(slug: string) {
   if (i === undefined) return [];
   return neighborIndices[i].map((j) => {
     const p = CONTENT_POINTS[j];
-    return { title: p.title, href: `#content-${p.slug}` };
+    return { title: p.title, href: p.href };
   });
 }
 
