@@ -28,9 +28,9 @@ const COPY = {
       description: "CS/Math/Stats student at Penn State Behrend — research and projects.",
     },
     hero: {
-      headline: "Building at the edge of graph theory and code.",
+      headline: "Building software at the edge of graph theory and code.",
       subhead:
-        "CS/Math/Stats student at Penn State Behrend (May 2028), researching zero forcing polytopes.",
+        "CS/Math/Stats student at Penn State Behrend (May 2028) — builds graph and ML systems, and researches zero forcing polytopes.",
       ctaWork: "recruiting? → work",
       ctaMath: "researching zero forcing? → the math",
       zeroForcingCaptionPrefix: "Hover a node to see what it is, click to visit —",
@@ -41,6 +41,7 @@ const COPY = {
       introPrefix:
         "Research, projects, and experience — ordered by convex-hull peel layer over (recency, depth), not by type. See",
       introLinkLabel: "how this site works",
+      stackLine: "Python · TypeScript · PyTorch/YOLOv8 · C++ (ONNX) · graph & combinatorial algorithms",
     },
     about: {
       heading: "About",
@@ -107,13 +108,14 @@ const COPY = {
       status: "in progress",
       abstract:
         "Independent study with Hanely applying Ehrhart theory to zero forcing polytopes on small graph families. Constructs the polytope from a graph's zero forcing sets and studies its lattice-point structure, motivated by the conjecture |𝓕_G| ≥ ⌈n/3⌉ on the number of forcing sets of minimum size.",
+      notesLinkLabel: "notes (ask for a copy)",
     },
   },
 
   projects: {
     zeroForcingPolytopes: {
       title: "Zero Forcing Polytopes",
-      tag: "python · code coming soon",
+      tag: "python",
       description:
         "Computational companion to the research above — builds the zero forcing polytope from a graph's minimum forcing sets and enumerates its lattice points. The open problem: forcing-set enumeration blows up combinatorially past small graphs, so the code has to prune the search rather than brute-force it.",
     },
@@ -141,12 +143,13 @@ const COPY = {
       role: "Software Engineering Intern",
       org: "AgentMade",
       description:
-        "Built and open-sourced Quire (see Projects), a triage multiplexer for AI-generated pull requests, as the core engineering contribution of the internship.",
+        "Built and open-sourced Quire (see Projects), a triage multiplexer for AI-generated pull requests, as the core engineering contribution on a 5-person engineering team — took each engineer's reviewable PR-bundle throughput from ~10/day to 30+/day.",
     },
     uasSoftwareLead: {
       role: "Software Team Lead",
       org: "UAS Club, Penn State Behrend",
-      description: "Leads software development for the club's unmanned aerial systems — computer vision, data processing, and data generation pipelines.",
+      description:
+        "Leads a 10-person software team building Behrend_UAS, a CI-tested drone pipeline — a YOLOv8 model trained on Blender-synthesized data detects mannequins and tents, and a Python perception-control node plus a low-latency C++ ONNX runtime turn detections into autonomous flight guidance, backed by a simulation harness and full documentation.",
     },
   },
 

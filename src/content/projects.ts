@@ -29,6 +29,7 @@ export const projects: ProjectEntry[] = [
     tag: copy("projects.preferenceLayer.tag"),
     description: copy("projects.preferenceLayer.description"),
     href: "https://github.com/ethanluh/preference-layer",
+    image: "/preference-layer-diagram.svg",
   },
   {
     slug: "quire",
@@ -37,6 +38,7 @@ export const projects: ProjectEntry[] = [
     tag: copy("projects.quire.tag"),
     description: copy("projects.quire.description"),
     href: "https://github.com/ethanluh/quire",
+    image: "/quire-diagram.svg",
   },
   {
     slug: "market-sentiment-predictor",
@@ -45,5 +47,6 @@ export const projects: ProjectEntry[] = [
     tag: copy("projects.marketSentimentPredictor.tag"),
     description: copy("projects.marketSentimentPredictor.description"),
     href: "https://github.com/ethanluh/market-sentiment-predictor",
+    image: "/market-sentiment-diagram.svg",
   },
 ];

@@ -69,7 +69,7 @@ const personSchema = {
     />
   </head>
   <body class="min-h-screen flex flex-col">
-    <Nav />
+    <Nav email={CONTACT_EMAIL} socialLinks={SOCIAL_LINKS} />
     <SideRail orientation="left" variant="social" links={SOCIAL_LINKS} personalSite={PERSONAL_SITE} />
     <SideRail orientation="right" variant="email" email={CONTACT_EMAIL} themeToggle />
     <main class="flex-1">
