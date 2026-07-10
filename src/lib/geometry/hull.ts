@@ -51,9 +51,10 @@ export function peelLayers<T>(items: T[], project: (item: T) => Point2D): T[][] 
 
   while (remaining.length > 2) {
     const coords = remaining.map(project);
-    const hullIdx = new Set(convexHull(coords));
-    if (hullIdx.size === 0) break;
-    layers.push(remaining.filter((_, i) => hullIdx.has(i)));
+    const hullOrder = convexHull(coords);
+    if (hullOrder.length === 0) break;
+    const hullIdx = new Set(hullOrder);
+    layers.push(hullOrder.map((i) => remaining[i]));
     remaining = remaining.filter((_, i) => !hullIdx.has(i));
   }
   if (remaining.length > 0) layers.push(remaining);
