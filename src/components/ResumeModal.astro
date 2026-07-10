@@ -1,7 +1,7 @@
 <dialog id="resume-modal" class="resume-modal" aria-labelledby="resume-modal-title">
   <div class="flex items-center justify-between gap-4 border-b border-bark px-5 py-3">
     <h2 id="resume-modal-title" class="font-mono text-xs uppercase tracking-widest text-stone">
-      Résumé
+      Resume
     </h2>
     <div class="flex items-center gap-4 font-mono text-xs">
       <a href="/resume.pdf" download class="hover:text-parchment transition-colors duration-150"> Download </a>
@@ -18,7 +18,7 @@
   </div>
   <div id="resume-modal-body" class="resume-modal-object">
     <p class="p-6 font-mono text-xs text-stone">
-      Loading résumé…
+      Loading resume…
     </p>
   </div>
 </dialog>
@@ -110,7 +110,7 @@
       }
     } catch {
       rendered = false;
-      body.innerHTML = `<p class="p-6 font-mono text-xs text-stone">Couldn't render the résumé. <a href="/resume.pdf" download class="text-parchment underline">Download it</a> instead.</p>`;
+      body.innerHTML = `<p class="p-6 font-mono text-xs text-stone">Couldn't render the resume. <a href="/resume.pdf" download class="text-parchment underline">Download it</a> instead.</p>`;
     }
   }
 

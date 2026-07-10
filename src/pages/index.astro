@@ -103,8 +103,12 @@ function delaunayFor(slug: string) {
 <BaseLayout
   title={copy("home.meta.title")}
   description={copy("home.meta.description")}
+  railSections={[
+    { label: copy("home.work.heading"), href: "#work" },
+    { label: copy("home.about.heading"), href: "#about" },
+  ]}
 >
-  <section class="max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16 pt-12 pb-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
+  <section class="pt-12 pb-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
     <div class="max-w-2xl">
       <h1 class="font-display text-h1 leading-tight mb-4">
         {copy("home.hero.headline")}
@@ -121,58 +125,75 @@ function delaunayFor(slug: string) {
         </a>
       </p>
     </div>
-    <div class="w-full lg:w-[30vw] lg:shrink-0">
+    <div class="w-full lg:w-[26rem] lg:shrink-0">
       <ZeroForcingHero />
     </div>
   </section>
 
-  <section id="work" class="max-w-3xl mx-auto px-6 pt-2 pb-10 scroll-mt-16">
+  <section id="work" class="pt-2 pb-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">{copy("home.work.heading")}</h2>
     <p class="font-mono text-xs text-stone mb-2">
       {copy("home.work.introPrefix")} <a href="/how-it-works" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.introLinkLabel")}</a>.
     </p>
-    <p class="font-mono text-xs text-stone mb-6">
+    <p class="font-mono text-xs text-stone mb-8">
       {copy("home.work.stackLine")}
     </p>
-    <div class="flex flex-col gap-4">
-      {featuredWork && (
-        <div class="reveal">
-          <FeaturedProjectCard
-            id={`content-${featuredWork.slug}`}
-            number={featuredWork.number}
-            title={featuredWork.title}
-            tag={featuredWork.tag}
-            description={featuredWork.description}
-            href={featuredWork.href}
-            image={featuredWork.image}
-            kindLabel={featuredWork.kind}
-            related={relatedFor(featuredWork.slug)}
-            delaunay={delaunayFor(featuredWork.slug)}
-          />
-        </div>
-      )}
+
+    {featuredWork && (
+      <div class="reveal mb-10">
+        <FeaturedProjectCard
+          id={`content-${featuredWork.slug}`}
+          number={featuredWork.number}
+          title={featuredWork.title}
+          tag={featuredWork.tag}
+          description={featuredWork.description}
+          href={featuredWork.href}
+          image={featuredWork.image}
+          kindLabel={featuredWork.kind}
+          eyebrow={copy("home.work.featuredEyebrow")}
+          related={relatedFor(featuredWork.slug)}
+          delaunay={delaunayFor(featuredWork.slug)}
+        />
+      </div>
+    )}
+
+    <div class="flex flex-col gap-10">
       {
-        restWork.map((entry) => (
-          <div class="reveal">
-            <SpecimenCard
-              id={`content-${entry.slug}`}
-              number={entry.number}
-              title={entry.title}
-              tag={entry.tag}
-              description={entry.description}
-              links={entry.href ? [{ label: "view", href: entry.href }] : (entry.links ?? [])}
-              image={entry.image}
-              kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}
-              related={relatedFor(entry.slug)}
-              delaunay={delaunayFor(entry.slug)}
-            />
-          </div>
-        ))
+        (["project", "experience", "research"] as const).map((kind) => {
+          const entries = restWork.filter((entry) => entry.kind === kind);
+          if (entries.length === 0) return null;
+          return (
+            <div>
+              <p class="font-mono text-[0.68rem] uppercase tracking-widest text-stone mb-3 flex items-center gap-3 track-label">
+                {copy(`home.work.trackLabel.${kind}`)}
+              </p>
+              <div class="flex flex-col gap-4">
+                {entries.map((entry) => (
+                  <div class="reveal">
+                    <SpecimenCard
+                      id={`content-${entry.slug}`}
+                      number={entry.number}
+                      title={entry.title}
+                      tag={entry.tag}
+                      description={entry.description}
+                      links={entry.href ? [{ label: "view", href: entry.href }] : (entry.links ?? [])}
+                      image={entry.image}
+                      variant={entry.kind}
+                      kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}
+                      related={relatedFor(entry.slug)}
+                      delaunay={delaunayFor(entry.slug)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })
       }
     </div>
   </section>
 
-  <section id="about" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
+  <section id="about" class="py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">{copy("home.about.heading")}</h2>
     <div class="reveal grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-10 items-start">
       <div class="max-w-xl text-parchment/90 flex flex-col gap-4">
@@ -215,6 +236,13 @@ function delaunayFor(slug: string) {
 </script>
 
 <style>
+  .track-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-bark);
+  }
+
   .reveal {
     opacity: 0;
     transform: translateY(12px);

@@ -3,14 +3,15 @@ import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import ResumeModal from "../components/ResumeModal.astro";
 import DetailsModal from "../components/DetailsModal.astro";
-import SideRail from "../components/SideRail.astro";
+import IndexRail from "../components/IndexRail.astro";
 
 interface Props {
   title: string;
   description: string;
+  railSections?: { label: string; href: string }[];
 }
 
-const { title, description } = Astro.props;
+const { title, description, railSections = [] } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const CONTACT_EMAIL = "ethan@ethanluh.com";
 const SOCIAL_LINKS = [
@@ -70,11 +71,12 @@ const personSchema = {
   </head>
   <body class="min-h-screen flex flex-col">
     <Nav email={CONTACT_EMAIL} socialLinks={SOCIAL_LINKS} />
-    <SideRail orientation="left" variant="social" links={SOCIAL_LINKS} personalSite={PERSONAL_SITE} />
-    <SideRail orientation="right" variant="email" email={CONTACT_EMAIL} themeToggle />
-    <main class="flex-1">
-      <slot />
-    </main>
+    <div class="flex-1 w-full max-w-[92rem] mx-auto px-6 sm:px-10 lg:px-16 flex gap-12 lg:gap-16 items-start">
+      <main class="min-w-0 flex-1">
+        <slot />
+      </main>
+      <IndexRail sections={railSections} email={CONTACT_EMAIL} socialLinks={SOCIAL_LINKS} personalSite={PERSONAL_SITE} />
+    </div>
     <ResumeModal />
     <DetailsModal />
   </body>

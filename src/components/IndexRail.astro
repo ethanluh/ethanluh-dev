@@ -1,0 +1,156 @@
+---
+import { copy } from "../lib/copy";
+
+interface Props {
+  sections?: { label: string; href: string }[];
+  email: string;
+  socialLinks: { label: string; href: string }[];
+  personalSite: { label: string; href: string };
+}
+
+const { sections = [], email, socialLinks, personalSite } = Astro.props;
+---
+
+<aside class="index-rail hidden lg:flex sticky top-24 self-start flex-col gap-9 shrink-0 w-60 pb-12">
+  {
+    sections.length > 0 && (
+      <div>
+        <p class="font-mono text-[0.65rem] uppercase tracking-widest text-stone mb-3">{copy("rail.onThisPage")}</p>
+        <ul class="flex flex-col gap-2">
+          {sections.map((s) => (
+            <li>
+              <a href={s.href} class="flex items-baseline gap-2 text-parchment/80 hover:text-moss transition-colors duration-150 text-sm">
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  <div>
+    <p class="font-mono text-[0.65rem] uppercase tracking-widest text-stone mb-3">Contact</p>
+    <ul class="flex flex-col gap-2 font-mono text-xs text-stone">
+      <li>
+        <a href={`mailto:${email}`} class="hover:text-moss transition-colors duration-150">{email}</a>
+      </li>
+      {socialLinks.map((link) => (
+        <li>
+          <a href={link.href} target="_blank" rel="noopener noreferrer" class="hover:text-moss transition-colors duration-150">
+            {link.label}
+          </a>
+        </li>
+      ))}
+      <li>
+        <button type="button" data-resume-trigger class="hover:text-moss transition-colors duration-150 cursor-pointer">Resume</button>
+      </li>
+      <li class="flex items-center gap-2">
+        <span class="rail-dot transition-colors duration-150" aria-hidden="true">&middot;</span>
+        <a href={personalSite.href} class="hover:text-moss transition-colors duration-150">{personalSite.label}</a>
+      </li>
+    </ul>
+  </div>
+
+  <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle color theme" class="theme-toggle self-start">
+    <span class="theme-toggle-track">
+      <span class="theme-toggle-thumb">
+        <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+      </span>
+    </span>
+    <span class="font-mono text-[0.65rem] uppercase tracking-widest text-stone">Theme</span>
+  </button>
+</aside>
+
+<style>
+  .rail-dot:hover {
+    color: var(--color-lavender);
+  }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  .theme-toggle:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  .theme-toggle-track {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 2.2rem;
+    height: 1.1rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-bark);
+    transition: border-color var(--duration-base) var(--ease-field);
+  }
+
+  .theme-toggle-thumb {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 0.9rem;
+    height: 0.9rem;
+    margin-left: 0.05rem;
+    border: 1.5px solid var(--color-moss);
+    border-radius: 50%;
+    background-color: var(--surface-light);
+    color: var(--surface-dark);
+    font-size: 0.55rem;
+    line-height: 1;
+    transform: translateX(0);
+    transition:
+      transform var(--duration-base) var(--ease-field),
+      background-color var(--duration-base) var(--ease-field),
+      color var(--duration-base) var(--ease-field);
+  }
+
+  .theme-toggle[aria-checked="true"] .theme-toggle-thumb {
+    background-color: var(--surface-dark);
+    color: var(--surface-light);
+    transform: translateX(1rem);
+  }
+
+  .theme-toggle:hover .theme-toggle-track {
+    border-color: var(--color-moss);
+  }
+</style>
+
+<script>
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = themeToggle?.querySelector(".theme-toggle-icon");
+  const lightScheme = window.matchMedia("(prefers-color-scheme: light)");
+
+  function currentTheme(): "light" | "dark" {
+    const explicit = document.documentElement.dataset.theme;
+    if (explicit === "light" || explicit === "dark") return explicit;
+    return lightScheme.matches ? "light" : "dark";
+  }
+
+  function applyIcon(theme: "light" | "dark") {
+    if (themeIcon) themeIcon.textContent = theme === "dark" ? "☾" : "☀";
+    themeToggle?.setAttribute("aria-checked", theme === "light" ? "true" : "false");
+  }
+
+  applyIcon(currentTheme());
+
+  themeToggle?.addEventListener("click", () => {
+    const next = currentTheme() === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem("theme", next);
+    applyIcon(next);
+  });
+
+  lightScheme.addEventListener("change", () => {
+    if (!localStorage.getItem("theme")) applyIcon(currentTheme());
+  });
+</script>
