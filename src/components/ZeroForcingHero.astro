@@ -171,6 +171,17 @@ function clampLabelX(centerX: number, title: string): number {
   </ul>
 </div>
 
+<script>
+  // SVG has no z-index — paint order is DOM order, so a later node's circle
+  // can draw over an earlier node's tooltip label. Bump the hovered/focused
+  // node to the end of its parent so its label always paints on top.
+  document.querySelectorAll<SVGAElement>(".zf-hero .zf-node-link").forEach((link) => {
+    const raise = () => link.parentElement?.appendChild(link);
+    link.addEventListener("pointerenter", raise);
+    link.addEventListener("focus", raise);
+  });
+</script>
+
 <style define:vars={{ scale, edgeDash, labelFontSize }}>
   .zf-hero {
     overflow: visible;
