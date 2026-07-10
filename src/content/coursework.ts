@@ -1,3 +1,5 @@
+import { copy } from "../lib/copy";
+
 export interface CourseworkEntry {
   number: string;
   title: string;
@@ -8,22 +10,20 @@ export interface CourseworkEntry {
 export const coursework: CourseworkEntry[] = [
   {
     number: "01",
-    title: "Systems & Software",
-    tag: "coursework",
-    description:
-      "Data Structures & Algorithms, Computer Organization/Architecture, Operating Systems, Programming Languages, Computer Networks.",
+    title: copy("coursework.systemsSoftware.title"),
+    tag: copy("coursework.systemsSoftware.tag"),
+    description: copy("coursework.systemsSoftware.description"),
   },
   {
     number: "02",
-    title: "AI & Security",
-    tag: "coursework",
-    description: "Machine Learning, Artificial Intelligence, Computer Vision, Cryptography, Machine Learning + Data Science.",
+    title: copy("coursework.aiSecurity.title"),
+    tag: copy("coursework.aiSecurity.tag"),
+    description: copy("coursework.aiSecurity.description"),
   },
   {
     number: "03",
-    title: "Math & Statistics",
-    tag: "coursework",
-    description:
-      "Discrete Mathematics, Calculus I–III, Linear Algebra, Differential Equations, Statistics I & II, Number Theory, Numerical Analysis.",
+    title: copy("coursework.mathStats.title"),
+    tag: copy("coursework.mathStats.tag"),
+    description: copy("coursework.mathStats.description"),
   },
 ];

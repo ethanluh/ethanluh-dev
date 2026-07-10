@@ -9,6 +9,7 @@ import { experience } from "../content/experience";
 import { CONTENT_POINTS } from "../data/content-points";
 import { peelLayers } from "../lib/geometry/hull";
 import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
+import { copy } from "../lib/copy";
 
 // --- Unified Work stream: Research + Projects + Experience, one adapter shape ---
 type WorkEntry = {
@@ -95,24 +96,23 @@ function delaunayFor(slug: string) {
 ---
 
 <BaseLayout
-  title="Ethan Luh"
-  description="CS/Math/Stats student at Penn State Behrend — research and projects."
+  title={copy("home.meta.title")}
+  description={copy("home.meta.description")}
 >
   <section class="max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16 pt-12 pb-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
     <div class="max-w-2xl">
       <h1 class="font-display text-h1 leading-tight mb-4">
-        Building at the edge of graph theory and code.
+        {copy("home.hero.headline")}
       </h1>
       <p class="max-w-xl text-parchment/90">
-        CS/Math/Stats student at Penn State Behrend (May 2028), researching
-        zero forcing polytopes.
+        {copy("home.hero.subhead")}
       </p>
       <p class="font-mono text-xs text-stone mt-4 flex flex-wrap gap-x-4 gap-y-1">
         <a href="#work" class="hover:text-moss transition-colors duration-150">
-          recruiting? &rarr; work
+          {copy("home.hero.ctaWork")}
         </a>
         <a href="#content-zero-forcing-polytopes-research" class="hover:text-moss transition-colors duration-150">
-          researching zero forcing? &rarr; the math
+          {copy("home.hero.ctaMath")}
         </a>
       </p>
     </div>
@@ -122,10 +122,9 @@ function delaunayFor(slug: string) {
   </section>
 
   <section id="work" class="max-w-3xl mx-auto px-6 pt-2 pb-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Work</h2>
+    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">{copy("home.work.heading")}</h2>
     <p class="font-mono text-xs text-stone mb-6">
-      Research, projects, and experience — ordered by convex-hull peel layer over
-      (recency, depth), not by type. See <a href="/how-it-works" class="text-moss hover:text-parchment transition-colors duration-150">how this site works</a>.
+      {copy("home.work.introPrefix")} <a href="/how-it-works" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.introLinkLabel")}</a>.
     </p>
     <div class="flex flex-col gap-4">
       {featuredWork && (
@@ -165,26 +164,11 @@ function delaunayFor(slug: string) {
   </section>
 
   <section id="about" class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">About</h2>
+    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">{copy("home.about.heading")}</h2>
     <div class="reveal grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-10 items-start">
       <div class="max-w-xl text-parchment/90 flex flex-col gap-4">
-        <p>
-          I first got interested in zero forcing sitting in on an undergraduate
-          thesis defense on the minimal forts of trees, then followed it home
-          — reading back into the foundational paper it built on, on my own,
-          afterward. I stayed for the combinatorics. Most of what I build sits
-          at that same boundary: applying mathematical structure to software
-          problems and using software to test mathematical ones, from the
-          zero forcing polytope work above to a market-signal model that runs
-          diffusion on a graph Laplacian.
-        </p>
-        <p>
-          Outside of that, I like taking things apart and putting them back
-          together — literally: a couple of old MacBook Pros, an HP Legion,
-          an Apple Magic Mouse, and a pair of speakers have all survived a
-          repair. I fence, and play ultimate frisbee, volleyball, and
-          badminton — and drink more boba tea than is probably reasonable.
-        </p>
+        <p>{copy("home.about.paragraph1")}</p>
+        <p>{copy("home.about.paragraph2")}</p>
       </div>
       <div class="about-photo-frame relative max-w-[220px]">
         <div class="about-photo-border absolute inset-0 border-2 border-moss rounded-sm" aria-hidden="true"></div>

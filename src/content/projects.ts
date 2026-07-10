@@ -1,3 +1,5 @@
+import { copy } from "../lib/copy";
+
 export interface ProjectEntry {
   slug: string;
   number: string;
@@ -15,35 +17,33 @@ export const projects: ProjectEntry[] = [
   {
     slug: "zero-forcing-polytopes",
     number: "01",
-    title: "Zero Forcing Polytopes",
-    tag: "python · code coming soon",
-    description:
-      "Computational companion to the research above — builds the zero forcing polytope from a graph's minimum forcing sets and enumerates its lattice points. The open problem: forcing-set enumeration blows up combinatorially past small graphs, so the code has to prune the search rather than brute-force it.",
+    title: copy("projects.zeroForcingPolytopes.title"),
+    tag: copy("projects.zeroForcingPolytopes.tag"),
+    description: copy("projects.zeroForcingPolytopes.description"),
     image: "/placeholder-project.svg",
   },
   {
     slug: "preference-layer",
     number: "02",
-    title: "preference-layer",
-    tag: "python",
-    description: "Portable preference infrastructure and API for the agentic web — user-controlled preference credentials and profile-conditioned product intelligence for AI shopping agents.",
+    title: copy("projects.preferenceLayer.title"),
+    tag: copy("projects.preferenceLayer.tag"),
+    description: copy("projects.preferenceLayer.description"),
     href: "https://github.com/ethanluh/preference-layer",
   },
   {
     slug: "quire",
     number: "03",
-    title: "quire",
-    tag: "typescript",
-    description: "Triage tool for high-volume AI-generated pull requests — groups PRs by product direction so you review bundles, not diffs.",
+    title: copy("projects.quire.title"),
+    tag: copy("projects.quire.tag"),
+    description: copy("projects.quire.description"),
     href: "https://github.com/ethanluh/quire",
   },
   {
     slug: "market-sentiment-predictor",
     number: "04",
-    title: "market-sentiment-predictor",
-    tag: "python · graph diffusion",
-    description:
-      "Models how a signal (an 8-K, a press release) propagates through the market's information hierarchy — sec_corp → institutional → fin_press → informed_retail → uninformed_retail — as a continuous-time heat kernel on the graph Laplacian, then feeds the diffusion lag into 9 quantile-regression models predicting P10/P50/P90 forward returns at three horizons. The gotcha: diffusion has to run on the Laplacian transpose, or the signal propagates backwards against edge direction.",
+    title: copy("projects.marketSentimentPredictor.title"),
+    tag: copy("projects.marketSentimentPredictor.tag"),
+    description: copy("projects.marketSentimentPredictor.description"),
     href: "https://github.com/ethanluh/market-sentiment-predictor",
   },
 ];

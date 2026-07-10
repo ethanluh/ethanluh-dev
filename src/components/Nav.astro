@@ -1,10 +1,12 @@
 ---
+import { copy } from "../lib/copy";
+
 const links = [
-  { label: "main page", href: "/" },
-  { label: "coursework", href: "/coursework" },
-  { label: "about", href: "/#about" },
-  { label: "how this page works", href: "/how-it-works" },
-  { label: "contact", href: "mailto:ethan@ethanluh.com" },
+  { label: copy("nav.link.mainPage"), href: "/" },
+  { label: copy("nav.link.coursework"), href: "/coursework" },
+  { label: copy("nav.link.about"), href: "/#about" },
+  { label: copy("nav.link.howItWorks"), href: "/how-it-works" },
+  { label: copy("nav.link.contact"), href: "mailto:ethan@ethanluh.com" },
 ];
 ---
 
@@ -13,8 +15,8 @@ const links = [
     class="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-2 px-6 py-3 font-mono text-xs uppercase tracking-widest"
   >
     <a href="/" class="flex flex-col leading-tight text-parchment/80 hover:text-moss transition-colors duration-150">
-      <span>Ethan Luh</span>
-      <span class="text-[0.65rem] tracking-normal normal-case text-stone">field notes from graph theory & code</span>
+      <span>{copy("nav.brand.name")}</span>
+      <span class="text-[0.65rem] tracking-normal normal-case text-stone">{copy("nav.brand.tagline")}</span>
     </a>
     <ul class="nav-links flex flex-nowrap gap-3 sm:gap-5 items-center overflow-x-auto">
       {
