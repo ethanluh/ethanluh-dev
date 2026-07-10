@@ -79,7 +79,7 @@
 
   pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
-  const trigger = document.getElementById("resume-trigger");
+  const triggers = document.querySelectorAll("[data-resume-trigger]");
   const modal = document.getElementById("resume-modal") as HTMLDialogElement | null;
   const closeBtn = document.getElementById("resume-modal-close");
   const body = document.getElementById("resume-modal-body");
@@ -129,12 +129,14 @@
     });
   }
 
-  trigger?.addEventListener("click", async () => {
-    modal?.classList.add("resume-modal--sizing");
-    modal?.showModal();
-    await renderResume();
-    await fitModalWidth();
-    modal?.classList.remove("resume-modal--sizing");
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("click", async () => {
+      modal?.classList.add("resume-modal--sizing");
+      modal?.showModal();
+      await renderResume();
+      await fitModalWidth();
+      modal?.classList.remove("resume-modal--sizing");
+    });
   });
   closeBtn?.addEventListener("click", () => modal?.close());
   modal?.addEventListener("click", (event) => {
