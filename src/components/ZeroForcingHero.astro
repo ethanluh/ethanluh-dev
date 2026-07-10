@@ -41,7 +41,7 @@ const height = Math.round((width / motifWidth) * motifHeight);
 const padX = (motifPadding / motifWidth) * width;
 const padY = (motifPadding / motifHeight) * height;
 const scale = width / 400;
-const nodeRadius = 9 * scale;
+const nodeRadius = 4.5 * scale;
 
 // Pull every node 20% closer to the plot's center, so the graph reads as
 // slightly more compact/clustered without changing the canvas or the
@@ -97,7 +97,7 @@ const edgeDash = Math.ceil(Math.hypot(width, height));
 // Font size is intentionally not tied to `scale` (that's for node/stroke
 // weight) — a small caption-sized label reads as a tooltip, a `scale`d one
 // reads as a second heading.
-const labelFontSize = 13;
+const labelFontSize = 10;
 const estCharWidth = labelFontSize * 0.62;
 const labelSafeMargin = 16;
 function clampLabelX(centerX: number, title: string): number {
@@ -106,6 +106,20 @@ function clampLabelX(centerX: number, title: string): number {
   const max = width - labelSafeMargin - halfWidth;
   if (min > max) return width / 2;
   return Math.min(Math.max(centerX, min), max);
+}
+
+// Tooltip background chip, sized to the same estimated text width used for
+// clamping above so the box always fully contains the label.
+const tooltipPadX = 5;
+const tooltipPadY = 3;
+function tooltipRect(centerX: number, labelY: number, title: string) {
+  const textWidth = title.length * estCharWidth;
+  return {
+    x: centerX - textWidth / 2 - tooltipPadX,
+    y: labelY - labelFontSize * 0.78 - tooltipPadY,
+    width: textWidth + tooltipPadX * 2,
+    height: labelFontSize + tooltipPadY * 2,
+  };
 }
 ---
 
@@ -130,12 +144,24 @@ function clampLabelX(centerX: number, title: string): number {
     {
       renderNodes.map(({ node, round }) => {
         // Flip the label below the node when it's near the top edge so the
-        // halo text doesn't clip against the viewBox boundary.
+        // tooltip doesn't clip against the viewBox boundary.
         const labelBelow = node.y - padY < 24;
         const labelY = labelBelow ? node.y + 20 : node.y - 14;
         const labelX = clampLabelX(node.x, node.title);
+        const box = tooltipRect(labelX, labelY, node.title);
         return (
-          <a href={node.href} class="zf-node-link" tabindex="-1">
+          <a
+            href={node.href}
+            class="zf-node-link"
+            tabindex="-1"
+            data-title={node.title}
+            data-label-x={labelX}
+            data-label-y={labelY}
+            data-rect-x={box.x}
+            data-rect-y={box.y}
+            data-rect-w={box.width}
+            data-rect-h={box.height}
+          >
             <circle
               class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]}
               style={{ "--round": round }}
@@ -143,17 +169,27 @@ function clampLabelX(centerX: number, title: string): number {
               cy={node.y}
               r={nodeRadius}
             />
-            <text x={labelX} y={labelY} text-anchor="middle" class="zf-node-label zf-node-label-halo" aria-hidden="true">
-              {node.title}
-            </text>
-            <text x={labelX} y={labelY} text-anchor="middle" class="zf-node-label" aria-hidden="true">
-              {node.title}
-            </text>
             <title>{node.title}</title>
           </a>
         );
       })
     }
+
+    {
+      // A single shared tooltip, repositioned via JS and always the SVG's
+      // last child — since SVG has no z-index, "always paints on top" means
+      // "always last in DOM", and a single element can't be shadowed by
+      // whichever node happens to be hovered. (An earlier version rendered
+      // one tooltip per node and re-parented the hovered node to the end of
+      // the SVG to raise it — that reparenting was enough to make Chrome
+      // restart the node's `zf-force` fill animation on every hover, which
+      // is why forced nodes flickered back to their unforced color instead
+      // of darkening.)
+    }
+    <g class="zf-tooltip" aria-hidden="true">
+      <rect class="zf-tooltip-bg" rx="4" />
+      <text class="zf-tooltip-label" text-anchor="middle" />
+    </g>
   </svg>
 
   <p class="zf-hero-caption font-mono text-xs text-stone">
@@ -170,6 +206,35 @@ function clampLabelX(centerX: number, title: string): number {
     }
   </ul>
 </div>
+
+<script>
+  const svg = document.querySelector<SVGSVGElement>(".zf-hero");
+  const tooltip = svg?.querySelector<SVGGElement>(".zf-tooltip");
+  const tooltipBg = tooltip?.querySelector<SVGRectElement>(".zf-tooltip-bg");
+  const tooltipLabel = tooltip?.querySelector<SVGTextElement>(".zf-tooltip-label");
+
+  if (tooltip && tooltipBg && tooltipLabel) {
+    const show = (link: SVGAElement) => {
+      const { title, labelX, labelY, rectX, rectY, rectW, rectH } = link.dataset;
+      tooltipBg.setAttribute("x", rectX ?? "0");
+      tooltipBg.setAttribute("y", rectY ?? "0");
+      tooltipBg.setAttribute("width", rectW ?? "0");
+      tooltipBg.setAttribute("height", rectH ?? "0");
+      tooltipLabel.setAttribute("x", labelX ?? "0");
+      tooltipLabel.setAttribute("y", labelY ?? "0");
+      tooltipLabel.textContent = title ?? "";
+      tooltip.classList.add("is-visible");
+    };
+    const hide = () => tooltip.classList.remove("is-visible");
+
+    document.querySelectorAll<SVGAElement>(".zf-hero .zf-node-link").forEach((link) => {
+      link.addEventListener("pointerenter", () => show(link));
+      link.addEventListener("focus", () => show(link));
+      link.addEventListener("pointerleave", hide);
+      link.addEventListener("blur", hide);
+    });
+  }
+</script>
 
 <style define:vars={{ scale, edgeDash, labelFontSize }}>
   .zf-hero {
@@ -221,37 +286,30 @@ function clampLabelX(centerX: number, title: string): number {
 
   .zf-node-link:hover .zf-node,
   .zf-node-link:focus-visible .zf-node {
-    transform: scale(1.4);
-    stroke: var(--color-moss);
-    filter: drop-shadow(0 0 calc(4px * var(--scale)) color-mix(in srgb, var(--color-moss) 55%, transparent));
+    transform: scale(1.1);
+    filter: brightness(0.8);
   }
 
-  .zf-node-label,
-  .zf-node-label-halo {
-    font-family: var(--font-mono);
-    font-size: calc(var(--labelFontSize) * 1px);
+  .zf-tooltip {
     pointer-events: none;
     opacity: 0;
     transition: opacity 150ms var(--ease-field);
   }
 
-  .zf-node-label {
-    fill: var(--color-parchment);
-  }
-
-  .zf-node-label-halo {
-    fill: none;
-    stroke: var(--color-canopy);
-    stroke-width: 3px;
-    stroke-linejoin: round;
-    paint-order: stroke;
-  }
-
-  .zf-node-link:hover .zf-node-label,
-  .zf-node-link:hover .zf-node-label-halo,
-  .zf-node-link:focus-visible .zf-node-label,
-  .zf-node-link:focus-visible .zf-node-label-halo {
+  .zf-tooltip.is-visible {
     opacity: 1;
+  }
+
+  .zf-tooltip-bg {
+    fill: var(--color-bark);
+    stroke: var(--color-moss);
+    stroke-width: 1px;
+  }
+
+  .zf-tooltip-label {
+    font-family: var(--font-mono);
+    font-size: calc(var(--labelFontSize) * 1px);
+    fill: var(--color-parchment);
   }
 
   .zf-hero-caption {
