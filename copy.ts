@@ -17,7 +17,7 @@ const COPY = {
       mainPage: "main page",
       coursework: "coursework",
       about: "about",
-      howItWorks: "how this page works",
+      howItWorks: "how this site works",
       contact: "contact",
     },
   },
