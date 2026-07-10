@@ -10,6 +10,7 @@
 import { CONTENT_POINTS } from "../data/content-points";
 import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
 import { buildAdjacency, findMinimumZeroForcingSet, simulateForcing } from "../lib/zeroForcing";
+import { copy } from "../lib/copy";
 
 const delaunayActive = CONTENT_POINTS.length >= MIN_POINTS_FOR_DELAUNAY;
 const neighborIndices = relatedIndices(CONTENT_POINTS.map((p) => [p.topic, p.recency]));
@@ -56,7 +57,11 @@ const nodes = CONTENT_POINTS.map((p) => {
   return {
     slug: p.slug,
     title: p.title,
-    href: `#content-${p.slug}`,
+    // Research/project/experience cards all live on the homepage, so an
+    // on-page anchor works regardless of each point's own `href` (which for
+    // projects points offsite to the repo instead). Coursework cards live on
+    // a separate page, so those nodes need the real cross-page href.
+    href: p.kind === "coursework" ? p.href : `#content-${p.slug}`,
     x: centerX + (rawX - centerX) * spacingScale,
     y: centerY + (rawY - centerY) * spacingScale,
   };
@@ -152,7 +157,7 @@ function clampLabelX(centerX: number, title: string): number {
   </svg>
 
   <p class="zf-hero-caption font-mono text-xs text-stone">
-    Hover a node to see what it is, click to visit — <a href="#colophon-zero-forcing" class="text-moss hover:text-parchment transition-colors duration-150">how this graph works ↓</a>
+    {copy("home.hero.zeroForcingCaptionPrefix")} <a href="/how-it-works#zero-forcing" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.hero.zeroForcingCaptionLink")}</a>
   </p>
 
   <ul class="sr-only">

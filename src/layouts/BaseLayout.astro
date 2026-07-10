@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import ResumeModal from "../components/ResumeModal.astro";
+import DetailsModal from "../components/DetailsModal.astro";
 import SideRail from "../components/SideRail.astro";
 
 interface Props {
@@ -75,5 +76,6 @@ const personSchema = {
       <slot />
     </main>
     <ResumeModal />
+    <DetailsModal />
   </body>
 </html>

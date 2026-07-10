@@ -1,0 +1,97 @@
+<dialog id="details-modal" class="details-modal" aria-labelledby="details-modal-title">
+  <div class="flex items-start justify-between gap-4 border-b border-bark px-6 py-4">
+    <div class="flex flex-col gap-1">
+      <div id="details-modal-meta" class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs"></div>
+      <h2 id="details-modal-title" class="font-display text-xl"></h2>
+    </div>
+    <button
+      type="button"
+      id="details-modal-close"
+      aria-label="Close details"
+      class="shrink-0 hover:text-parchment transition-colors duration-150 cursor-pointer text-base leading-none"
+    >
+      &times;
+    </button>
+  </div>
+  <div class="px-6 py-4 flex flex-col gap-4">
+    <p id="details-modal-description" class="text-parchment/90"></p>
+    <div id="details-modal-links" class="flex gap-4 font-mono text-xs"></div>
+  </div>
+</dialog>
+
+<style>
+  .details-modal {
+    box-sizing: border-box;
+    margin: auto;
+    padding: 0;
+    width: min(90vw, 640px);
+    max-width: 90vw;
+    max-height: 85vh;
+    border: 1px solid var(--color-bark);
+    background-color: var(--color-canopy);
+    color: var(--color-parchment);
+    border-radius: 0.25rem;
+  }
+
+  .details-modal[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .details-modal::backdrop {
+    background-color: rgb(0 0 0 / 0.6);
+  }
+</style>
+
+<script>
+  interface DetailLink {
+    label: string;
+    href: string;
+  }
+
+  const modal = document.getElementById("details-modal") as HTMLDialogElement | null;
+  const closeBtn = document.getElementById("details-modal-close");
+  const metaEl = document.getElementById("details-modal-meta");
+  const titleEl = document.getElementById("details-modal-title");
+  const descriptionEl = document.getElementById("details-modal-description");
+  const linksEl = document.getElementById("details-modal-links");
+
+  function openDetails(trigger: HTMLElement) {
+    if (!modal || !metaEl || !titleEl || !descriptionEl || !linksEl) return;
+
+    const number = trigger.dataset.number ?? "";
+    const kindLabel = trigger.dataset.kindLabel ?? "";
+    const tag = trigger.dataset.tag ?? "";
+    const title = trigger.dataset.title ?? "";
+    const description = trigger.dataset.description ?? "";
+    const links: DetailLink[] = JSON.parse(trigger.dataset.links ?? "[]");
+
+    const metaParts = [number, kindLabel, ...tag.split(" · ")].filter(Boolean);
+    metaEl.innerHTML = metaParts
+      .map((part, i) => {
+        const isFirst = i === 0;
+        const cls = isFirst ? "text-parchment" : "chip text-stone";
+        const sep = i > 0 ? '<span class="text-stone" aria-hidden="true">&middot;</span>' : "";
+        return `${sep}<span class="${cls}">${part}</span>`;
+      })
+      .join("");
+
+    titleEl.textContent = title;
+    descriptionEl.textContent = description;
+    linksEl.innerHTML = links
+      .map((link) => `<a href="${link.href}" class="text-moss hover:text-parchment transition-colors duration-150">${link.label}</a>`)
+      .join("");
+
+    modal.showModal();
+  }
+
+  document.addEventListener("click", (event) => {
+    const trigger = (event.target as HTMLElement)?.closest<HTMLElement>(".details-trigger");
+    if (trigger) openDetails(trigger);
+  });
+
+  closeBtn?.addEventListener("click", () => modal?.close());
+  modal?.addEventListener("click", (event) => {
+    if (event.target === modal) modal.close();
+  });
+</script>

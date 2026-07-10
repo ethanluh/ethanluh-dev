@@ -1,3 +1,5 @@
+import { copy } from "../lib/copy";
+
 export interface ResearchEntry {
   slug: string;
   number: string;
@@ -12,11 +14,15 @@ export const research: ResearchEntry[] = [
   {
     slug: "zero-forcing-polytopes-research",
     number: "01",
-    title: "Zero Forcing Polytopes",
-    status: "in progress",
+    title: copy("research.zeroForcingPolytopesResearch.title"),
+    status: copy("research.zeroForcingPolytopesResearch.status"),
     updated: "2026-07",
-    abstract:
-      "Independent study with Hanely applying Ehrhart theory to zero forcing polytopes on small graph families. Constructs the polytope from a graph's zero forcing sets and studies its lattice-point structure, motivated by the conjecture |𝓕_G| ≥ ⌈n/3⌉ on the number of forcing sets of minimum size.",
-    links: [{ label: "notes (ask for a copy)", href: "mailto:ethan@ethanluh.com?subject=Zero%20forcing%20polytopes%20notes" }],
+    abstract: copy("research.zeroForcingPolytopesResearch.abstract"),
+    links: [
+      {
+        label: copy("research.zeroForcingPolytopesResearch.notesLinkLabel"),
+        href: "mailto:ethan@ethanluh.com?subject=Zero%20forcing%20polytopes%20notes",
+      },
+    ],
   },
 ];

@@ -23,6 +23,7 @@ interface Props {
 
 const { id, number, title, tag, description, links = [], image, kindLabel, related = [], delaunay } = Astro.props;
 const chips = tag.split(" · ");
+const hasDetails = description.length > 160 || links.length > 0;
 const primaryHref = links[0]?.href;
 ---
 
@@ -45,16 +46,22 @@ const primaryHref = links[0]?.href;
       <h3 class="font-display text-xl mb-1 flex items-center gap-2">
         {title}
       </h3>
-      <p class="text-parchment/90 mb-2">{description}</p>
+      <p class="text-parchment/90 mb-2 line-clamp-2">{description}</p>
       {
-        links.length > 0 && (
-          <div class="flex gap-4 font-mono text-xs mb-2">
-            {links.map((link) => (
-              <a href={link.href} class="text-moss hover:text-parchment transition-colors duration-150">
-                {link.label}
-              </a>
-            ))}
-          </div>
+        hasDetails && (
+          <button
+            type="button"
+            class="details-trigger font-mono text-xs text-moss hover:text-parchment transition-colors duration-150 mb-2 self-start"
+            aria-haspopup="dialog"
+            data-number={number}
+            data-title={title}
+            data-tag={tag}
+            data-kind-label={kindLabel}
+            data-description={description}
+            data-links={JSON.stringify(links)}
+          >
+            details &rarr;
+          </button>
         )
       }
       {
