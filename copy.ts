@@ -8,6 +8,11 @@
 // values (counts, etc) — see src/lib/copy.ts.
 
 const COPY = {
+  rail: {
+    onThisPage: "On this page",
+    contact: "Contact",
+  },
+
   nav: {
     brand: {
       name: "Ethan Luh",
@@ -42,6 +47,12 @@ const COPY = {
         "Research, projects, and experience — ordered by convex-hull peel layer over (recency, depth), not by type. See",
       introLinkLabel: "how this site works",
       stackLine: "Python · TypeScript · PyTorch/YOLOv8 · C++ (ONNX) · graph & combinatorial algorithms",
+      featuredEyebrow: "featured",
+      trackLabel: {
+        research: "Research",
+        project: "Projects",
+        experience: "Experience",
+      },
     },
     about: {
       heading: "About",
@@ -85,6 +96,12 @@ const COPY = {
     heading: "How This Site Works",
     intro:
       "Notes on the math driving the layout and animation of this site — not a project write-up, just what's actually running under the hood.",
+    railLabel: {
+      zeroForcing: "Zero forcing",
+      hstar: "h*-vector",
+      workOrdering: "Work ordering",
+      delaunay: "Delaunay",
+    },
     zeroForcing: {
       stat: "{{seedCount}} seed{{seedPlural}} · {{nodeCount}} nodes",
       body: 'The hero graph on the homepage is this site\'s actual content — the same {{nodeCount}} items, connected by the same Delaunay edges used for "related" — animated by <strong>zero forcing</strong>, the color-change rule from the zero forcing research: a colored vertex with exactly one uncolored neighbor forces it to color. The {{seedCount}} moss-colored seeds on load are a real computed minimum zero forcing set, not a hand-picked example; everything else propagates in the order the rule actually forces it. It\'s a live instance of the math, not an illustration of it — hover a node for its title, click to visit.',

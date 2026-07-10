@@ -42,30 +42,39 @@ const delaunayBody = copyTemplate("howItWorks.delaunay.body", {
 });
 ---
 
-<BaseLayout title={copy("howItWorks.meta.title")} description={copy("howItWorks.meta.description")}>
-  <section class="max-w-3xl mx-auto px-6 py-10 scroll-mt-16">
+<BaseLayout
+  title={copy("howItWorks.meta.title")}
+  description={copy("howItWorks.meta.description")}
+  railSections={[
+    { label: copy("howItWorks.railLabel.zeroForcing"), href: "#zero-forcing" },
+    { label: copy("howItWorks.railLabel.hstar"), href: "#hstar" },
+    { label: copy("howItWorks.railLabel.workOrdering"), href: "#work-ordering" },
+    { label: copy("howItWorks.railLabel.delaunay"), href: "#delaunay" },
+  ]}
+>
+  <section class="py-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">{copy("howItWorks.heading")}</h2>
     <p class="font-mono text-xs text-stone mb-6">
       {copy("howItWorks.intro")}
     </p>
-    <div class="flex flex-col gap-8">
+    <div class="flex flex-col gap-8 max-w-3xl">
       <div id="zero-forcing" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
         <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
           {zeroForcingStat}
         </p>
         <p class="text-parchment/90 max-w-md" set:html={zeroForcingBody} />
       </div>
-      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+      <div id="hstar" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
         <HStarMotif vectorId="cube4" mode="bar" width={160} height={40} class="shrink-0" />
         <p class="text-parchment/90 max-w-md" set:html={copy("howItWorks.hstar.body")} />
       </div>
-      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+      <div id="work-ordering" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
         <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
           {workOrderingStat}
         </p>
         <p class="text-parchment/90 max-w-md">{copy("howItWorks.workOrdering.body")}</p>
       </div>
-      <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+      <div id="delaunay" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
         <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
           {delaunayStat}
         </p>

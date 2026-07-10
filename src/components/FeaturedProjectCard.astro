@@ -17,33 +17,32 @@ interface Props {
   href?: string;
   image?: string;
   kindLabel?: string;
+  eyebrow?: string;
   related?: { title: string; href: string }[];
   delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
 }
 
-const { id, number, title, tag, description, href, image, kindLabel, related = [], delaunay } = Astro.props;
+const { id, number, title, tag, description, href, image, kindLabel, eyebrow, related = [], delaunay } = Astro.props;
 const tags = tag.split(" · ");
 const links = href ? [{ label: "view", href }] : [];
 const hasDetails = description.length > 160 || links.length > 0;
 ---
 
-<article id={id} class="featured-specimen card-lift bg-bark border border-moss/30 border-l-[3px] border-l-moss rounded-r-sm p-9 sm:p-10 shadow-lg shadow-canopy/40 grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-6 sm:items-center scroll-mt-24">
-  <div class="flex gap-6 sm:items-baseline">
-    <div class="font-mono text-lg text-parchment shrink-0">
-      {number}
+<article id={id} class="featured-specimen card-lift bg-bark/40 border border-moss/30 rounded-sm p-9 sm:p-12 shadow-lg shadow-canopy/40 grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-8 sm:items-center scroll-mt-24">
+  <div class="flex flex-col">
+    <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-3">
+      <span class="font-display text-lg text-parchment mr-1">{number}</span>
+      <span class="uppercase tracking-widest text-moss">{eyebrow ?? "Featured"}{kindLabel && ` · ${kindLabel}`}</span>
+      <span class="text-stone" aria-hidden="true">·</span>
+      {tags.map((entry) => (
+        <span class="chip text-stone">{entry}</span>
+      ))}
     </div>
     <div class="flex flex-col flex-1">
-      <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-2">
-        <span class="uppercase tracking-widest text-moss">Featured{kindLabel && ` · ${kindLabel}`}</span>
-        <span class="text-stone" aria-hidden="true">·</span>
-        {tags.map((entry) => (
-          <span class="chip text-stone">{entry}</span>
-        ))}
-      </div>
-      <h3 class="font-display text-2xl mb-2 flex items-center gap-2">
+      <h3 class="font-display text-3xl mb-3 flex items-center gap-2">
         {title}
       </h3>
-      <p class="text-parchment/90 mb-3 line-clamp-3">{description}</p>
+      <p class="text-parchment/90 mb-3">{description}</p>
       {
         hasDetails && (
           <button

@@ -17,33 +17,58 @@ interface Props {
   links?: { label: string; href: string }[];
   image?: string;
   kindLabel?: string;
+  variant?: "research" | "project" | "experience" | "coursework";
+  layout?: "row" | "stack";
   related?: { title: string; href: string }[];
   delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
 }
 
-const { id, number, title, tag, description, links = [], image, kindLabel, related = [], delaunay } = Astro.props;
+const {
+  id,
+  number,
+  title,
+  tag,
+  description,
+  links = [],
+  image,
+  kindLabel,
+  variant = "research",
+  layout = "row",
+  related = [],
+  delaunay,
+} = Astro.props;
 const chips = tag.split(" · ");
 const hasDetails = description.length > 160 || links.length > 0;
 const primaryHref = links[0]?.href;
+const isExperience = variant === "experience";
+const isProject = variant === "project";
 ---
 
-<article id={id} class="specimen card-lift bg-bark border-l-[3px] border-moss rounded-r-sm p-7 shadow-lg shadow-canopy/40 flex flex-col sm:flex-row gap-5 items-baseline scroll-mt-24">
+<article
+  id={id}
+  class:list={[
+    "specimen card-lift bg-bark rounded-r-sm p-7 shadow-lg shadow-canopy/40 flex flex-col scroll-mt-24",
+    layout === "row" ? "gap-5 sm:flex-row sm:items-baseline items-start" : "gap-3 items-start",
+    isExperience ? "border-l-[3px] border-lavender/60" : "border-l-[3px] border-moss",
+  ]}
+>
   <div class="specimen-num font-mono text-lg text-parchment relative shrink-0">
     {number}
+    {isExperience && <span class="timeline-dot absolute top-1.5 -left-8 w-2 h-2 rounded-full bg-moss" aria-hidden="true" />}
     <span class="flower absolute -top-0.5 left-full ml-1.5 text-lavender text-sm opacity-0" aria-hidden="true">
       &#10047;
     </span>
   </div>
-  <div class="flex flex-col flex-1 gap-5 sm:flex-row sm:items-center">
+  <div class:list={["flex flex-col flex-1 gap-5", layout === "row" && "sm:flex-row sm:items-center"]}>
     <div class="flex flex-col flex-1">
       <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-2">
         {kindLabel && <span class="uppercase tracking-widest text-moss">{kindLabel}</span>}
         {kindLabel && <span class="text-stone" aria-hidden="true">·</span>}
-        {chips.map((entry) => (
-          <span class="chip text-stone">{entry}</span>
+        {chips.map((entry, i) => (
+          <span class:list={["chip text-stone", isExperience && i === 0 && "text-moss bg-transparent px-0"]}>{entry}</span>
         ))}
       </div>
-      <h3 class="font-display text-xl mb-1 flex items-center gap-2">
+      <h3 class:list={["text-xl mb-1 flex items-center gap-2", isProject ? "font-mono project-title" : "font-display"]}>
         {title}
       </h3>
       <p class="text-parchment/90 mb-2 line-clamp-2">{description}</p>
@@ -88,6 +113,10 @@ const primaryHref = links[0]?.href;
 </article>
 
 <style>
+  .project-title::before {
+    content: "$ ";
+    color: var(--color-moss);
+  }
   .specimen-num:hover .flower {
     opacity: 1;
     transition: opacity var(--ease-field) 250ms;
