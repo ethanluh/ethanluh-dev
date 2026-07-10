@@ -1,3 +1,5 @@
+import { copy } from "../lib/copy";
+
 export interface ExperienceEntry {
   slug: string;
   number: string;
@@ -11,17 +13,17 @@ export const experience: ExperienceEntry[] = [
   {
     slug: "agentmade-internship",
     number: "01",
-    role: "Software Engineering Intern",
-    org: "AgentMade",
+    role: copy("experience.agentmadeInternship.role"),
+    org: copy("experience.agentmadeInternship.org"),
     dates: "Summer 2026",
-    description: "Built and open-sourced Quire (see Projects), a triage multiplexer for AI-generated pull requests, as the core engineering contribution of the internship.",
+    description: copy("experience.agentmadeInternship.description"),
   },
   {
     slug: "uas-software-lead",
     number: "02",
-    role: "Software Team Lead",
-    org: "UAS Club, Penn State Behrend",
+    role: copy("experience.uasSoftwareLead.role"),
+    org: copy("experience.uasSoftwareLead.org"),
     dates: "Fall 2025–present",
-    description: "Leads software development for the club's unmanned aerial systems — computer vision, data processing, and data generation pipelines.",
+    description: copy("experience.uasSoftwareLead.description"),
   },
 ];
