@@ -22,8 +22,9 @@ const links = [
       {
         links.map((link) => (
           <li>
-            <a href={link.href} class="text-stone hover:text-moss transition-colors duration-150">
-              {link.label}
+            <a href={link.href} class="nav-link flex flex-col items-center text-stone hover:text-moss transition-colors duration-150">
+              <span class="nav-link-index"></span>
+              <span>{link.label}</span>
             </a>
           </li>
         ))
@@ -51,8 +52,8 @@ const links = [
   .nav-links li {
     counter-increment: item;
   }
-  .nav-links li a::before {
-    content: "0" counter(item) ". ";
+  .nav-link-index::before {
+    content: "0" counter(item) ".";
     color: var(--color-moss);
   }
 </style>
