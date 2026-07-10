@@ -102,14 +102,17 @@ const COPY = {
       delaunay: "Delaunay",
     },
     zeroForcing: {
+      title: "Zero Forcing",
       stat: "{{seedCount}} seed{{seedPlural}} · {{nodeCount}} nodes",
       body: 'The hero graph on the homepage is this site\'s actual content — the same {{nodeCount}} items, connected by the same Delaunay edges used for "related" — animated by <strong>zero forcing</strong>, the color-change rule from the zero forcing research: a colored vertex with exactly one uncolored neighbor forces it to color. The {{seedCount}} moss-colored seeds on load are a real computed minimum zero forcing set, not a hand-picked example; everything else propagates in the order the rule actually forces it. It\'s a live instance of the math, not an illustration of it — hover a node for its title, click to visit.',
     },
     workOrdering: {
+      title: "Convex Hull Peeling",
       stat: "{{layerCount}} layer{{layerPlural}} · {{itemCount}} items",
       body: "Work on the homepage isn't grouped by type (research/project/experience) — it's ordered by convex-hull peel layer over (recency, depth). The Featured card is the top of layer 0, the Pareto-extreme set not dominated on both axes by any other single item; everything else follows in layer order, labeled with its kind and layer number.",
     },
     delaunay: {
+      title: "Delaunay Triangulation",
       stat: "{{pointCount}} points{{belowThreshold}}",
       body: 'The small node-and-edge diagram next to each "related" list is the actual Delaunay triangulation over hand-placed (topic, recency) coordinates — every point and edge in the full graph, with the current card\'s node and its neighbors highlighted. Below {{minPoints}} points the triangulation gets arbitrary, so the feature stays off until there\'s enough content to make it mean something.',
     },

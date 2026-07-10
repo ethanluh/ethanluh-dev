@@ -58,39 +58,36 @@ const delaunayBody = copyTemplate("howItWorks.delaunay.body", {
     <p class="font-mono text-xs text-stone mb-6">
       {copy("howItWorks.intro")}
     </p>
-    <div class="flex flex-col gap-8 max-w-3xl">
-      <div id="zero-forcing" class="reveal flex flex-col gap-6 scroll-mt-24">
-        <div class="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-          <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
-            {zeroForcingStat}
-          </p>
-          <p class="text-parchment/90 max-w-md" set:html={zeroForcingBody} />
+    <div class="flex flex-col gap-14 max-w-4xl">
+      <div id="zero-forcing" class="reveal flex flex-col md:flex-row gap-6 md:gap-10 md:items-center scroll-mt-24">
+        <div class="flex flex-col gap-3 md:flex-1">
+          <h3 class="font-display text-2xl text-parchment">{copy("howItWorks.zeroForcing.title")}</h3>
+          <p class="font-mono text-xs text-stone">{zeroForcingStat}</p>
+          <p class="text-parchment/90" set:html={zeroForcingBody} />
         </div>
-        <div class="max-w-sm">
+        <div class="max-w-sm mx-auto md:mx-0 md:flex-1">
           <ZeroForcingHero showCaption={false} />
         </div>
       </div>
-      <div id="work-ordering" class="reveal flex flex-col gap-6 scroll-mt-24">
-        <div class="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-          <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
-            {workOrderingStat}
-          </p>
-          <p class="text-parchment/90 max-w-md">{copy("howItWorks.workOrdering.body")}</p>
+      <div id="work-ordering" class="reveal flex flex-col md:flex-row-reverse gap-6 md:gap-10 md:items-center scroll-mt-24">
+        <div class="flex flex-col gap-3 md:flex-1">
+          <h3 class="font-display text-2xl text-parchment">{copy("howItWorks.workOrdering.title")}</h3>
+          <p class="font-mono text-xs text-stone">{workOrderingStat}</p>
+          <p class="text-parchment/90">{copy("howItWorks.workOrdering.body")}</p>
         </div>
-        <div class="max-w-sm">
+        <div class="max-w-sm mx-auto md:mx-0 md:flex-1">
           <HullPeelMotif layers={workLayers} width={400} height={257} class="w-full h-auto" />
         </div>
       </div>
-      <div id="delaunay" class="reveal flex flex-col gap-6 scroll-mt-24">
-        <div class="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-          <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
-            {delaunayStat}
-          </p>
-          <p class="text-parchment/90 max-w-md" set:html={delaunayBody} />
+      <div id="delaunay" class="reveal flex flex-col md:flex-row gap-6 md:gap-10 md:items-center scroll-mt-24">
+        <div class="flex flex-col gap-3 md:flex-1">
+          <h3 class="font-display text-2xl text-parchment">{copy("howItWorks.delaunay.title")}</h3>
+          <p class="font-mono text-xs text-stone">{delaunayStat}</p>
+          <p class="text-parchment/90" set:html={delaunayBody} />
         </div>
         {
           delaunayActive && (
-            <div class="max-w-sm">
+            <div class="max-w-sm mx-auto md:mx-0 md:flex-1">
               <DelaunayMotif points={CONTENT_POINTS} edges={delaunayEdges} width={400} height={257} class="w-full h-auto" />
             </div>
           )
