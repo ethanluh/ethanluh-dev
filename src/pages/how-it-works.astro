@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import HStarMotif from "../components/HStarMotif.astro";
 import { CONTENT_POINTS } from "../data/content-points";
 import { peelLayers } from "../lib/geometry/hull";
 import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
@@ -47,7 +46,6 @@ const delaunayBody = copyTemplate("howItWorks.delaunay.body", {
   description={copy("howItWorks.meta.description")}
   railSections={[
     { label: copy("howItWorks.railLabel.zeroForcing"), href: "#zero-forcing" },
-    { label: copy("howItWorks.railLabel.hstar"), href: "#hstar" },
     { label: copy("howItWorks.railLabel.workOrdering"), href: "#work-ordering" },
     { label: copy("howItWorks.railLabel.delaunay"), href: "#delaunay" },
   ]}
@@ -63,10 +61,6 @@ const delaunayBody = copyTemplate("howItWorks.delaunay.body", {
           {zeroForcingStat}
         </p>
         <p class="text-parchment/90 max-w-md" set:html={zeroForcingBody} />
-      </div>
-      <div id="hstar" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
-        <HStarMotif vectorId="cube4" mode="bar" width={160} height={40} class="shrink-0" />
-        <p class="text-parchment/90 max-w-md" set:html={copy("howItWorks.hstar.body")} />
       </div>
       <div id="work-ordering" class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center scroll-mt-24">
         <p class="font-mono text-xs text-stone shrink-0 sm:w-40">
@@ -117,15 +111,5 @@ const delaunayBody = copyTemplate("howItWorks.delaunay.body", {
   .reveal.in-view {
     opacity: 1;
     transform: translateY(0);
-  }
-  .reveal.in-view :global(.hstar-draw .hstar-stroke) {
-    stroke-dashoffset: 0;
-  }
-  .reveal.in-view :global(.hstar-draw .hstar-dot) {
-    opacity: 1;
-    transform: scale(1);
-  }
-  .reveal.in-view :global(.hstar-draw .hstar-fill) {
-    opacity: 1;
   }
 </style>

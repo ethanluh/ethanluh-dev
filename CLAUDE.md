@@ -26,7 +26,7 @@ Always base the PR body on `.github/pull_request_template.md` — don't fall bac
 - `copy.ts` — source of truth for all site copy (see Conventions above)
 - `src/pages/` — routes: `index.astro` (home), `coursework.astro`, `how-it-works.astro`
 - `src/layouts/` — `BaseLayout.astro` (head, fonts, Nav/SideRail/modals wrapper)
-- `src/components/` — `Nav.astro`, `SpecimenCard.astro`/`FeaturedProjectCard.astro` (work cards), `SideRail.astro`, `ResumeModal.astro`, `DetailsModal.astro`, `ZeroForcingHero.astro`, `HStarMotif.astro`, `DelaunayMotif.astro`, `RelatedInfo.astro`
+- `src/components/` — `Nav.astro`, `SpecimenCard.astro`/`FeaturedProjectCard.astro` (work cards), `SideRail.astro`, `ResumeModal.astro`, `DetailsModal.astro`, `ZeroForcingHero.astro`, `DelaunayMotif.astro`, `RelatedInfo.astro`
 - `src/content/` — typed data files (`research.ts`, `projects.ts`, `experience.ts`, `coursework.ts`) — edit these to add/reorder entries; their display strings come from `copy.ts`
 - `src/data/content-points.ts` — hand-scored (topic, recency, depth) points driving hull-peel ordering, Delaunay "related", and the zero-forcing hero graph
 - `src/lib/` — `copy.ts` (copy.ts loader), `zeroForcing.ts`, `geometry/` (hull peeling, Delaunay-ish related-content)
