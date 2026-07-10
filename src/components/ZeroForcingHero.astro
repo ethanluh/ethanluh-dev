@@ -97,7 +97,7 @@ const edgeDash = Math.ceil(Math.hypot(width, height));
 // Font size is intentionally not tied to `scale` (that's for node/stroke
 // weight) — a small caption-sized label reads as a tooltip, a `scale`d one
 // reads as a second heading.
-const labelFontSize = 13;
+const labelFontSize = 10;
 const estCharWidth = labelFontSize * 0.62;
 const labelSafeMargin = 16;
 function clampLabelX(centerX: number, title: string): number {
@@ -110,8 +110,8 @@ function clampLabelX(centerX: number, title: string): number {
 
 // Tooltip background chip, sized to the same estimated text width used for
 // clamping above so the box always fully contains the label.
-const tooltipPadX = 7;
-const tooltipPadY = 5;
+const tooltipPadX = 5;
+const tooltipPadY = 3;
 function tooltipRect(centerX: number, labelY: number, title: string) {
   const textWidth = title.length * estCharWidth;
   return {
