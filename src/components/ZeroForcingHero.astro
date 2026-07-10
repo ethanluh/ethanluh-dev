@@ -12,6 +12,11 @@ import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../
 import { buildAdjacency, findMinimumZeroForcingSet, simulateForcing } from "../lib/zeroForcing";
 import { copy } from "../lib/copy";
 
+interface Props {
+  showCaption?: boolean;
+}
+const { showCaption = true } = Astro.props;
+
 const delaunayActive = CONTENT_POINTS.length >= MIN_POINTS_FOR_DELAUNAY;
 const neighborIndices = relatedIndices(CONTENT_POINTS.map((p) => [p.topic, p.recency]));
 const indexEdges = delaunayActive ? edgesFromNeighbors(neighborIndices) : [];
@@ -188,9 +193,13 @@ function tooltipRect(centerX: number, labelY: number, title: string) {
     </g>
   </svg>
 
-  <p class="zf-hero-caption font-mono text-xs text-stone">
-    {copy("home.hero.zeroForcingCaptionPrefix")} <a href="/how-it-works#zero-forcing" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.hero.zeroForcingCaptionLink")}</a>
-  </p>
+  {
+    showCaption && (
+      <p class="zf-hero-caption font-mono text-xs text-stone">
+        {copy("home.hero.zeroForcingCaptionPrefix")} <a href="/how-it-works#zero-forcing" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.hero.zeroForcingCaptionLink")}</a>
+      </p>
+    )
+  }
 
   <ul class="sr-only">
     {

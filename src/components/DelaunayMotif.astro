@@ -9,7 +9,9 @@ interface DelaunayPoint {
 interface Props {
   points: DelaunayPoint[];
   edges: [number, number][];
-  activeSlug: string;
+  // Omit to render an "overview" of the full graph with no single node
+  // singled out, instead of the per-card focus-on-one-node treatment.
+  activeSlug?: string;
   width?: number;
   height?: number;
   class?: string;
@@ -25,7 +27,8 @@ const pos = (p: DelaunayPoint): [number, number] => [
   padding + (1 - p.recency) * scaleY,
 ];
 
-const activeIndex = points.findIndex((p) => p.slug === activeSlug);
+const overview = activeSlug === undefined;
+const activeIndex = overview ? -1 : points.findIndex((p) => p.slug === activeSlug);
 const neighborSet = new Set(
   edges.flatMap(([a, b]) => {
     if (a === activeIndex) return [b];
@@ -47,15 +50,15 @@ const neighborSet = new Set(
     edges.map(([a, b]) => {
       const [x1, y1] = pos(points[a]);
       const [x2, y2] = pos(points[b]);
-      const active = a === activeIndex || b === activeIndex;
+      const active = overview || a === activeIndex || b === activeIndex;
       return <line x1={x1} y1={y1} x2={x2} y2={y2} class={active ? "edge-active" : "edge-dim"} />;
     })
   }
   {
     points.map((p, i) => {
       const [cx, cy] = pos(p);
-      const cls = i === activeIndex ? "node-active" : neighborSet.has(i) ? "node-neighbor" : "node-dim";
-      const r = i === activeIndex ? 4 : neighborSet.has(i) ? 3 : 2;
+      const cls = overview ? "node-neighbor" : i === activeIndex ? "node-active" : neighborSet.has(i) ? "node-neighbor" : "node-dim";
+      const r = overview ? 3 : i === activeIndex ? 4 : neighborSet.has(i) ? 3 : 2;
       const above = cy > height / 2;
       const tooltipWidth = 200;
       const tooltipHeight = 42;

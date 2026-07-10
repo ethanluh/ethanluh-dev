@@ -1,0 +1,119 @@
+---
+interface HullPoint {
+  slug: string;
+  title: string;
+  recency: number;
+  depth: number;
+}
+
+interface Props {
+  layers: HullPoint[][];
+  width?: number;
+  height?: number;
+  class?: string;
+}
+
+const { layers, width = 140, height = 90, class: className = "" } = Astro.props;
+
+const padding = 10;
+const scaleX = width - padding * 2;
+const scaleY = height - padding * 2;
+const pos = (p: HullPoint): [number, number] => [
+  padding + p.recency * scaleX,
+  padding + (1 - p.depth) * scaleY,
+];
+
+// Layer 0 (outermost, Pareto-extreme) reads brightest/moss; later layers fade
+// toward stone so depth of nesting is visible at a glance without a legend.
+function layerOpacity(index: number): number {
+  return Math.max(0.35, 1 - index * 0.22);
+}
+---
+
+<svg
+  class:list={["hull-peel-motif", className]}
+  width={width}
+  height={height}
+  viewBox={`0 0 ${width} ${height}`}
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    layers.map((layer, layerIndex) => {
+      const coords = layer.map(pos);
+      const path = coords.length >= 3 ? `M ${coords.map(([x, y]) => `${x},${y}`).join(" L ")} Z` : null;
+      return (
+        <g style={{ "--opacity": layerOpacity(layerIndex) }}>
+          {path && <path d={path} class="hull-ring" />}
+          {layer.map((p) => {
+            const [cx, cy] = pos(p);
+            const above = cy > height / 2;
+            const tooltipWidth = 200;
+            const tooltipHeight = 42;
+            const tooltipX = Math.min(Math.max(cx - tooltipWidth / 2, 0), Math.max(width - tooltipWidth, 0));
+            const tooltipY = above ? cy - tooltipHeight - 10 : cy + 10;
+            return (
+              <g class="node-group">
+                <circle cx={cx} cy={cy} r={7} class="node-hit" />
+                <circle cx={cx} cy={cy} r={layerIndex === 0 ? 4 : 3} class="hull-node" />
+                <foreignObject x={tooltipX} y={tooltipY} width={tooltipWidth} height={tooltipHeight} class="node-tooltip-anchor">
+                  <div class="node-tooltip-wrap">
+                    <div class="node-tooltip font-mono">{p.title}</div>
+                  </div>
+                </foreignObject>
+              </g>
+            );
+          })}
+        </g>
+      );
+    })
+  }
+</svg>
+
+<style>
+  .hull-peel-motif {
+    overflow: visible;
+  }
+  .hull-ring {
+    fill: color-mix(in srgb, var(--color-moss) 12%, transparent);
+    stroke: var(--color-moss);
+    stroke-width: 1;
+    opacity: var(--opacity);
+  }
+  .hull-node {
+    fill: var(--color-moss);
+    opacity: var(--opacity);
+  }
+  .node-hit {
+    fill: transparent;
+  }
+  .node-tooltip-anchor {
+    overflow: visible;
+    pointer-events: none;
+  }
+  .node-tooltip-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+  .node-tooltip {
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.7rem;
+    line-height: 1.3;
+    text-align: center;
+    overflow-wrap: break-word;
+    color: var(--color-parchment);
+    background: var(--color-canopy);
+    border: 1px solid color-mix(in srgb, var(--color-moss) 30%, transparent);
+    border-radius: 0.25rem;
+    box-shadow: 0 8px 16px -8px rgb(0 0 0 / 0.5);
+    opacity: 0;
+    transition: opacity 120ms var(--ease-field);
+  }
+  .node-group:hover .node-tooltip {
+    opacity: 1;
+  }
+</style>
