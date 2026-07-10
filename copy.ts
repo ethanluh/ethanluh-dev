@@ -10,6 +10,7 @@
 const COPY = {
   rail: {
     onThisPage: "On this page",
+    contact: "Contact",
   },
 
   nav: {
