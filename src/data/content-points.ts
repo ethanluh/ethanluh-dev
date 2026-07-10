@@ -3,7 +3,7 @@ import { copy } from "../lib/copy";
 export type ContentPoint = {
   slug: string;
   title: string;
-  kind: "project" | "research" | "experience";
+  kind: "project" | "research" | "experience" | "coursework";
   href: string;
   // Hand-placed, not embedding-derived — see colophon. 0..1 throughout.
   topic: number; // 0 = pure combinatorics/math ... 1 = pure ML/software
@@ -74,5 +74,32 @@ export const CONTENT_POINTS: ContentPoint[] = [
     topic: 0.6,
     recency: 0.9,
     depth: 0.55,
+  },
+  {
+    slug: "systems-software",
+    title: copy("contentPoints.systemsSoftware.label"),
+    kind: "coursework",
+    href: "/coursework#content-systems-software",
+    topic: 0.85,
+    recency: 0.5,
+    depth: 0.4,
+  },
+  {
+    slug: "ai-security",
+    title: copy("contentPoints.aiSecurity.label"),
+    kind: "coursework",
+    href: "/coursework#content-ai-security",
+    topic: 0.7,
+    recency: 0.75,
+    depth: 0.4,
+  },
+  {
+    slug: "math-stats",
+    title: copy("contentPoints.mathStats.label"),
+    kind: "coursework",
+    href: "/coursework#content-math-stats",
+    topic: 0.15,
+    recency: 0.3,
+    depth: 0.35,
   },
 ];

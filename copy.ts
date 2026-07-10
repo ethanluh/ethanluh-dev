@@ -158,6 +158,9 @@ const COPY = {
     marketSentimentPredictor: { label: "market-sentiment-predictor" },
     agentmadeInternship: { label: "Software Engineering Intern, AgentMade" },
     uasSoftwareLead: { label: "Software Team Lead, UAS Club" },
+    systemsSoftware: { label: "Systems & Software (coursework)" },
+    aiSecurity: { label: "AI & Security (coursework)" },
+    mathStats: { label: "Math & Statistics (coursework)" },
   },
 } as const;
 
