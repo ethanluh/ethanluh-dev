@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="Diagram: incoming AI-generated pull requests clustered by product direction, then reviewed as bundles">
+  <rect width="640" height="400" fill="#171c15" />
+
+  <g fill="#9a948a" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="1">
+    <text x="70" y="60">INCOMING PRS</text>
+    <text x="300" y="60">GROUPED BY DIRECTION</text>
+    <text x="520" y="60">REVIEWED AS BUNDLES</text>
+  </g>
+
+  <g fill="none" stroke="#96b481" stroke-width="1.5" opacity="0.85">
+    <circle cx="90" cy="110" r="7" />
+    <circle cx="90" cy="160" r="7" />
+    <circle cx="90" cy="210" r="7" />
+    <circle cx="90" cy="260" r="7" />
+    <circle cx="90" cy="310" r="7" />
+  </g>
+
+  <g stroke="#96b481" stroke-width="1" opacity="0.45">
+    <line x1="97" y1="110" x2="280" y2="150" />
+    <line x1="97" y1="160" x2="280" y2="150" />
+    <line x1="97" y1="210" x2="280" y2="260" />
+    <line x1="97" y1="260" x2="280" y2="260" />
+    <line x1="97" y1="310" x2="280" y2="260" />
+  </g>
+
+  <g fill="none" stroke="#96b481" stroke-width="1.5">
+    <rect x="280" y="120" width="90" height="60" rx="4" />
+    <rect x="280" y="230" width="90" height="60" rx="4" />
+  </g>
+  <g fill="#96b481" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">
+    <text x="325" y="154">bundle A</text>
+    <text x="325" y="264">bundle B</text>
+  </g>
+
+  <g stroke="#96b481" stroke-width="1.5" opacity="0.85">
+    <line x1="370" y1="150" x2="510" y2="150" />
+    <line x1="370" y1="260" x2="510" y2="260" />
+  </g>
+
+  <g fill="none" stroke="#ece7d9" stroke-width="1.5">
+    <rect x="510" y="115" width="100" height="70" rx="4" />
+    <rect x="510" y="225" width="100" height="70" rx="4" />
+  </g>
+  <g fill="#ece7d9" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">
+    <text x="560" y="155">review</text>
+    <text x="560" y="265">review</text>
+  </g>
+</svg>

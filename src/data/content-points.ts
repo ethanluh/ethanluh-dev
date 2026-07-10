@@ -7,6 +7,11 @@ export type ContentPoint = {
   topic: number; // 0 = pure combinatorics/math ... 1 = pure ML/software
   recency: number; // 0 = oldest ... 1 = newest
   depth: number; // 0..1, effort/complexity judgment — used for hull peeling, not Delaunay
+  // true = a real public repo someone can click into today; false = explicitly
+  // in-progress/unreleased; omitted = not applicable (experience entries).
+  // Adjusts the hull-peel's depth axis (see index.astro) so an unfinished
+  // deep-research entry can't outrank shipped work for the featured slot.
+  shipped?: boolean;
 };
 
 export const CONTENT_POINTS: ContentPoint[] = [
@@ -18,6 +23,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
     topic: 0.05,
     recency: 0.95,
     depth: 0.95,
+    shipped: false,
   },
   {
     slug: "zero-forcing-polytopes",
@@ -27,6 +33,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
     topic: 0.1,
     recency: 0.95,
     depth: 0.9,
+    shipped: false,
   },
   {
     slug: "preference-layer",
@@ -36,6 +43,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
     topic: 0.65,
     recency: 0.7,
     depth: 0.6,
+    shipped: true,
   },
   {
     slug: "quire",
@@ -45,6 +53,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
     topic: 0.75,
     recency: 0.85,
     depth: 0.55,
+    shipped: true,
   },
   {
     slug: "market-sentiment-predictor",
@@ -54,6 +63,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
     topic: 0.55,
     recency: 0.4,
     depth: 0.45,
+    shipped: true,
   },
   {
     slug: "agentmade-internship",

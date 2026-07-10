@@ -67,8 +67,13 @@ const workBySlug = new Map(workEntries.map((w) => [w.slug, w]));
 // layers[0] is the Pareto-extreme set (not dominated on both axes by any
 // other single item) — this replaces both the hand-set `featured` flag and
 // the research/projects/experience grouping. Order is layer, not type.
-const workLayers = peelLayers(CONTENT_POINTS, (p) => [p.recency, p.depth]);
-const byWeight = (p: (typeof CONTENT_POINTS)[number]) => p.recency + p.depth;
+// Shipped work gets a depth bonus, unshipped a penalty, before peeling — so
+// the featured slot favors something a recruiter can actually click into
+// today, without hand-picking it (see colophon).
+const effectiveDepth = (p: (typeof CONTENT_POINTS)[number]) =>
+  p.depth * (p.shipped === true ? 1.3 : p.shipped === false ? 0.6 : 1);
+const workLayers = peelLayers(CONTENT_POINTS, (p) => [p.recency, effectiveDepth(p)]);
+const byWeight = (p: (typeof CONTENT_POINTS)[number]) => p.recency + effectiveDepth(p);
 const orderedWorkSlugs = workLayers.flatMap((layer) => [...layer].sort((a, b) => byWeight(b) - byWeight(a))).map((p) => p.slug);
 const orderedWork = orderedWorkSlugs.map((slug) => workBySlug.get(slug)).filter((w): w is WorkEntry => Boolean(w));
 
@@ -111,11 +116,11 @@ const zfSeeds = findMinimumZeroForcingSet(zfGraph);
   <section class="max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16 pt-12 pb-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
     <div class="max-w-2xl">
       <h1 class="font-display text-h1 leading-tight mb-4">
-        Building at the edge of graph theory and code.
+        Building software at the edge of graph theory and code.
       </h1>
       <p class="max-w-xl text-parchment/90">
-        CS/Math/Stats student at Penn State Behrend (May 2028), researching
-        zero forcing polytopes.
+        CS/Math/Stats student at Penn State Behrend (May 2028) — builds
+        graph and ML systems, and researches zero forcing polytopes.
       </p>
       <p class="font-mono text-xs text-stone mt-4 flex flex-wrap gap-x-4 gap-y-1">
         <a href="#work" class="hover:text-moss transition-colors duration-150">
@@ -133,9 +138,13 @@ const zfSeeds = findMinimumZeroForcingSet(zfGraph);
 
   <section id="work" class="max-w-3xl mx-auto px-6 pt-2 pb-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">Work</h2>
-    <p class="font-mono text-xs text-stone mb-6">
+    <p class="font-mono text-xs text-stone mb-2">
       Research, projects, and experience — ordered by convex-hull peel layer over
-      (recency, depth), not by type. See colophon.
+      (recency, depth), not by type. This ordering isn't manual —{" "}
+      <a href="#colophon-zero-forcing" class="text-moss hover:text-parchment transition-colors duration-150">see how &darr;</a>.
+    </p>
+    <p class="font-mono text-xs text-stone mb-6">
+      Python · TypeScript · PyTorch/YOLOv8 · C++ (ONNX) · graph & combinatorial algorithms
     </p>
     <div class="flex flex-col gap-4">
       {featuredWork && (
@@ -164,6 +173,7 @@ const zfSeeds = findMinimumZeroForcingSet(zfGraph);
               tag={entry.tag}
               description={entry.description}
               links={entry.href ? [{ label: "view", href: entry.href }] : (entry.links ?? [])}
+              image={entry.image}
               kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}
               related={relatedFor(entry.slug)}
               delaunay={delaunayFor(entry.slug)}
@@ -197,6 +207,13 @@ const zfSeeds = findMinimumZeroForcingSet(zfGraph);
     <div class="reveal grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-10 items-start">
       <div class="max-w-xl text-parchment/90 flex flex-col gap-4">
         <p>
+          I like taking things apart and putting them back together, in
+          software and in hardware. I lead the software team for Penn State
+          Behrend's UAS Club, and I fix what's broken for fun — a couple of
+          old MacBook Pros, an HP Legion, an Apple Magic Mouse, and a pair of
+          speakers have all survived a repair.
+        </p>
+        <p>
           I first got interested in zero forcing sitting in on an undergraduate
           thesis defense — zero forcing sets, zero forcing numbers, minimal
           forts — and stayed for the combinatorics. Most of what I build sits
@@ -206,11 +223,8 @@ const zfSeeds = findMinimumZeroForcingSet(zfGraph);
           diffusion on a graph Laplacian.
         </p>
         <p>
-          Outside of that, I like taking things apart and putting them back
-          together — literally: a couple of old MacBook Pros, an HP Legion,
-          an Apple Magic Mouse, and a pair of speakers have all survived a
-          repair. I fence, and play ultimate frisbee, volleyball, and
-          badminton — and drink more boba tea than is probably reasonable.
+          Outside of that, I fence, and play ultimate frisbee, volleyball,
+          and badminton — and drink more boba tea than is probably reasonable.
         </p>
       </div>
       <div class="about-photo-frame relative max-w-[220px]">
@@ -262,13 +276,15 @@ const zfSeeds = findMinimumZeroForcingSet(zfGraph);
         </p>
         <p class="text-parchment/90 max-w-md">
           Work isn't grouped by type (research/project/experience) anymore —
-          it's ordered by convex-hull peel layer over (recency, depth). The
-          Featured card is the top of layer 0, the Pareto-extreme set not
-          dominated on both axes by any other single item; everything else
-          follows in layer order, labeled with its kind and layer number. The
-          nav bar up top is peeled the same way, over (depth, recency) per
-          section, using the same <code class="text-xs">convexHull</code>
-          function — sections in an inner layer render slightly dimmer.
+          it's ordered by convex-hull peel layer over (recency, depth), with
+          depth adjusted by a shipped bonus: real, public, clickable work is
+          weighted up, "in progress" work down, before the hull is drawn. The
+          Featured card is the top of layer 0 by that adjusted weight;
+          everything else follows in layer order, labeled with its kind and
+          layer number. The nav bar up top is peeled the same way, over
+          (depth, recency) per section, using the same{" "}
+          <code class="text-xs">convexHull</code> function — sections in an
+          inner layer render slightly dimmer.
         </p>
       </div>
       <div class="reveal flex flex-col sm:flex-row gap-6 items-start sm:items-center">
