@@ -1,6 +1,13 @@
 ---
 import { copy } from "../lib/copy";
 
+interface Props {
+  email: string;
+  socialLinks: { label: string; href: string }[];
+}
+
+const { email, socialLinks } = Astro.props;
+
 const links = [
   { label: copy("nav.link.mainPage"), href: "/" },
   { label: copy("nav.link.coursework"), href: "/coursework" },
@@ -31,6 +38,13 @@ const links = [
       }
     </ul>
   </nav>
+  <div class="mobile-contact-bar lg:hidden flex items-center justify-center gap-5 border-t border-bark px-6 py-2 font-mono text-[0.65rem] tracking-widest uppercase text-stone">
+    <a href={`mailto:${email}`} class="hover:text-moss transition-colors duration-150">Email</a>
+    {socialLinks.map((link) => (
+      <a href={link.href} target="_blank" rel="noopener noreferrer" class="hover:text-moss transition-colors duration-150">{link.label}</a>
+    ))}
+    <button type="button" data-resume-trigger class="hover:text-moss transition-colors duration-150 cursor-pointer">Resume</button>
+  </div>
 </header>
 
 <style>

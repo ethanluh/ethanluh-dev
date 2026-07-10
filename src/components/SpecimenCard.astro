@@ -15,57 +15,73 @@ interface Props {
   tag: string;
   description: string;
   links?: { label: string; href: string }[];
+  image?: string;
   kindLabel?: string;
   related?: { title: string; href: string }[];
   delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
 }
 
-const { id, number, title, tag, description, links = [], kindLabel, related = [], delaunay } = Astro.props;
+const { id, number, title, tag, description, links = [], image, kindLabel, related = [], delaunay } = Astro.props;
 const chips = tag.split(" · ");
 const hasDetails = description.length > 160 || links.length > 0;
+const primaryHref = links[0]?.href;
 ---
 
-<article id={id} class="specimen card-lift bg-bark border-l-[3px] border-moss rounded-r-sm p-7 shadow-lg shadow-canopy/40 flex gap-5 items-baseline scroll-mt-24">
+<article id={id} class="specimen card-lift bg-bark border-l-[3px] border-moss rounded-r-sm p-7 shadow-lg shadow-canopy/40 flex flex-col sm:flex-row gap-5 items-baseline scroll-mt-24">
   <div class="specimen-num font-mono text-lg text-parchment relative shrink-0">
     {number}
     <span class="flower absolute -top-0.5 left-full ml-1.5 text-lavender text-sm opacity-0" aria-hidden="true">
       &#10047;
     </span>
   </div>
-  <div class="flex flex-col flex-1">
-    <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-2">
-      {kindLabel && <span class="uppercase tracking-widest text-moss">{kindLabel}</span>}
-      {kindLabel && <span class="text-stone" aria-hidden="true">·</span>}
-      {chips.map((entry) => (
-        <span class="chip text-stone">{entry}</span>
-      ))}
+  <div class="flex flex-col flex-1 gap-5 sm:flex-row sm:items-center">
+    <div class="flex flex-col flex-1">
+      <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-2">
+        {kindLabel && <span class="uppercase tracking-widest text-moss">{kindLabel}</span>}
+        {kindLabel && <span class="text-stone" aria-hidden="true">·</span>}
+        {chips.map((entry) => (
+          <span class="chip text-stone">{entry}</span>
+        ))}
+      </div>
+      <h3 class="font-display text-xl mb-1 flex items-center gap-2">
+        {title}
+      </h3>
+      <p class="text-parchment/90 mb-2 line-clamp-2">{description}</p>
+      {
+        hasDetails && (
+          <button
+            type="button"
+            class="details-trigger font-mono text-xs text-moss hover:text-parchment transition-colors duration-150 mb-2 self-start"
+            aria-haspopup="dialog"
+            data-number={number}
+            data-title={title}
+            data-tag={tag}
+            data-kind-label={kindLabel}
+            data-description={description}
+            data-links={JSON.stringify(links)}
+          >
+            details &rarr;
+          </button>
+        )
+      }
+      {
+        delaunay && (
+          <div class="mt-1">
+            <RelatedInfo related={related} delaunay={delaunay} />
+          </div>
+        )
+      }
     </div>
-    <h3 class="font-display text-xl mb-1 flex items-center gap-2">
-      {title}
-    </h3>
-    <p class="text-parchment/90 mb-2 line-clamp-2">{description}</p>
     {
-      hasDetails && (
-        <button
-          type="button"
-          class="details-trigger font-mono text-xs text-moss hover:text-parchment transition-colors duration-150 mb-2 self-start"
-          aria-haspopup="dialog"
-          data-number={number}
-          data-title={title}
-          data-tag={tag}
-          data-kind-label={kindLabel}
-          data-description={description}
-          data-links={JSON.stringify(links)}
+      image && (
+        <a
+          href={primaryHref ?? "#"}
+          class="specimen-image-link relative block rounded-sm overflow-hidden shrink-0 w-full sm:w-40"
+          tabindex={primaryHref ? 0 : -1}
+          aria-hidden={primaryHref ? undefined : "true"}
         >
-          details &rarr;
-        </button>
-      )
-    }
-    {
-      delaunay && (
-        <div class="mt-1">
-          <RelatedInfo related={related} delaunay={delaunay} />
-        </div>
+          <img src={image} alt="" class="specimen-image w-full h-auto block" loading="lazy" />
+        </a>
       )
     }
   </div>
@@ -87,5 +103,30 @@ const hasDetails = description.length > 160 || links.length > 0;
       transform: translateY(-4px);
       box-shadow: 0 12px 24px -12px rgb(0 0 0 / 0.5);
     }
+  }
+
+  .specimen-image-link {
+    background-color: var(--color-canopy);
+  }
+  .specimen-image-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-canopy);
+    mix-blend-mode: screen;
+    transition: opacity var(--duration-base) var(--ease-field);
+    z-index: 1;
+  }
+  .specimen-image {
+    filter: grayscale(100%) contrast(1) brightness(90%);
+    transition: filter var(--duration-base) var(--ease-field);
+  }
+  .specimen-image-link:hover::before,
+  .specimen-image-link:focus-visible::before {
+    opacity: 0;
+  }
+  .specimen-image-link:hover .specimen-image,
+  .specimen-image-link:focus-visible .specimen-image {
+    filter: none;
   }
 </style>

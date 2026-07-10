@@ -18,6 +18,11 @@ export const research: ResearchEntry[] = [
     status: copy("research.zeroForcingPolytopesResearch.status"),
     updated: "2026-07",
     abstract: copy("research.zeroForcingPolytopesResearch.abstract"),
-    links: [],
+    links: [
+      {
+        label: copy("research.zeroForcingPolytopesResearch.notesLinkLabel"),
+        href: "mailto:ethan@ethanluh.com?subject=Zero%20forcing%20polytopes%20notes",
+      },
+    ],
   },
 ];

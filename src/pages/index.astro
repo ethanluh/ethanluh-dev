@@ -65,8 +65,13 @@ const workBySlug = new Map(workEntries.map((w) => [w.slug, w]));
 // layers[0] is the Pareto-extreme set (not dominated on both axes by any
 // other single item) — this replaces both the hand-set `featured` flag and
 // the research/projects/experience grouping. Order is layer, not type.
-const workLayers = peelLayers(CONTENT_POINTS, (p) => [p.recency, p.depth]);
-const byWeight = (p: (typeof CONTENT_POINTS)[number]) => p.recency + p.depth;
+// Shipped work gets a depth bonus, unshipped a penalty, before peeling — so
+// the featured slot favors something a recruiter can actually click into
+// today, without hand-picking it (see /how-it-works).
+const effectiveDepth = (p: (typeof CONTENT_POINTS)[number]) =>
+  p.depth * (p.shipped === true ? 1.3 : p.shipped === false ? 0.6 : 1);
+const workLayers = peelLayers(CONTENT_POINTS, (p) => [p.recency, effectiveDepth(p)]);
+const byWeight = (p: (typeof CONTENT_POINTS)[number]) => p.recency + effectiveDepth(p);
 const orderedWorkSlugs = workLayers.flatMap((layer) => [...layer].sort((a, b) => byWeight(b) - byWeight(a))).map((p) => p.slug);
 const orderedWork = orderedWorkSlugs.map((slug) => workBySlug.get(slug)).filter((w): w is WorkEntry => Boolean(w));
 
@@ -123,8 +128,11 @@ function delaunayFor(slug: string) {
 
   <section id="work" class="max-w-3xl mx-auto px-6 pt-2 pb-10 scroll-mt-16">
     <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">{copy("home.work.heading")}</h2>
-    <p class="font-mono text-xs text-stone mb-6">
+    <p class="font-mono text-xs text-stone mb-2">
       {copy("home.work.introPrefix")} <a href="/how-it-works" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.introLinkLabel")}</a>.
+    </p>
+    <p class="font-mono text-xs text-stone mb-6">
+      {copy("home.work.stackLine")}
     </p>
     <div class="flex flex-col gap-4">
       {featuredWork && (
@@ -153,6 +161,7 @@ function delaunayFor(slug: string) {
               tag={entry.tag}
               description={entry.description}
               links={entry.href ? [{ label: "view", href: entry.href }] : (entry.links ?? [])}
+              image={entry.image}
               kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}
               related={relatedFor(entry.slug)}
               delaunay={delaunayFor(entry.slug)}
@@ -181,7 +190,6 @@ function delaunayFor(slug: string) {
       </div>
     </div>
   </section>
-
 </BaseLayout>
 
 <script>
