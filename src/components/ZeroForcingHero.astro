@@ -57,7 +57,11 @@ const nodes = CONTENT_POINTS.map((p) => {
   return {
     slug: p.slug,
     title: p.title,
-    href: `#content-${p.slug}`,
+    // Research/project/experience cards all live on the homepage, so an
+    // on-page anchor works regardless of each point's own `href` (which for
+    // projects points offsite to the repo instead). Coursework cards live on
+    // a separate page, so those nodes need the real cross-page href.
+    href: p.kind === "coursework" ? p.href : `#content-${p.slug}`,
     x: centerX + (rawX - centerX) * spacingScale,
     y: centerY + (rawY - centerY) * spacingScale,
   };

@@ -2,7 +2,29 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SpecimenCard from "../components/SpecimenCard.astro";
 import { coursework } from "../content/coursework";
+import { CONTENT_POINTS } from "../data/content-points";
+import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
 import { copy } from "../lib/copy";
+
+// --- Related-content: same Delaunay triangulation over (topic, recency) used on the homepage ---
+const contentIndexBySlug = new Map(CONTENT_POINTS.map((p, i) => [p.slug, i]));
+const neighborIndices = relatedIndices(CONTENT_POINTS.map((p) => [p.topic, p.recency]));
+const delaunayEdges = edgesFromNeighbors(neighborIndices);
+const delaunayActive = CONTENT_POINTS.length >= MIN_POINTS_FOR_DELAUNAY;
+
+function relatedFor(slug: string) {
+  if (!delaunayActive) return [];
+  const i = contentIndexBySlug.get(slug);
+  if (i === undefined) return [];
+  return neighborIndices[i].map((j) => {
+    const p = CONTENT_POINTS[j];
+    return { title: p.title, href: p.href };
+  });
+}
+
+function delaunayFor(slug: string) {
+  return { points: CONTENT_POINTS, edges: delaunayEdges, activeSlug: slug };
+}
 ---
 
 <BaseLayout title={copy("coursework.meta.title")} description={copy("coursework.meta.description")}>
@@ -11,7 +33,15 @@ import { copy } from "../lib/copy";
     <div class="flex flex-col gap-4">
       {
         coursework.map((entry) => (
-          <SpecimenCard number={entry.number} title={entry.title} tag={entry.tag} description={entry.description} />
+          <SpecimenCard
+            id={`content-${entry.slug}`}
+            number={entry.number}
+            title={entry.title}
+            tag={entry.tag}
+            description={entry.description}
+            related={relatedFor(entry.slug)}
+            delaunay={delaunayFor(entry.slug)}
+          />
         ))
       }
     </div>
