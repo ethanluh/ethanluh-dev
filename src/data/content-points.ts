@@ -1,3 +1,5 @@
+import { copy } from "../lib/copy";
+
 export type ContentPoint = {
   slug: string;
   title: string;
@@ -12,7 +14,7 @@ export type ContentPoint = {
 export const CONTENT_POINTS: ContentPoint[] = [
   {
     slug: "zero-forcing-polytopes-research",
-    title: "Zero Forcing Polytopes (research)",
+    title: copy("contentPoints.zeroForcingPolytopesResearch.label"),
     kind: "research",
     href: "#content-zero-forcing-polytopes-research",
     topic: 0.05,
@@ -21,7 +23,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
   },
   {
     slug: "zero-forcing-polytopes",
-    title: "Zero Forcing Polytopes",
+    title: copy("contentPoints.zeroForcingPolytopes.label"),
     kind: "project",
     href: "#content-zero-forcing-polytopes",
     topic: 0.1,
@@ -30,7 +32,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
   },
   {
     slug: "preference-layer",
-    title: "preference-layer",
+    title: copy("contentPoints.preferenceLayer.label"),
     kind: "project",
     href: "https://github.com/ethanluh/preference-layer",
     topic: 0.65,
@@ -39,7 +41,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
   },
   {
     slug: "quire",
-    title: "quire",
+    title: copy("contentPoints.quire.label"),
     kind: "project",
     href: "https://github.com/ethanluh/quire",
     topic: 0.75,
@@ -48,7 +50,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
   },
   {
     slug: "market-sentiment-predictor",
-    title: "market-sentiment-predictor",
+    title: copy("contentPoints.marketSentimentPredictor.label"),
     kind: "project",
     href: "https://github.com/ethanluh/market-sentiment-predictor",
     topic: 0.55,
@@ -57,7 +59,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
   },
   {
     slug: "agentmade-internship",
-    title: "Software Engineering Intern, AgentMade",
+    title: copy("contentPoints.agentmadeInternship.label"),
     kind: "experience",
     href: "#content-agentmade-internship",
     topic: 0.7,
@@ -66,7 +68,7 @@ export const CONTENT_POINTS: ContentPoint[] = [
   },
   {
     slug: "uas-software-lead",
-    title: "Software Team Lead, UAS Club",
+    title: copy("contentPoints.uasSoftwareLead.label"),
     kind: "experience",
     href: "#content-uas-software-lead",
     topic: 0.6,
