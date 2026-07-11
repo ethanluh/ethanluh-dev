@@ -22,6 +22,8 @@ type WorkEntry = {
   href?: string;
   image?: string;
   links?: { label: string; href: string }[];
+  techStack?: string[];
+  mathStack?: string[];
 };
 
 const workEntries: WorkEntry[] = [
@@ -47,6 +49,8 @@ const workEntries: WorkEntry[] = [
       href: p.href,
       links: p.links,
       image: p.image,
+      techStack: p.techStack,
+      mathStack: p.mathStack,
     }),
   ),
   ...experience.map(
@@ -137,7 +141,7 @@ function delaunayFor(slug: string) {
       {copy("home.work.introPrefix")} <a href="/how-it-works" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.introLinkLabel")}</a>.
     </p>
     <p class="font-mono text-xs text-stone mb-8">
-      {copy("home.work.stackLine")}
+      {copy("home.work.stackLine")} <a href="/stack" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.stackLinkLabel")}</a>
     </p>
 
     {featuredWork && (
@@ -155,6 +159,8 @@ function delaunayFor(slug: string) {
           eyebrow={copy("home.work.featuredEyebrow")}
           related={relatedFor(featuredWork.slug)}
           delaunay={delaunayFor(featuredWork.slug)}
+          techStack={featuredWork.techStack}
+          mathStack={featuredWork.mathStack}
         />
       </div>
     )}
@@ -184,6 +190,8 @@ function delaunayFor(slug: string) {
                       kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}
                       related={relatedFor(entry.slug)}
                       delaunay={delaunayFor(entry.slug)}
+                      techStack={entry.techStack}
+                      mathStack={entry.mathStack}
                     />
                   </div>
                 ))}

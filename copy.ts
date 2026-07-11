@@ -21,6 +21,7 @@ const COPY = {
     link: {
       mainPage: "main page",
       coursework: "coursework",
+      stack: "stack",
       about: "about",
       howItWorks: "how this site works",
       contact: "contact",
@@ -47,6 +48,7 @@ const COPY = {
         "Research, projects, and experience — ordered by convex-hull peel layer over (recency, depth), not by type. See",
       introLinkLabel: "how this site works",
       stackLine: "Python · TypeScript · PyTorch/YOLOv8 · C++ (ONNX) · graph & combinatorial algorithms",
+      stackLinkLabel: "full stack →",
       featuredEyebrow: "featured",
       trackLabel: {
         research: "Research",
@@ -118,6 +120,35 @@ const COPY = {
     },
   },
 
+  stack: {
+    meta: {
+      title: "Stack — Ethan Luh",
+      description: "The languages, frameworks, and math that the research, projects, and experience above actually run on.",
+    },
+    heading: "Stack",
+    intro:
+      "What actually ships in the work above, split into what it's built with and what it's built on — a fuller picture than the one-line summary under Work.",
+    railLabel: {
+      tech: "Tech stack",
+      math: "Math stack",
+    },
+    techHeading: "Tech Stack",
+    mathHeading: "Math Stack",
+    tech: {
+      languages: { label: "Languages", items: "Python · TypeScript · C++" },
+      mlVision: { label: "ML & Computer Vision", items: "PyTorch · YOLOv8 · ONNX Runtime" },
+      site: { label: "This Site", items: "Astro · Tailwind CSS" },
+    },
+    math: {
+      graphTheory: { label: "Graph Theory", items: "Zero forcing · Graph Laplacian diffusion" },
+      geometry: {
+        label: "Combinatorics & Discrete Geometry",
+        items: "Ehrhart theory · Polytopes & lattice points · Convex hull peeling · Delaunay triangulation",
+      },
+      statistics: { label: "Statistics", items: "Quantile regression" },
+    },
+  },
+
   research: {
     zeroForcingPolytopesResearch: {
       title: "Zero Forcing Polytopes",
@@ -134,23 +165,29 @@ const COPY = {
       tag: "python",
       description:
         "Computational companion to the research above — builds the zero forcing polytope from a graph's minimum forcing sets and enumerates its lattice points. The open problem: forcing-set enumeration blows up combinatorially past small graphs, so the code has to prune the search rather than brute-force it.",
+      techStack: "Python",
+      mathStack: "Zero forcing · Ehrhart theory · Polytopes & lattice points · Combinatorics",
     },
     preferenceLayer: {
       title: "preference-layer",
       tag: "python",
       description:
         "Portable preference infrastructure and API for the agentic web — user-controlled preference credentials and profile-conditioned product intelligence for AI shopping agents.",
+      techStack: "Python",
     },
     quire: {
       title: "quire",
       tag: "typescript",
       description: "Triage tool for high-volume AI-generated pull requests — groups PRs by product direction so you review bundles, not diffs.",
+      techStack: "TypeScript",
     },
     marketSentimentPredictor: {
       title: "market-sentiment-predictor",
       tag: "python · graph diffusion",
       description:
         "Models how a signal (an 8-K, a press release) propagates through the market's information hierarchy — sec_corp → institutional → fin_press → informed_retail → uninformed_retail — as a continuous-time heat kernel on the graph Laplacian, then feeds the diffusion lag into 9 quantile-regression models predicting P10/P50/P90 forward returns at three horizons. The gotcha: diffusion has to run on the Laplacian transpose, or the signal propagates backwards against edge direction.",
+      techStack: "Python",
+      mathStack: "Graph Laplacian diffusion · Quantile regression",
     },
   },
 

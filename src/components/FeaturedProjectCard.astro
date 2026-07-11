@@ -21,6 +21,8 @@ interface Props {
   eyebrow?: string;
   related?: { title: string; href: string }[];
   delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
+  techStack?: string[];
+  mathStack?: string[];
 }
 
 const {
@@ -36,6 +38,8 @@ const {
   eyebrow,
   related = [],
   delaunay,
+  techStack = [],
+  mathStack = [],
 } = Astro.props;
 const tags = tag.split(" · ");
 const links = linksProp ?? (href ? [{ label: "view", href }] : []);
@@ -59,6 +63,20 @@ const hasDetails = description.length > 160 || links.length > 0;
       </h3>
       <p class="text-parchment/90 mb-3">{description}</p>
       {
+        techStack.length > 0 && (
+          <p class="stack-row font-mono text-[0.65rem] uppercase tracking-widest text-stone mb-1">
+            <span class="text-moss">tech</span> {techStack.join(" · ")}
+          </p>
+        )
+      }
+      {
+        mathStack.length > 0 && (
+          <p class="stack-row font-mono text-[0.65rem] uppercase tracking-widest text-stone mb-2">
+            <span class="text-moss">math</span> {mathStack.join(" · ")}
+          </p>
+        )
+      }
+      {
         hasDetails && (
           <button
             type="button"
@@ -70,6 +88,8 @@ const hasDetails = description.length > 160 || links.length > 0;
             data-kind-label={kindLabel ? `Featured · ${kindLabel}` : "Featured"}
             data-description={description}
             data-links={JSON.stringify(links)}
+            data-tech-stack={JSON.stringify(techStack)}
+            data-math-stack={JSON.stringify(mathStack)}
           >
             details &rarr;
           </button>
