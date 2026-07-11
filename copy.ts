@@ -58,11 +58,6 @@ const COPY = {
         project: "Projects",
         experience: "Experience",
       },
-      rankReason: {
-        topShipped: "most recent, shipped",
-        topInProgress: "most recent, in progress",
-        layer: "layer {{layer}}",
-      },
     },
     about: {
       heading: "About",
