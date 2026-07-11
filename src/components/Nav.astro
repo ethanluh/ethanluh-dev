@@ -36,6 +36,12 @@ const links = [
           </li>
         ))
       }
+      <li class="shrink-0">
+        <button type="button" data-resume-trigger class="nav-link nav-link-resume flex flex-col items-center text-stone hover:text-moss transition-colors duration-150 cursor-pointer">
+          <span class="nav-link-index"></span>
+          <span>{copy("nav.link.resume")}</span>
+        </button>
+      </li>
     </ul>
 
     <button
@@ -104,6 +110,13 @@ const links = [
   .nav-link-index::before {
     content: "0" counter(item) ".";
     color: var(--color-moss);
+  }
+
+  .nav-link-resume {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
   }
 
   .nav-menu-bar {
