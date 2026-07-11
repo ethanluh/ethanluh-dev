@@ -25,7 +25,6 @@ const COPY = {
       about: "about",
       howItWorks: "how this site works",
       contact: "contact",
-      resume: "resume",
     },
   },
 
