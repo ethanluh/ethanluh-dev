@@ -42,6 +42,13 @@
   /* fixed regardless of active theme — used by the theme toggle to preview the mode a click switches to */
   --surface-dark: #171c15;
   --surface-light: #f4f1e8;
+
+  /* Kept in sync with #site-header's real rendered height by Nav.astro's
+     script — the header's height isn't a fixed constant (it grows slightly
+     right at the lg breakpoint edge), so IndexRail's sticky offset reads
+     this instead of guessing a pixel value. This default is only what
+     paints before that script runs on first load. */
+  --header-height: 5.0625rem;
 }
 
 @media (prefers-color-scheme: light) {

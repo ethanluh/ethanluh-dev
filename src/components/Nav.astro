@@ -138,6 +138,18 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: "mailto:
   const header = document.getElementById("site-header");
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // Publishes the header's real rendered height so IndexRail's sticky
+  // offset can sit flush under it instead of guessing a pixel value —
+  // header height isn't perfectly constant (it grows slightly right at the
+  // lg breakpoint edge, where the nav links get tight before wrapping).
+  if (header) {
+    const syncHeaderHeight = () => {
+      document.documentElement.style.setProperty("--header-height", `${header.getBoundingClientRect().height}px`);
+    };
+    syncHeaderHeight();
+    new ResizeObserver(syncHeaderHeight).observe(header);
+  }
+
   if (header && !prefersReducedMotion) {
     let lastScrollY = window.scrollY;
 

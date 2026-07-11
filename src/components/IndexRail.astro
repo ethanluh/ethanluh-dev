@@ -11,7 +11,7 @@ interface Props {
 const { sections = [], email, socialLinks, personalSite } = Astro.props;
 ---
 
-<aside class="index-rail hidden lg:flex sticky top-24 self-start flex-col gap-9 shrink-0 w-60 pt-12 pb-12">
+<aside class="index-rail hidden lg:flex sticky top-[var(--header-height)] self-start flex-col gap-9 shrink-0 w-60 pt-12 pb-12">
   {
     sections.length > 0 && (
       <div>
