@@ -9,6 +9,8 @@ export interface ProjectEntry {
   href?: string;
   links?: { label: string; href: string }[];
   image?: string;
+  techStack: string[];
+  mathStack?: string[];
 }
 
 // Featured status and display order are computed at build time via hull
@@ -22,6 +24,8 @@ export const projects: ProjectEntry[] = [
     tag: copy("projects.zeroForcingPolytopes.tag"),
     description: copy("projects.zeroForcingPolytopes.description"),
     image: "/placeholder-project.svg",
+    techStack: copy("projects.zeroForcingPolytopes.techStack").split(" · "),
+    mathStack: copy("projects.zeroForcingPolytopes.mathStack").split(" · "),
   },
   {
     slug: "preference-layer",
@@ -31,6 +35,7 @@ export const projects: ProjectEntry[] = [
     description: copy("projects.preferenceLayer.description"),
     href: "https://github.com/ethanluh/preference-layer",
     image: "/preference-layer-diagram.svg",
+    techStack: copy("projects.preferenceLayer.techStack").split(" · "),
   },
   {
     slug: "quire",
@@ -43,6 +48,7 @@ export const projects: ProjectEntry[] = [
       { label: "code", href: "https://github.com/ethanluh/quire" },
     ],
     image: "/quire-diagram.svg",
+    techStack: copy("projects.quire.techStack").split(" · "),
   },
   {
     slug: "market-sentiment-predictor",
@@ -52,5 +58,7 @@ export const projects: ProjectEntry[] = [
     description: copy("projects.marketSentimentPredictor.description"),
     href: "https://github.com/ethanluh/market-sentiment-predictor",
     image: "/market-sentiment-diagram.svg",
+    techStack: copy("projects.marketSentimentPredictor.techStack").split(" · "),
+    mathStack: copy("projects.marketSentimentPredictor.mathStack").split(" · "),
   },
 ];

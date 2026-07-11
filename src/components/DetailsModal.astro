@@ -15,6 +15,7 @@
   </div>
   <div class="px-6 py-4 flex flex-col gap-4">
     <p id="details-modal-description" class="text-parchment/90"></p>
+    <div id="details-modal-stack" class="flex flex-col gap-1 font-mono text-[0.65rem] uppercase tracking-widest text-stone"></div>
     <div id="details-modal-links" class="flex gap-4 font-mono text-xs"></div>
   </div>
 </dialog>
@@ -54,10 +55,11 @@
   const metaEl = document.getElementById("details-modal-meta");
   const titleEl = document.getElementById("details-modal-title");
   const descriptionEl = document.getElementById("details-modal-description");
+  const stackEl = document.getElementById("details-modal-stack");
   const linksEl = document.getElementById("details-modal-links");
 
   function openDetails(trigger: HTMLElement) {
-    if (!modal || !metaEl || !titleEl || !descriptionEl || !linksEl) return;
+    if (!modal || !metaEl || !titleEl || !descriptionEl || !stackEl || !linksEl) return;
 
     const number = trigger.dataset.number ?? "";
     const kindLabel = trigger.dataset.kindLabel ?? "";
@@ -65,6 +67,8 @@
     const title = trigger.dataset.title ?? "";
     const description = trigger.dataset.description ?? "";
     const links: DetailLink[] = JSON.parse(trigger.dataset.links ?? "[]");
+    const techStack: string[] = JSON.parse(trigger.dataset.techStack ?? "[]");
+    const mathStack: string[] = JSON.parse(trigger.dataset.mathStack ?? "[]");
 
     const metaParts = [number, kindLabel, ...tag.split(" · ")].filter(Boolean);
     metaEl.innerHTML = metaParts
@@ -78,6 +82,10 @@
 
     titleEl.textContent = title;
     descriptionEl.textContent = description;
+    stackEl.innerHTML = [
+      techStack.length > 0 ? `<p><span class="text-moss">tech</span> ${techStack.join(" · ")}</p>` : "",
+      mathStack.length > 0 ? `<p><span class="text-moss">math</span> ${mathStack.join(" · ")}</p>` : "",
+    ].join("");
     linksEl.innerHTML = links
       .map((link) => `<a href="${link.href}" class="text-moss hover:text-parchment transition-colors duration-150">${link.label}</a>`)
       .join("");
