@@ -19,17 +19,16 @@ const links = [
 ---
 
 <header id="site-header" class="border-b border-bark sticky top-0 z-20 bg-canopy/85 backdrop-blur">
-  <nav
-    class="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-2 px-6 py-3 font-mono text-xs uppercase tracking-widest"
-  >
+  <nav class="max-w-3xl mx-auto flex items-center gap-8 px-6 py-3 font-mono text-xs uppercase tracking-widest">
     <a href="/" class="flex flex-col leading-tight text-parchment/80 hover:text-moss transition-colors duration-150">
       <span>{copy("nav.brand.name")}</span>
       <span class="text-[0.65rem] tracking-normal normal-case text-stone">{copy("nav.brand.tagline")}</span>
     </a>
-    <ul class="nav-links flex flex-wrap justify-center gap-x-4 gap-y-2 sm:flex-nowrap sm:justify-start sm:gap-5 sm:overflow-x-auto items-start sm:items-center">
+
+    <ul class="nav-links hidden lg:flex flex-nowrap gap-5 items-center">
       {
         links.map((link) => (
-          <li>
+          <li class="shrink-0">
             <a href={link.href} class="nav-link flex flex-col items-center text-stone hover:text-moss transition-colors duration-150">
               <span class="nav-link-index"></span>
               <span>{link.label}</span>
@@ -38,13 +37,48 @@ const links = [
         ))
       }
     </ul>
+
+    <button
+      type="button"
+      id="nav-menu-toggle"
+      aria-expanded="false"
+      aria-controls="nav-menu-panel"
+      aria-label="Toggle menu"
+      class="nav-menu-toggle lg:hidden flex flex-col justify-center gap-1.5 ml-auto cursor-pointer"
+    >
+      <span class="nav-menu-bar" aria-hidden="true"></span>
+      <span class="nav-menu-bar" aria-hidden="true"></span>
+      <span class="nav-menu-bar" aria-hidden="true"></span>
+    </button>
   </nav>
-  <div class="mobile-contact-bar lg:hidden flex flex-wrap items-center justify-center gap-x-5 gap-y-1 border-t border-bark px-6 py-2 font-mono text-[0.65rem] tracking-widest uppercase text-stone">
-    <a href={`mailto:${email}`} class="hover:text-moss transition-colors duration-150">Email</a>
-    {socialLinks.map((link) => (
-      <a href={link.href} target="_blank" rel="noopener noreferrer" class="hover:text-moss transition-colors duration-150">{link.label}</a>
-    ))}
-    <button type="button" data-resume-trigger class="hover:text-moss transition-colors duration-150 cursor-pointer">Resume</button>
+
+  <div id="nav-menu-panel" class="nav-menu-panel lg:hidden border-t border-bark px-6 py-5 font-mono text-xs uppercase tracking-widest" hidden>
+    <ul class="nav-links flex flex-col gap-3">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} class="nav-link flex items-center gap-2 text-stone hover:text-moss transition-colors duration-150">
+              <span class="nav-link-index"></span>
+              <span>{link.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="nav-menu-divider my-5" aria-hidden="true"></div>
+    <ul class="flex flex-col gap-3 text-stone">
+      <li>
+        <a href={`mailto:${email}`} class="hover:text-moss transition-colors duration-150">Email</a>
+      </li>
+      {socialLinks.map((link) => (
+        <li>
+          <a href={link.href} target="_blank" rel="noopener noreferrer" class="hover:text-moss transition-colors duration-150">{link.label}</a>
+        </li>
+      ))}
+      <li>
+        <button type="button" data-resume-trigger class="nav-menu-resume hover:text-moss transition-colors duration-150 cursor-pointer">Resume</button>
+      </li>
+    </ul>
   </div>
 </header>
 
@@ -71,6 +105,29 @@ const links = [
     content: "0" counter(item) ".";
     color: var(--color-moss);
   }
+
+  .nav-menu-bar {
+    display: block;
+    width: 1.25rem;
+    height: 1.5px;
+    background-color: var(--color-stone);
+    transition: background-color var(--duration-base) var(--ease-field);
+  }
+  .nav-menu-toggle:hover .nav-menu-bar {
+    background-color: var(--color-moss);
+  }
+
+  .nav-menu-divider {
+    height: 1px;
+    background: var(--color-bark);
+  }
+
+  .nav-menu-resume {
+    text-align: left;
+    padding: 0;
+    background: none;
+    border: none;
+  }
 </style>
 
 <script>
@@ -96,5 +153,40 @@ const links = [
       },
       { passive: true },
     );
+  }
+
+  const menuToggle = document.getElementById("nav-menu-toggle");
+  const menuPanel = document.getElementById("nav-menu-panel");
+
+  function closeMenu() {
+    if (!menuToggle || !menuPanel) return;
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuPanel.hidden = true;
+  }
+
+  function openMenu() {
+    if (!menuToggle || !menuPanel) return;
+    menuToggle.setAttribute("aria-expanded", "true");
+    menuPanel.hidden = false;
+  }
+
+  if (menuToggle && menuPanel) {
+    menuToggle.addEventListener("click", () => {
+      if (menuPanel.hidden) openMenu();
+      else closeMenu();
+    });
+
+    menuPanel.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement)?.closest("a, button")) closeMenu();
+    });
+
+    document.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement;
+      if (!menuPanel.hidden && !header?.contains(target)) closeMenu();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !menuPanel.hidden) closeMenu();
+    });
   }
 </script>
