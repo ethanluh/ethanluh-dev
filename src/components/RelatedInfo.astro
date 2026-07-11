@@ -118,4 +118,32 @@ const { related, delaunay } = Astro.props;
       transform: translateY(0);
     }
   }
+
+  /* Anchoring the popover to the trigger's left edge overflows the viewport
+     when a card's trigger sits away from the screen's left edge, and
+     position: fixed doesn't reliably escape it — the card's own
+     hover/focus transform (.card-lift) creates a containing block that
+     traps fixed-position descendants too. Drop the floating overlay in
+     favor of an in-flow panel below the trigger instead. */
+  @media (max-width: 640px) {
+    .related-info {
+      display: block;
+    }
+    .related-popover {
+      position: static;
+      display: none;
+      opacity: 1;
+      pointer-events: auto;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: none;
+      margin-top: 0.5rem;
+      transform: none;
+    }
+    .related-info:hover .related-popover,
+    .related-info:focus-within .related-popover {
+      display: flex;
+      transform: none;
+    }
+  }
 </style>
