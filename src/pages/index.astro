@@ -45,6 +45,7 @@ const workEntries: WorkEntry[] = [
       tag: p.tag,
       description: p.description,
       href: p.href,
+      links: p.links,
       image: p.image,
     }),
   ),
@@ -148,6 +149,7 @@ function delaunayFor(slug: string) {
           tag={featuredWork.tag}
           description={featuredWork.description}
           href={featuredWork.href}
+          links={featuredWork.links}
           image={featuredWork.image}
           kindLabel={featuredWork.kind}
           eyebrow={copy("home.work.featuredEyebrow")}
@@ -176,7 +178,7 @@ function delaunayFor(slug: string) {
                       title={entry.title}
                       tag={entry.tag}
                       description={entry.description}
-                      links={entry.href ? [{ label: "view", href: entry.href }] : (entry.links ?? [])}
+                      links={entry.links ?? (entry.href ? [{ label: "view", href: entry.href }] : [])}
                       image={entry.image}
                       variant={entry.kind}
                       kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}

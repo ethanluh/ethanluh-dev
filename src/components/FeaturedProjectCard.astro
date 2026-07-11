@@ -15,6 +15,7 @@ interface Props {
   tag: string;
   description: string;
   href?: string;
+  links?: { label: string; href: string }[];
   image?: string;
   kindLabel?: string;
   eyebrow?: string;
@@ -22,9 +23,23 @@ interface Props {
   delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
 }
 
-const { id, number, title, tag, description, href, image, kindLabel, eyebrow, related = [], delaunay } = Astro.props;
+const {
+  id,
+  number,
+  title,
+  tag,
+  description,
+  href,
+  links: linksProp,
+  image,
+  kindLabel,
+  eyebrow,
+  related = [],
+  delaunay,
+} = Astro.props;
 const tags = tag.split(" · ");
-const links = href ? [{ label: "view", href }] : [];
+const links = linksProp ?? (href ? [{ label: "view", href }] : []);
+const imageHref = links[0]?.href ?? href;
 const hasDetails = description.length > 160 || links.length > 0;
 ---
 
@@ -72,10 +87,10 @@ const hasDetails = description.length > 160 || links.length > 0;
   {
     image && (
       <a
-        href={href ?? "#"}
+        href={imageHref ?? "#"}
         class="featured-image-link relative block rounded-sm overflow-hidden"
-        tabindex={href ? 0 : -1}
-        aria-hidden={href ? undefined : "true"}
+        tabindex={imageHref ? 0 : -1}
+        aria-hidden={imageHref ? undefined : "true"}
       >
         <img src={image} alt="" class="featured-image w-full h-auto block" loading="lazy" />
       </a>

@@ -7,6 +7,7 @@ export interface ProjectEntry {
   tag: string;
   description: string;
   href?: string;
+  links?: { label: string; href: string }[];
   image?: string;
 }
 
@@ -37,7 +38,10 @@ export const projects: ProjectEntry[] = [
     title: copy("projects.quire.title"),
     tag: copy("projects.quire.tag"),
     description: copy("projects.quire.description"),
-    href: "https://github.com/ethanluh/quire",
+    links: [
+      { label: "app", href: "https://quire-review.com" },
+      { label: "code", href: "https://github.com/ethanluh/quire" },
+    ],
     image: "/quire-diagram.svg",
   },
   {
