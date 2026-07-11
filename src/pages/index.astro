@@ -117,13 +117,11 @@ function delaunayFor(slug: string) {
       <h1 class="font-display text-h1 leading-tight mb-4">
         {copy("home.hero.headline")}
       </h1>
-      <p class="max-w-xl text-parchment/90">
-        {copy("home.hero.subhead")}
+      <p class="font-mono text-xs uppercase tracking-widest text-stone leading-relaxed">
+        {copy("home.hero.chipProgram")}
+        <br />
+        {copy("home.hero.chipGradDate")}
       </p>
-      <ul class="hero-chips flex flex-wrap gap-2 mt-4 font-mono text-[0.7rem] uppercase tracking-widest">
-        <li class="chip text-stone">{copy("home.hero.chipProgram")}</li>
-        <li class="chip text-stone">{copy("home.hero.chipGradDate")}</li>
-      </ul>
       <p class="font-mono text-xs text-stone mt-4 flex flex-wrap gap-x-4 gap-y-1">
         <a href="#work" class="hover:text-moss transition-colors duration-150">
           {copy("home.hero.ctaWork")}
