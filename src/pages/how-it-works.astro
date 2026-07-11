@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ZeroForcingHero from "../components/ZeroForcingHero.astro";
 import HullPeelMotif from "../components/HullPeelMotif.astro";
 import DelaunayMotif from "../components/DelaunayMotif.astro";
+import DefinitionBlock from "../components/DefinitionBlock.astro";
 import { CONTENT_POINTS } from "../data/content-points";
 import { peelLayers } from "../lib/geometry/hull";
 import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
@@ -26,7 +27,7 @@ const zeroForcingStat = copyTemplate("howItWorks.zeroForcing.stat", {
   seedPlural: zfSeeds.length === 1 ? "" : "s",
   nodeCount: CONTENT_POINTS.length,
 });
-const zeroForcingBody = copyTemplate("howItWorks.zeroForcing.body", {
+const zeroForcingRemark = copyTemplate("howItWorks.zeroForcing.remark", {
   nodeCount: CONTENT_POINTS.length,
   seedCount: zfSeeds.length,
 });
@@ -39,7 +40,7 @@ const delaunayStat = copyTemplate("howItWorks.delaunay.stat", {
   pointCount: CONTENT_POINTS.length,
   belowThreshold: delaunayActive ? "" : " (below threshold)",
 });
-const delaunayBody = copyTemplate("howItWorks.delaunay.body", {
+const delaunayRemark = copyTemplate("howItWorks.delaunay.remark", {
   minPoints: MIN_POINTS_FOR_DELAUNAY,
 });
 ---
@@ -63,7 +64,7 @@ const delaunayBody = copyTemplate("howItWorks.delaunay.body", {
         <div class="flex flex-col gap-3 md:flex-1">
           <h3 class="font-display text-2xl text-parchment">{copy("howItWorks.zeroForcing.title")}</h3>
           <p class="font-mono text-xs text-stone">{zeroForcingStat}</p>
-          <p class="text-parchment/90" set:html={zeroForcingBody} />
+          <DefinitionBlock definition={copy("howItWorks.zeroForcing.definition")} remark={zeroForcingRemark} />
         </div>
         <div class="max-w-sm mx-auto md:mx-0 md:flex-1">
           <ZeroForcingHero showCaption={false} />
@@ -83,7 +84,7 @@ const delaunayBody = copyTemplate("howItWorks.delaunay.body", {
         <div class="flex flex-col gap-3 md:flex-1">
           <h3 class="font-display text-2xl text-parchment">{copy("howItWorks.delaunay.title")}</h3>
           <p class="font-mono text-xs text-stone">{delaunayStat}</p>
-          <p class="text-parchment/90" set:html={delaunayBody} />
+          <DefinitionBlock definition={copy("howItWorks.delaunay.definition")} remark={delaunayRemark} />
         </div>
         {
           delaunayActive && (

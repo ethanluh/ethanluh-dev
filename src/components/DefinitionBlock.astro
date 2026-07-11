@@ -1,0 +1,25 @@
+---
+interface Props {
+  definition: string;
+  remark: string;
+}
+const { definition, remark } = Astro.props;
+---
+
+<div class="definition-block flex flex-col gap-3">
+  <p class="definition text-parchment/90" set:html={definition} />
+  <p class="remark text-parchment/90">
+    <span class="remark-label font-mono text-[0.65rem] uppercase tracking-widest text-stone mr-2">On this site</span>
+    <Fragment set:html={remark} />
+  </p>
+</div>
+
+<style>
+  .definition {
+    border-left: 2px solid var(--color-moss);
+    padding-left: 0.9rem;
+  }
+  .remark {
+    padding-left: 0.9rem;
+  }
+</style>

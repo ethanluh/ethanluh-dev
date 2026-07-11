@@ -41,6 +41,9 @@ const COPY = {
       ctaMath: "researching zero forcing? → the math",
       zeroForcingCaptionPrefix: "Hover a node to see what it is, click to visit —",
       zeroForcingCaptionLink: "how this graph works ↓",
+      chipProgram: "CS/Math/Stats · Penn State Behrend",
+      chipGradDate: "Grad May 2028",
+      proofStat: "At AgentMade, took PR-bundle review throughput from ~10/day to 30+/day across a 5-person team.",
     },
     work: {
       heading: "Work",
@@ -54,6 +57,11 @@ const COPY = {
         research: "Research",
         project: "Projects",
         experience: "Experience",
+      },
+      rankReason: {
+        topShipped: "most recent, shipped",
+        topInProgress: "most recent, in progress",
+        layer: "layer {{layer}}",
       },
     },
     about: {
@@ -106,7 +114,10 @@ const COPY = {
     zeroForcing: {
       title: "Zero Forcing",
       stat: "{{seedCount}} seed{{seedPlural}} · {{nodeCount}} nodes",
-      body: 'The hero graph on the homepage is this site\'s actual content — the same {{nodeCount}} items, connected by the same Delaunay edges used for "related" — animated by <strong>zero forcing</strong>, the color-change rule from the zero forcing research: a colored vertex with exactly one uncolored neighbor forces it to color. The {{seedCount}} moss-colored seeds on load are a real computed minimum zero forcing set, not a hand-picked example; everything else propagates in the order the rule actually forces it. It\'s a live instance of the math, not an illustration of it — hover a node for its title, click to visit.',
+      definition:
+        "<strong>Zero forcing.</strong> A colored vertex with exactly one uncolored neighbor forces that neighbor to color; a zero forcing set is a starting coloring that, applying this rule repeatedly, colors the whole graph.",
+      remark:
+        'The hero graph is this site\'s actual content — the same {{nodeCount}} items, connected by the same Delaunay edges used for "related." The {{seedCount}} moss-colored seeds on load are a real computed minimum zero forcing set, not a hand-picked example; everything else propagates in the order the rule actually forces it. Hover a node for its title, click to visit.',
     },
     workOrdering: {
       title: "Convex Hull Peeling",
@@ -116,7 +127,10 @@ const COPY = {
     delaunay: {
       title: "Delaunay Triangulation",
       stat: "{{pointCount}} points{{belowThreshold}}",
-      body: 'The small node-and-edge diagram next to each "related" list is the actual Delaunay triangulation over hand-placed (topic, recency) coordinates — every point and edge in the full graph, with the current card\'s node and its neighbors highlighted. Below {{minPoints}} points the triangulation gets arbitrary, so the feature stays off until there\'s enough content to make it mean something.',
+      definition:
+        "<strong>Delaunay triangulation.</strong> Given a set of points, the triangulation where no point lies inside another point's circumcircle — the one that avoids thin, needle-like triangles.",
+      remark:
+        'The small node-and-edge diagram next to each "related" list is the actual triangulation over hand-placed (topic, recency) coordinates — every point and edge in the full graph, with the current card\'s node and its neighbors highlighted. Below {{minPoints}} points the triangulation gets arbitrary, so the feature stays off until there\'s enough content to make it mean something.',
     },
   },
 

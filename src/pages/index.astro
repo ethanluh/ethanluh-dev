@@ -9,7 +9,7 @@ import { experience } from "../content/experience";
 import { CONTENT_POINTS } from "../data/content-points";
 import { peelLayers } from "../lib/geometry/hull";
 import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
-import { copy } from "../lib/copy";
+import { copy, copyTemplate } from "../lib/copy";
 
 // --- Unified Work stream: Research + Projects + Experience, one adapter shape ---
 type WorkEntry = {
@@ -83,6 +83,19 @@ const orderedWork = orderedWorkSlugs.map((slug) => workBySlug.get(slug)).filter(
 const [featuredWork, ...restWork] = orderedWork;
 const layerIndexBySlug = new Map(workLayers.flatMap((layer, i) => layer.map((p) => [p.slug, i] as const)));
 
+// Plain-language stand-in for the bare "layer N" label — layer 0 is why a
+// given item is featured/first, so it gets a reason instead of a number.
+const shippedBySlug = new Map(CONTENT_POINTS.map((p) => [p.slug, p.shipped]));
+function rankReasonFor(slug: string): string {
+  const layer = layerIndexBySlug.get(slug) ?? 0;
+  if (layer === 0) {
+    return shippedBySlug.get(slug) === false
+      ? copy("home.work.rankReason.topInProgress")
+      : copy("home.work.rankReason.topShipped");
+  }
+  return copyTemplate("home.work.rankReason.layer", { layer });
+}
+
 // --- Related-content: Delaunay triangulation over (topic, recency) ---
 // Gated on MIN_POINTS_FOR_DELAUNAY — below that, neighbors are near-arbitrary.
 const contentIndexBySlug = new Map(CONTENT_POINTS.map((p, i) => [p.slug, i]));
@@ -121,6 +134,14 @@ function delaunayFor(slug: string) {
       <p class="max-w-xl text-parchment/90">
         {copy("home.hero.subhead")}
       </p>
+      <ul class="hero-chips flex flex-wrap gap-2 mt-4 font-mono text-[0.7rem] uppercase tracking-widest">
+        <li class="chip text-stone">{copy("home.hero.chipProgram")}</li>
+        <li class="chip text-stone">{copy("home.hero.chipGradDate")}</li>
+        <li class="chip text-stone">{copy("home.work.stackLine")}</li>
+      </ul>
+      <p class="max-w-xl text-parchment/90 font-mono text-xs mt-3 border-l-2 border-moss pl-3">
+        {copy("home.hero.proofStat")}
+      </p>
       <p class="font-mono text-xs text-stone mt-4 flex flex-wrap gap-x-4 gap-y-1">
         <a href="#work" class="hover:text-moss transition-colors duration-150">
           {copy("home.hero.ctaWork")}
@@ -155,7 +176,7 @@ function delaunayFor(slug: string) {
           href={featuredWork.href}
           links={featuredWork.links}
           image={featuredWork.image}
-          kindLabel={featuredWork.kind}
+          kindLabel={`${featuredWork.kind} · ${rankReasonFor(featuredWork.slug)}`}
           eyebrow={copy("home.work.featuredEyebrow")}
           related={relatedFor(featuredWork.slug)}
           delaunay={delaunayFor(featuredWork.slug)}
@@ -187,7 +208,7 @@ function delaunayFor(slug: string) {
                       links={entry.links ?? (entry.href ? [{ label: "view", href: entry.href }] : [])}
                       image={entry.image}
                       variant={entry.kind}
-                      kindLabel={`${entry.kind} · layer ${layerIndexBySlug.get(entry.slug) ?? 0}`}
+                      kindLabel={`${entry.kind} · ${rankReasonFor(entry.slug)}`}
                       related={relatedFor(entry.slug)}
                       delaunay={delaunayFor(entry.slug)}
                       techStack={entry.techStack}

@@ -8,24 +8,28 @@ interface Props {
 
 const { email, socialLinks } = Astro.props;
 
+// Contact (and, on desktop, résumé) live in IndexRail's "Contact" block,
+// which is always visible on desktop — no need to duplicate them in the top
+// nav there. IndexRail is hidden below the `lg` breakpoint, so the mobile
+// menu panel still needs its own contact link, appended separately below.
 const links = [
   { label: copy("nav.link.mainPage"), href: "/" },
   { label: copy("nav.link.coursework"), href: "/coursework" },
   { label: copy("nav.link.stack"), href: "/stack" },
   { label: copy("nav.link.about"), href: "/#about" },
   { label: copy("nav.link.howItWorks"), href: "/how-it-works" },
-  { label: copy("nav.link.contact"), href: "mailto:ethan@ethanluh.com" },
 ];
+const mobileLinks = [...links, { label: copy("nav.link.contact"), href: "mailto:ethan@ethanluh.com" }];
 ---
 
 <header id="site-header" class="border-b border-bark sticky top-0 z-20 bg-canopy/85 backdrop-blur">
-  <nav class="max-w-3xl mx-auto flex items-center justify-between gap-8 px-6 py-3 font-mono text-xs uppercase tracking-widest">
+  <nav class="max-w-[92rem] mx-auto flex items-center gap-8 px-6 sm:px-10 lg:px-16 py-3 font-mono text-xs uppercase tracking-widest">
     <a href="/" class="flex flex-col leading-tight text-parchment/80 hover:text-moss transition-colors duration-150">
       <span>{copy("nav.brand.name")}</span>
       <span class="text-[0.65rem] tracking-normal normal-case text-stone">{copy("nav.brand.tagline")}</span>
     </a>
 
-    <ul class="nav-links hidden lg:flex flex-nowrap gap-5 items-center">
+    <ul class="nav-links hidden lg:flex flex-nowrap gap-5 items-center ml-auto">
       {
         links.map((link) => (
           <li class="shrink-0">
@@ -55,7 +59,7 @@ const links = [
   <div id="nav-menu-panel" class="nav-menu-panel lg:hidden border-t border-bark px-6 py-5 font-mono text-xs uppercase tracking-widest" hidden>
     <ul class="nav-links flex flex-col gap-3">
       {
-        links.map((link) => (
+        mobileLinks.map((link) => (
           <li>
             <a href={link.href} class="nav-link flex items-center gap-2 text-stone hover:text-moss transition-colors duration-150">
               <span class="nav-link-index"></span>
@@ -133,6 +137,18 @@ const links = [
 <script>
   const header = document.getElementById("site-header");
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Publishes the header's real rendered height so IndexRail's sticky
+  // offset can sit flush under it instead of guessing a pixel value —
+  // header height isn't perfectly constant (it grows slightly right at the
+  // lg breakpoint edge, where the nav links get tight before wrapping).
+  if (header) {
+    const syncHeaderHeight = () => {
+      document.documentElement.style.setProperty("--header-height", `${header.getBoundingClientRect().height}px`);
+    };
+    syncHeaderHeight();
+    new ResizeObserver(syncHeaderHeight).observe(header);
+  }
 
   if (header && !prefersReducedMotion) {
     let lastScrollY = window.scrollY;
