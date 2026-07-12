@@ -84,35 +84,44 @@
   const closeBtn = document.getElementById("resume-modal-close");
   const body = document.getElementById("resume-modal-body");
 
-  let rendered = false;
+  let renderPromise: Promise<void> | null = null;
 
-  async function renderResume() {
-    if (rendered || !body) return;
-    rendered = true;
+  function renderResume() {
+    if (renderPromise || !body) return renderPromise ?? Promise.resolve();
 
-    try {
-      const pdf = await pdfjsLib.getDocument("/resume.pdf").promise;
-      body.innerHTML = "";
+    renderPromise = (async () => {
+      try {
+        const pdf = await pdfjsLib.getDocument("/resume.pdf").promise;
+        const pages: HTMLCanvasElement[] = [];
 
-      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum);
-        const scale = (window.devicePixelRatio || 1) * 1.5;
-        const viewport = page.getViewport({ scale });
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
+          const scale = (window.devicePixelRatio || 1) * 1.5;
+          const viewport = page.getViewport({ scale });
 
-        const canvas = document.createElement("canvas");
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const context = canvas.getContext("2d");
-        if (!context) continue;
+          const canvas = document.createElement("canvas");
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const context = canvas.getContext("2d");
+          if (!context) continue;
 
-        await page.render({ canvas, canvasContext: context, viewport }).promise;
-        body.appendChild(canvas);
+          await page.render({ canvas, canvasContext: context, viewport }).promise;
+          pages.push(canvas);
+        }
+
+        body.innerHTML = "";
+        pages.forEach((canvas) => body.appendChild(canvas));
+      } catch {
+        renderPromise = null;
+        body.innerHTML = `<p class="p-6 font-mono text-xs text-stone">Couldn't render the resume. <a href="/resume.pdf" download class="text-parchment underline">Download it</a> instead.</p>`;
       }
-    } catch {
-      rendered = false;
-      body.innerHTML = `<p class="p-6 font-mono text-xs text-stone">Couldn't render the resume. <a href="/resume.pdf" download class="text-parchment underline">Download it</a> instead.</p>`;
-    }
+    })();
+
+    return renderPromise;
   }
+
+  const requestIdle = window.requestIdleCallback ?? ((cb: IdleRequestCallback) => setTimeout(cb, 1));
+  if (triggers.length > 0) requestIdle(() => renderResume());
 
   function fitModalWidth() {
     return new Promise<void>((resolve) => {
