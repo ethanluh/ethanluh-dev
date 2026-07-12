@@ -35,8 +35,6 @@ const COPY = {
     },
     hero: {
       headline: "Building software at the edge of graph theory and code.",
-      subhead:
-        "CS/Math/Stats student at Penn State Behrend (May 2028) — builds graph and ML systems, and researches zero forcing polytopes.",
       ctaWork: "recruiting? → work",
       ctaMath: "researching zero forcing? → the math",
       zeroForcingCaptionPrefix: "Hover a node to see what it is, click to visit —",
@@ -57,11 +55,6 @@ const COPY = {
         research: "Research",
         project: "Projects",
         experience: "Experience",
-      },
-      rankReason: {
-        topShipped: "most recent, shipped",
-        topInProgress: "most recent, in progress",
-        layer: "layer {{layer}}",
       },
     },
     about: {
