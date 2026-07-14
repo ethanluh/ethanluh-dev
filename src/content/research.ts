@@ -13,7 +13,7 @@ export interface ResearchEntry {
 export const research: ResearchEntry[] = [
   {
     slug: "zero-forcing-polytopes-research",
-    number: "01",
+    number: "00",
     title: copy("research.zeroForcingPolytopesResearch.title"),
     status: copy("research.zeroForcingPolytopesResearch.status"),
     updated: "2026-07",

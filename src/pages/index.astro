@@ -70,11 +70,11 @@ const workBySlug = new Map(workEntries.map((w) => [w.slug, w]));
 // layers[0] is the Pareto-extreme set (not dominated on both axes by any
 // other single item) — this replaces both the hand-set `featured` flag and
 // the research/projects/experience grouping. Order is layer, not type.
-// Shipped work gets a depth bonus, unshipped a penalty, before peeling — so
-// the featured slot favors something a recruiter can actually click into
-// today, without hand-picking it (see /how-it-works).
+// Shipped work gets a depth bonus, unshipped a smaller penalty, before
+// peeling — enough that shallow shipped side projects don't out-rank deep
+// unshipped research for the featured slot (see /how-it-works).
 const effectiveDepth = (p: (typeof CONTENT_POINTS)[number]) =>
-  p.depth * (p.shipped === true ? 1.3 : p.shipped === false ? 0.6 : 1);
+  p.depth * (p.shipped === true ? 1.3 : p.shipped === false ? 0.85 : 1);
 const workLayers = peelLayers(CONTENT_POINTS, (p) => [p.recency, effectiveDepth(p)]);
 const byWeight = (p: (typeof CONTENT_POINTS)[number]) => p.recency + effectiveDepth(p);
 const orderedWorkSlugs = workLayers.flatMap((layer) => [...layer].sort((a, b) => byWeight(b) - byWeight(a))).map((p) => p.slug);
