@@ -158,10 +158,9 @@ const COPY = {
   research: {
     zeroForcingPolytopesResearch: {
       title: "Zero Forcing Polytopes",
-      status: "in progress",
-      abstract:
-        "Independent study with Hanely applying Ehrhart theory to zero forcing polytopes on small graph families. Constructs the polytope from a graph's zero forcing sets and studies its lattice-point structure, motivated by the conjecture |𝓕_G| ≥ ⌈n/3⌉ on the number of forcing sets of minimum size.",
-      notesLinkLabel: "notes (ask for a copy)",
+      status: "coming soon",
+      abstract: "Planned independent study applying Ehrhart theory to zero forcing polytopes on small graph families — not yet started. Check back for updates.",
+      notesLinkLabel: "ask about this",
     },
   },
 
@@ -184,7 +183,8 @@ const COPY = {
     quire: {
       title: "quire",
       tag: "typescript",
-      description: "Triage tool for high-volume AI-generated pull requests — groups PRs by product direction so you review bundles, not diffs.",
+      description:
+        "Direction-triage tool for AI-generated PR swarms — groups PRs pursuing the same product direction into a bundle, so a human makes one accept/defer/reject decision per bundle instead of per PR. A drift-detection system keeps each bundle's stated direction honest to what the PRs inside it actually do.",
       techStack: "TypeScript",
     },
     marketSentimentPredictor: {
