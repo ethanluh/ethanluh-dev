@@ -59,9 +59,9 @@ const COPY = {
     about: {
       heading: "About",
       paragraph1:
-        "I first got interested in zero forcing sitting in on an undergraduate thesis defense on the minimal forts of trees, then followed it home — reading back into the foundational paper it built on, on my own, afterward. I stayed for the combinatorics. Most of what I build sits at that same boundary: applying mathematical structure to software problems and using software to test mathematical ones, from the zero forcing polytope work above to a market-signal model that runs diffusion on a graph Laplacian.",
+        "I first got interested in zero forcing while sitting in on an undergraduate thesis defense on the minimal forts of trees—then followed it home, reading on my own back into the foundational paper the defense had built on. I stayed for the combinatorics. Most of what I build now sits at that same boundary: applying mathematical structure to software problems, and using software to test mathematical ones, from the zero forcing polytope work above to a market-signal model that runs diffusion on a graph Laplacian.",
       paragraph2:
-        "Outside of that, I like taking things apart and putting them back together — literally: a couple of old MacBook Pros, an HP Legion, an Apple Magic Mouse, and a pair of speakers have all survived a repair. I fence, and play ultimate frisbee, volleyball, and badminton — and drink more boba tea than is probably reasonable.",
+        "Outside of that, I like taking things apart and putting them back together—literally: a couple of old MacBook Pros, an HP Legion, an Apple Magic Mouse, and a pair of speakers have all survived a repair under my hands. I fence, and play ultimate frisbee, volleyball, and badminton, and drink more boba tea than is probably reasonable.",
     },
   },
 
