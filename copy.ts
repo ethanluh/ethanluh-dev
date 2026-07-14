@@ -80,7 +80,7 @@ const COPY = {
     aiSecurity: {
       title: "AI & Security",
       tag: "coursework",
-      description: "Machine Learning, Artificial Intelligence, Computer Vision, Cryptography, Machine Learning + Data Science.",
+      description: "Artificial Intelligence, Computer Vision, Cryptography, Machine Learning + Data Science.",
     },
     mathStats: {
       title: "Math & Statistics",
