@@ -158,8 +158,9 @@ const COPY = {
   research: {
     zeroForcingPolytopesResearch: {
       title: "Zero Forcing Polytopes",
-      status: "coming soon",
-      abstract: "Planned independent study applying Ehrhart theory to zero forcing polytopes on small graph families — not yet started. Check back for updates.",
+      status: "in progress",
+      abstract:
+        "Grew out of sitting in on an undergraduate thesis defense on the minimal forts of trees, then reading the foundational paper behind it independently. Now an independent study applying Ehrhart theory to zero forcing polytopes on small graph families — foundational reading done, approach identified, write-up in progress.",
       notesLinkLabel: "ask about this",
     },
   },
@@ -169,7 +170,7 @@ const COPY = {
       title: "Zero Forcing Polytopes",
       tag: "python",
       description:
-        "In-progress computational companion to the zero forcing polytopes research above — not yet built. The plan: construct the polytope from a graph's minimum forcing sets and enumerate its lattice points, pruning the search rather than brute-forcing it, since forcing-set enumeration blows up combinatorially past small graphs.",
+        "Computational companion to the zero forcing polytopes research above: construct the polytope from a graph's minimum forcing sets and enumerate its lattice points, pruning the search rather than brute-forcing it, since forcing-set enumeration blows up combinatorially past small graphs. In progress.",
       techStack: "Python",
       mathStack: "Zero forcing · Ehrhart theory · Polytopes & lattice points · Combinatorics",
     },

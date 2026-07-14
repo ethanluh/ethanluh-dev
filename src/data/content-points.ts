@@ -11,8 +11,9 @@ export type ContentPoint = {
   depth: number; // 0..1, effort/complexity judgment — used for hull peeling, not Delaunay
   // true = a real public repo someone can click into today; false = explicitly
   // in-progress/unreleased; omitted = not applicable (experience entries).
-  // Adjusts the hull-peel's depth axis (see index.astro) so an unfinished
-  // deep-research entry can't outrank shipped work for the featured slot.
+  // Adjusts the hull-peel's depth axis (see index.astro): shipped work gets
+  // a bonus, unshipped work a smaller penalty, so a shallow shipped side
+  // project can't outrank deep unshipped research for the featured slot.
   shipped?: boolean;
 };
 
