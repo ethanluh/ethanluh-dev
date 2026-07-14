@@ -34,13 +34,14 @@ const COPY = {
       description: "CS/Math/Stats student at Penn State Behrend — research and projects.",
     },
     hero: {
-      headline: "I build things that turn math into working software: zero forcing polytopes, autonomous drone perception, dev tools.",
+      headline: "Building software at the edge of graph theory and code.",
       ctaWork: "recruiting? → work",
       ctaMath: "researching zero forcing? → the math",
       zeroForcingCaptionPrefix: "Hover a node to see what it is, click to visit —",
       zeroForcingCaptionLink: "how this graph works ↓",
       chipProgram: "CS/Math/Stats · Penn State Behrend",
       chipGradDate: "Grad May 2028",
+      proofStat: "At AgentMade, took PR-bundle review throughput from ~10/day to 30+/day across a 5-person team.",
     },
     work: {
       heading: "Work",
@@ -59,9 +60,9 @@ const COPY = {
     about: {
       heading: "About",
       paragraph1:
-        "My interest in zero forcing began while sitting in on an undergraduate thesis defense on the minimal forts of trees, which led me to read, independently, the foundational paper the defense was built upon. The combinatorics is what held my attention. Since then, most of my work has occupied that same intersection—applying mathematical structure to software problems, and using software to test mathematical ones—from the zero forcing polytope research above to a market-signal model built on graph Laplacian diffusion.",
+        "I first got interested in zero forcing sitting in on an undergraduate thesis defense on the minimal forts of trees, then followed it home — reading back into the foundational paper it built on, on my own, afterward. I stayed for the combinatorics. Most of what I build sits at that same boundary: applying mathematical structure to software problems and using software to test mathematical ones, from the zero forcing polytope work above to a market-signal model that runs diffusion on a graph Laplacian.",
       paragraph2:
-        "Outside of that, I'm the kind of person who takes things apart just to see if I can put them back together again—so far, a couple of old MacBook Pros, an HP Legion, an Apple Magic Mouse, and a pair of speakers have all lived to tell the tale. I fence, chase a frisbee, hit volleyballs and birdies around, and drink more boba tea than is probably good for me.",
+        "Outside of that, I like taking things apart and putting them back together — literally: a couple of old MacBook Pros, an HP Legion, an Apple Magic Mouse, and a pair of speakers have all survived a repair. I fence, and play ultimate frisbee, volleyball, and badminton — and drink more boba tea than is probably reasonable.",
     },
   },
 
