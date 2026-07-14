@@ -34,14 +34,13 @@ const COPY = {
       description: "CS/Math/Stats student at Penn State Behrend — research and projects.",
     },
     hero: {
-      headline: "Building software at the edge of graph theory and code.",
+      headline: "I build things that turn math into working software: zero forcing polytopes, autonomous drone perception, dev tools.",
       ctaWork: "recruiting? → work",
       ctaMath: "researching zero forcing? → the math",
       zeroForcingCaptionPrefix: "Hover a node to see what it is, click to visit —",
       zeroForcingCaptionLink: "how this graph works ↓",
       chipProgram: "CS/Math/Stats · Penn State Behrend",
       chipGradDate: "Grad May 2028",
-      proofStat: "At AgentMade, took PR-bundle review throughput from ~10/day to 30+/day across a 5-person team.",
     },
     work: {
       heading: "Work",
@@ -60,9 +59,9 @@ const COPY = {
     about: {
       heading: "About",
       paragraph1:
-        "I first got interested in zero forcing sitting in on an undergraduate thesis defense on the minimal forts of trees, then followed it home — reading back into the foundational paper it built on, on my own, afterward. I stayed for the combinatorics. Most of what I build sits at that same boundary: applying mathematical structure to software problems and using software to test mathematical ones, from the zero forcing polytope work above to a market-signal model that runs diffusion on a graph Laplacian.",
+        "My interest in zero forcing began while sitting in on an undergraduate thesis defense on the minimal forts of trees, which led me to read, independently, the foundational paper the defense was built upon. The combinatorics is what held my attention. Since then, most of my work has occupied that same intersection—applying mathematical structure to software problems, and using software to test mathematical ones—from the zero forcing polytope research above to a market-signal model built on graph Laplacian diffusion.",
       paragraph2:
-        "Outside of that, I like taking things apart and putting them back together — literally: a couple of old MacBook Pros, an HP Legion, an Apple Magic Mouse, and a pair of speakers have all survived a repair. I fence, and play ultimate frisbee, volleyball, and badminton — and drink more boba tea than is probably reasonable.",
+        "Outside of that, I'm the kind of person who takes things apart just to see if I can put them back together again—so far, a couple of old MacBook Pros, an HP Legion, an Apple Magic Mouse, and a pair of speakers have all lived to tell the tale. I fence, chase a frisbee, hit volleyballs and birdies around, and drink more boba tea than is probably good for me.",
     },
   },
 
@@ -81,7 +80,7 @@ const COPY = {
     aiSecurity: {
       title: "AI & Security",
       tag: "coursework",
-      description: "Machine Learning, Artificial Intelligence, Computer Vision, Cryptography, Machine Learning + Data Science.",
+      description: "Artificial Intelligence, Computer Vision, Cryptography, Machine Learning + Data Science.",
     },
     mathStats: {
       title: "Math & Statistics",
@@ -159,10 +158,9 @@ const COPY = {
   research: {
     zeroForcingPolytopesResearch: {
       title: "Zero Forcing Polytopes",
-      status: "in progress",
-      abstract:
-        "Independent study with Hanely applying Ehrhart theory to zero forcing polytopes on small graph families. Constructs the polytope from a graph's zero forcing sets and studies its lattice-point structure, motivated by the conjecture |𝓕_G| ≥ ⌈n/3⌉ on the number of forcing sets of minimum size.",
-      notesLinkLabel: "notes (ask for a copy)",
+      status: "coming soon",
+      abstract: "Planned independent study applying Ehrhart theory to zero forcing polytopes on small graph families — not yet started. Check back for updates.",
+      notesLinkLabel: "ask about this",
     },
   },
 
@@ -171,7 +169,7 @@ const COPY = {
       title: "Zero Forcing Polytopes",
       tag: "python",
       description:
-        "Computational companion to the research above — builds the zero forcing polytope from a graph's minimum forcing sets and enumerates its lattice points. The open problem: forcing-set enumeration blows up combinatorially past small graphs, so the code has to prune the search rather than brute-force it.",
+        "In-progress computational companion to the zero forcing polytopes research above — not yet built. The plan: construct the polytope from a graph's minimum forcing sets and enumerate its lattice points, pruning the search rather than brute-forcing it, since forcing-set enumeration blows up combinatorially past small graphs.",
       techStack: "Python",
       mathStack: "Zero forcing · Ehrhart theory · Polytopes & lattice points · Combinatorics",
     },
@@ -185,14 +183,15 @@ const COPY = {
     quire: {
       title: "quire",
       tag: "typescript",
-      description: "Triage tool for high-volume AI-generated pull requests — groups PRs by product direction so you review bundles, not diffs.",
+      description:
+        "Direction-triage tool for AI-generated PR swarms — groups PRs pursuing the same product direction into a bundle, so a human makes one accept/defer/reject decision per bundle instead of per PR. A drift-detection system keeps each bundle's stated direction honest to what the PRs inside it actually do.",
       techStack: "TypeScript",
     },
     marketSentimentPredictor: {
       title: "market-sentiment-predictor",
       tag: "python · graph diffusion",
       description:
-        "Models how a signal (an 8-K, a press release) propagates through the market's information hierarchy — sec_corp → institutional → fin_press → informed_retail → uninformed_retail — as a continuous-time heat kernel on the graph Laplacian, then feeds the diffusion lag into 9 quantile-regression models predicting P10/P50/P90 forward returns at three horizons. The gotcha: diffusion has to run on the Laplacian transpose, or the signal propagates backwards against edge direction.",
+        "Models how a signal (an SEC filing, a press release) propagates through the market's information hierarchy — SEC filings → institutional investors → financial media → retail — as a continuous-time heat kernel on the graph Laplacian, then feeds the diffusion lag into quantile-regression models predicting P10/P50/P90 forward returns at three horizons (1-hour, 1-day, 5-day).",
       techStack: "Python",
       mathStack: "Graph Laplacian diffusion · Quantile regression",
     },
@@ -203,7 +202,7 @@ const COPY = {
       role: "Software Engineering Intern",
       org: "AgentMade",
       description:
-        "Built and open-sourced Quire (see Projects), a triage multiplexer for AI-generated pull requests, as the core engineering contribution on a 5-person engineering team — took each engineer's reviewable PR-bundle throughput from ~10/day to 30+/day.",
+        "Built and open-sourced Quire (see Projects), a triage tool for AI-generated pull requests, and an internal changelog manager. Worked across the frontend of the full application, and researched ways to improve the team's internal use of agent loops and fleets—work that fed into improving how agents are used in the product itself.",
     },
     uasSoftwareLead: {
       role: "Software Team Lead",
