@@ -169,7 +169,7 @@ const COPY = {
       title: "Zero Forcing Polytopes",
       tag: "python",
       description:
-        "Computational companion to the research above — builds the zero forcing polytope from a graph's minimum forcing sets and enumerates its lattice points. The open problem: forcing-set enumeration blows up combinatorially past small graphs, so the code has to prune the search rather than brute-force it.",
+        "In-progress computational companion to the zero forcing polytopes research above — not yet built. The plan: construct the polytope from a graph's minimum forcing sets and enumerate its lattice points, pruning the search rather than brute-forcing it, since forcing-set enumeration blows up combinatorially past small graphs.",
       techStack: "Python",
       mathStack: "Zero forcing · Ehrhart theory · Polytopes & lattice points · Combinatorics",
     },
