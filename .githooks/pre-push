@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# Local reminder only — git hooks can't see PR body content, so this can't verify the
+# declared-direction marker itself. Installed by Quire's repo setup — see CLAUDE.md.
+echo "Reminder: if this push opens or updates a PR, its body needs a <!-- declared-direction: ... --> marker for Quire." >&2
+exit 0
