@@ -34,14 +34,13 @@ const COPY = {
       description: "CS/Math/Stats student at Penn State Behrend — research and projects.",
     },
     hero: {
-      headline: "Building software at the edge of graph theory and code.",
+      headline: "I build things that turn math into working software: zero forcing polytopes, autonomous drone perception, dev tools.",
       ctaWork: "recruiting? → work",
       ctaMath: "researching zero forcing? → the math",
       zeroForcingCaptionPrefix: "Hover a node to see what it is, click to visit —",
       zeroForcingCaptionLink: "how this graph works ↓",
       chipProgram: "CS/Math/Stats · Penn State Behrend",
       chipGradDate: "Grad May 2028",
-      proofStat: "At AgentMade, took PR-bundle review throughput from ~10/day to 30+/day across a 5-person team.",
     },
     work: {
       heading: "Work",
