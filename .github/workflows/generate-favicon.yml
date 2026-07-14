@@ -1,0 +1,39 @@
+name: Generate favicon
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/data/content-points.ts"
+      - "src/lib/geometry/related.ts"
+      - "src/lib/zeroForcing.ts"
+      - "scripts/generate-favicon.ts"
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci
+      - run: npm run generate:favicon
+
+      - name: Commit favicon if changed
+        run: |
+          if git diff --quiet -- public/favicon.svg; then
+            echo "favicon.svg unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/favicon.svg
+          git commit -m "Regenerate favicon from content graph"
+          git push
