@@ -36,6 +36,7 @@ export const projects: ProjectEntry[] = [
     href: "https://github.com/ethanluh/preference-layer",
     image: "/preference-layer-diagram.svg",
     techStack: copy("projects.preferenceLayer.techStack").split(" · "),
+    mathStack: copy("projects.preferenceLayer.mathStack").split(" · "),
   },
   {
     slug: "quire",
@@ -49,6 +50,7 @@ export const projects: ProjectEntry[] = [
     ],
     image: "/quire-diagram.svg",
     techStack: copy("projects.quire.techStack").split(" · "),
+    mathStack: copy("projects.quire.mathStack").split(" · "),
   },
   {
     slug: "market-sentiment-predictor",
