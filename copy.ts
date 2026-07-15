@@ -146,12 +146,20 @@ const COPY = {
       site: { label: "This Site", items: "Astro · Tailwind CSS" },
     },
     math: {
-      graphTheory: { label: "Graph Theory", items: "Zero forcing · Graph Laplacian diffusion" },
+      graphTheory: {
+        label: "Graph Theory",
+        items:
+          "Zero forcing · Graph Laplacian diffusion · Similarity graphs & connected components · Conflict graphs & graph coloring · Spectral graph theory",
+      },
       geometry: {
         label: "Combinatorics & Discrete Geometry",
-        items: "Ehrhart theory · Polytopes & lattice points · Convex hull peeling · Delaunay triangulation",
+        items:
+          "Ehrhart theory · Polytopes & lattice points · Convex hull peeling · Delaunay triangulation · Simplicial complexes",
       },
-      statistics: { label: "Statistics", items: "Quantile regression" },
+      statistics: {
+        label: "Statistics & Probability",
+        items: "Quantile regression · Bayesian conjugate priors (Beta-Binomial, Normal-Normal) · Ranking fusion (NDCG@10)",
+      },
     },
   },
 
@@ -176,17 +184,19 @@ const COPY = {
     },
     preferenceLayer: {
       title: "preference-layer",
-      tag: "python",
+      tag: "python · bayesian ranking",
       description:
-        "Portable preference infrastructure and API for the agentic web — user-controlled preference credentials and profile-conditioned product intelligence for AI shopping agents.",
+        "Portable preference infrastructure and API for the agentic web — user-controlled preference credentials (Ed25519-signed, W3C Verifiable-Credentials-style, selectively disclosable) and profile-conditioned product intelligence for AI shopping agents. Preferences live in a sparse directed acyclic graph rather than flat embeddings, so hierarchical structure (laptop preferences → headphone preferences) supports transfer learning across product categories. A quality-intelligence layer extracts profile-conditioned signals from unstructured review text via TF-IDF/softmax scoring, then aggregates the noisy per-review signals with Beta-Binomial and Normal-Normal conjugate-prior Bayesian shrinkage; final ranking blends preference and quality scores through a tunable α-blend fusion function, evaluated against NDCG@10.",
       techStack: "Python",
+      mathStack: "Bayesian conjugate priors (Beta-Binomial, Normal-Normal) · TF-IDF & softmax scoring · DAG-structured preference graphs · Ranking fusion (NDCG@10)",
     },
     quire: {
       title: "quire",
-      tag: "typescript",
+      tag: "typescript · graph theory",
       description:
-        "Direction-triage tool for AI-generated PR swarms — groups PRs pursuing the same product direction into a bundle, so a human makes one accept/defer/reject decision per bundle instead of per PR. A drift-detection system keeps each bundle's stated direction honest to what the PRs inside it actually do.",
+        "Direction-triage tool for AI-generated PR swarms — groups PRs pursuing the same product direction into a bundle, so a human makes one accept/defer/reject decision per bundle instead of per PR. Bundling runs connected-components clustering over a similarity graph (PRs as nodes, cosine similarity between effect-summaries as edges); a drift-detection system keeps each bundle's stated direction honest to what the PRs inside it actually do. A conflict graph over file-overlap between queued bundles drives merge-queue scheduling, with exploratory work extending symbol-coherence checks to simplicial complexes and bundle-cohesion metrics to spectral graph theory (Fiedler value).",
       techStack: "TypeScript",
+      mathStack: "Similarity graphs & connected components · Conflict graphs & graph coloring · Simplicial complexes · Spectral graph theory",
     },
     marketSentimentPredictor: {
       title: "market-sentiment-predictor",
