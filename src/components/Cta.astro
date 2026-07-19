@@ -1,0 +1,34 @@
+---
+interface Props {
+  variant: "primary" | "secondary";
+  href?: string;
+  resumeTrigger?: boolean;
+  arrow?: boolean;
+  class?: string;
+}
+
+const { variant, href, resumeTrigger, arrow = false, class: className } = Astro.props;
+const cls = [variant === "primary" ? "btn-primary" : "btn-secondary", className].filter(Boolean).join(" ");
+---
+
+{
+  href ? (
+    <a href={href} class={cls}>
+      <slot />
+      {arrow && (
+        <span class="btn-arrow" aria-hidden="true">
+          &rarr;
+        </span>
+      )}
+    </a>
+  ) : (
+    <button type="button" data-resume-trigger class={cls}>
+      <slot />
+      {arrow && (
+        <span class="btn-arrow" aria-hidden="true">
+          &rarr;
+        </span>
+      )}
+    </button>
+  )
+}

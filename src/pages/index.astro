@@ -3,10 +3,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SpecimenCard from "../components/SpecimenCard.astro";
 import FeaturedProjectCard from "../components/FeaturedProjectCard.astro";
 import ZeroForcingHero from "../components/ZeroForcingHero.astro";
+import Cta from "../components/Cta.astro";
 import { research } from "../content/research";
 import { projects } from "../content/projects";
 import { experience } from "../content/experience";
 import { CONTENT_POINTS } from "../data/content-points";
+import { CONTACT_EMAIL, SOCIAL_LINKS, PERSONAL_SITE } from "../content/site";
 import { peelLayers } from "../lib/geometry/hull";
 import { relatedIndices, edgesFromNeighbors, MIN_POINTS_FOR_DELAUNAY } from "../lib/geometry/related";
 import { copy } from "../lib/copy";
@@ -19,8 +21,10 @@ type WorkEntry = {
   title: string;
   tag: string;
   description: string;
+  impact?: string;
   href?: string;
   image?: string;
+  imageAlt?: string;
   links?: { label: string; href: string }[];
   techStack?: string[];
   mathStack?: string[];
@@ -35,6 +39,7 @@ const workEntries: WorkEntry[] = [
       title: r.title,
       tag: `${r.status} · updated ${r.updated}`,
       description: r.abstract,
+      impact: r.impact,
       links: r.links,
     }),
   ),
@@ -46,9 +51,11 @@ const workEntries: WorkEntry[] = [
       title: p.title,
       tag: p.tag,
       description: p.description,
+      impact: p.impact,
       href: p.href,
       links: p.links,
       image: p.image,
+      imageAlt: p.imageAlt,
       techStack: p.techStack,
       mathStack: p.mathStack,
     }),
@@ -61,6 +68,7 @@ const workEntries: WorkEntry[] = [
       title: e.role,
       tag: `${e.org} · ${e.dates}`,
       description: e.description,
+      impact: e.impact,
     }),
   ),
 ];
@@ -81,6 +89,25 @@ const orderedWorkSlugs = workLayers.flatMap((layer) => [...layer].sort((a, b) =>
 const orderedWork = orderedWorkSlugs.map((slug) => workBySlug.get(slug)).filter((w): w is WorkEntry => Boolean(w));
 
 const [featuredWork, ...restWork] = orderedWork;
+
+// --- Status + rank-reason microcopy, derived from the same hull-peel data ---
+const contentPointBySlug = new Map(CONTENT_POINTS.map((p) => [p.slug, p]));
+const layer0Slugs = new Set((workLayers[0] ?? []).map((p) => p.slug));
+
+function statusFor(slug: string): "live" | "shipped" | "inProgress" {
+  if (slug === "quire") return "live";
+  const point = contentPointBySlug.get(slug);
+  if (point?.shipped === false) return "inProgress";
+  return "shipped";
+}
+
+function rankReasonFor(slug: string): "featured" | "frontier" | "shippedRecent" | "earlier" {
+  if (slug === orderedWorkSlugs[0]) return "featured";
+  if (layer0Slugs.has(slug)) return "frontier";
+  const point = contentPointBySlug.get(slug);
+  if (point?.shipped === true && point.recency >= 0.5) return "shippedRecent";
+  return "earlier";
+}
 
 // --- Related-content: Delaunay triangulation over (topic, recency) ---
 // Gated on MIN_POINTS_FOR_DELAUNAY — below that, neighbors are near-arbitrary.
@@ -110,54 +137,79 @@ function delaunayFor(slug: string) {
   railSections={[
     { label: copy("home.work.heading"), href: "#work" },
     { label: copy("home.about.heading"), href: "#about" },
+    { label: copy("home.contact.heading"), href: "#contact" },
   ]}
 >
-  <section class="pt-12 pb-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
-    <div class="max-w-2xl">
-      <h1 class="font-display text-h1 leading-tight mb-4">
+  <section class="section-block-hero flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10 lg:min-h-[calc(88svh-var(--header-height))]">
+    <div class="max-w-2xl flex flex-col gap-3 lg:gap-4">
+      <h1 class="hero-enter font-display text-h1" style="--enter-order: 0">
         {copy("home.hero.headline")}
       </h1>
-      <p class="font-mono text-xs uppercase tracking-widest text-stone leading-relaxed">
-        {copy("home.hero.chipProgram")}
-        <br />
-        {copy("home.hero.chipGradDate")}
+      <p class="hero-enter text-parchment/90 max-w-xl leading-snug sm:leading-relaxed" style="--enter-order: 1">
+        {copy("home.hero.subhead")}
       </p>
-      <p class="font-mono text-xs text-stone mt-4 flex flex-wrap gap-x-4 gap-y-1">
-        <a href="#work" class="hover:text-moss transition-colors duration-150">
-          {copy("home.hero.ctaWork")}
-        </a>
-        <a href="#content-zero-forcing-polytopes-research" class="hover:text-moss transition-colors duration-150">
+      <div class="hero-enter" style="--enter-order: 2">
+        <p class="font-mono text-xs uppercase tracking-widest text-stone leading-snug">
+          {copy("home.hero.chipProgram")}
+          <br />
+          {copy("home.hero.chipGradDate")}
+        </p>
+        <div class="flex flex-wrap gap-1.5 mt-2">
+          <span class="border border-bark rounded-sm px-2 py-0.5 text-[0.8125rem] text-stone font-mono">
+            <span class="text-moss" aria-hidden="true">&#9679;</span> {copy("home.hero.chipShipped")}
+          </span>
+          <span class="border border-bark rounded-sm px-2 py-0.5 text-[0.8125rem] text-stone font-mono">
+            {copy("home.hero.chipTeam")}
+          </span>
+          <span class="border border-bark rounded-sm px-2 py-0.5 text-[0.8125rem] text-stone font-mono">
+            {copy("home.hero.chipResearch")}
+          </span>
+        </div>
+      </div>
+      <div class="hero-enter flex flex-wrap items-center gap-3" style="--enter-order: 3">
+        <Cta variant="primary" href={`mailto:${CONTACT_EMAIL}`} arrow>{copy("home.hero.ctaEmail")}</Cta>
+        <Cta variant="secondary" resumeTrigger>{copy("home.hero.ctaResume")}</Cta>
+      </div>
+      <p class="font-mono text-xs text-stone">
+        <a href="#content-zero-forcing-polytopes-research" class="tap-target hover:text-moss transition-colors duration-150">
           {copy("home.hero.ctaMath")}
         </a>
       </p>
     </div>
-    <div class="w-full lg:w-[26rem] lg:shrink-0">
+    <div class="hero-enter w-full max-w-[22rem] mx-auto lg:max-w-none lg:mx-0 lg:w-[26rem] lg:shrink-0" style="--enter-order: 5">
       <ZeroForcingHero />
     </div>
   </section>
 
-  <section id="work" class="pt-2 pb-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">{copy("home.work.heading")}</h2>
-    <p class="font-mono text-xs text-stone mb-2">
-      {copy("home.work.introPrefix")} <a href="/how-it-works" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.introLinkLabel")}</a>.
-    </p>
-    <p class="font-mono text-xs text-stone mb-8">
-      {copy("home.work.stackLine")} <a href="/stack" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.stackLinkLabel")}</a>
-    </p>
+  <section id="work" class="section-block scroll-mt-16">
+    <h2 class="reveal rule-draw font-display text-h3 mb-6">{copy("home.work.heading")}</h2>
+    <div class="mb-12">
+      <p class="font-mono text-xs text-stone mb-2">
+        {copy("home.work.introPrefix")} <a href="/how-it-works" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.introLinkLabel")}</a>.
+      </p>
+      <p class="font-mono text-xs text-stone">
+        {copy("home.work.stackLine")} <a href="/stack" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.stackLinkLabel")}</a>
+      </p>
+    </div>
 
     {featuredWork && (
-      <div class="reveal mb-10">
+      <div class="reveal mb-16">
         <FeaturedProjectCard
           id={`content-${featuredWork.slug}`}
           number={featuredWork.number}
           title={featuredWork.title}
           tag={featuredWork.tag}
           description={featuredWork.description}
+          impact={featuredWork.impact}
           href={featuredWork.href}
           links={featuredWork.links}
           image={featuredWork.image}
+          imageAlt={featuredWork.imageAlt}
           kindLabel={featuredWork.kind}
           eyebrow={copy("home.work.featuredEyebrow")}
+          statusKind={statusFor(featuredWork.slug)}
+          statusLabel={copy(`home.work.status.${statusFor(featuredWork.slug)}`)}
+          rankReason={copy(`home.work.rankReason.${rankReasonFor(featuredWork.slug)}`)}
           related={relatedFor(featuredWork.slug)}
           delaunay={delaunayFor(featuredWork.slug)}
           techStack={featuredWork.techStack}
@@ -166,7 +218,7 @@ function delaunayFor(slug: string) {
       </div>
     )}
 
-    <div class="flex flex-col gap-10">
+    <div class="flex flex-col gap-14">
       {
         (["project", "experience", "research"] as const).map((kind) => {
           const entries = restWork.filter((entry) => entry.kind === kind);
@@ -177,18 +229,23 @@ function delaunayFor(slug: string) {
                 {copy(`home.work.trackLabel.${kind}`)}
               </p>
               <div class="flex flex-col gap-4">
-                {entries.map((entry) => (
-                  <div class="reveal">
+                {entries.map((entry, i) => (
+                  <div class="reveal" style={`--reveal-delay: ${Math.min(i * 90, 270)}ms`}>
                     <SpecimenCard
                       id={`content-${entry.slug}`}
                       number={entry.number}
                       title={entry.title}
                       tag={entry.tag}
                       description={entry.description}
+                      impact={entry.impact}
                       links={entry.links ?? (entry.href ? [{ label: "view", href: entry.href }] : [])}
                       image={entry.image}
+                      imageAlt={entry.imageAlt}
                       variant={entry.kind}
                       kindLabel={entry.kind}
+                      statusKind={statusFor(entry.slug)}
+                      statusLabel={copy(`home.work.status.${statusFor(entry.slug)}`)}
+                      rankReason={copy(`home.work.rankReason.${rankReasonFor(entry.slug)}`)}
                       related={relatedFor(entry.slug)}
                       delaunay={delaunayFor(entry.slug)}
                       techStack={entry.techStack}
@@ -202,10 +259,21 @@ function delaunayFor(slug: string) {
         })
       }
     </div>
+
+    <p class="font-mono text-xs text-stone mt-12">
+      {copy("home.work.outro")}{" "}
+      <button type="button" data-resume-trigger class="tap-target text-moss hover:text-parchment transition-colors duration-150 cursor-pointer">
+        {copy("home.work.outroResumeLabel")}
+      </button>{" "}
+      {copy("home.work.outroContactSuffix")}{" "}
+      <a href="#contact" class="tap-target text-moss hover:text-parchment transition-colors duration-150">
+        {copy("home.work.outroContactLabel")}
+      </a>.
+    </p>
   </section>
 
-  <section id="about" class="py-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">{copy("home.about.heading")}</h2>
+  <section id="about" class="section-block scroll-mt-16">
+    <h2 class="reveal rule-draw font-display text-h3 mb-6">{copy("home.about.heading")}</h2>
     <div class="reveal grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-10 items-start">
       <div class="max-w-xl text-parchment/90 flex flex-col gap-4">
         <p>{copy("home.about.paragraph1")}</p>
@@ -220,6 +288,34 @@ function delaunayFor(slug: string) {
           loading="lazy"
         />
       </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section-block pb-24 border-t border-bark scroll-mt-16">
+    <div class="max-w-2xl">
+      <h2 class="reveal rule-draw font-display text-h3 mb-6">{copy("home.contact.heading")}</h2>
+      <p class="reveal text-parchment/90 mb-8" style="--reveal-delay: 90ms">
+        {copy("home.contact.body")}
+      </p>
+      <div class="reveal flex flex-wrap items-center gap-3 mb-8" style="--reveal-delay: 180ms">
+        <Cta variant="primary" href={`mailto:${CONTACT_EMAIL}`} arrow>{copy("home.contact.ctaEmail")}</Cta>
+        <Cta variant="secondary" resumeTrigger>{copy("home.contact.ctaResume")}</Cta>
+      </div>
+      <p class="reveal font-mono text-xs text-stone" style="--reveal-delay: 270ms">
+        {copy("home.contact.elsewhere")}{" "}
+        {SOCIAL_LINKS.map((link, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true"> &middot; </span>}
+            <a href={link.href} target="_blank" rel="noopener noreferrer" class="tap-target hover:text-moss transition-colors duration-150">
+              {link.label}
+            </a>
+          </>
+        ))}
+        <span aria-hidden="true"> &middot; </span>
+        <a href={PERSONAL_SITE.href} class="tap-target hover:text-moss transition-colors duration-150">
+          {PERSONAL_SITE.label}
+        </a>
+      </p>
     </div>
   </section>
 </BaseLayout>
@@ -240,7 +336,7 @@ function delaunayFor(slug: string) {
           }
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.1, rootMargin: "0px 0px -8% 0px" },
     );
     reveals.forEach((el) => observer.observe(el));
   }
@@ -252,18 +348,6 @@ function delaunayFor(slug: string) {
     flex: 1;
     height: 1px;
     background: var(--color-bark);
-  }
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(12px);
-    transition:
-      opacity var(--duration-base, 300ms) var(--ease-field),
-      transform var(--duration-base, 300ms) var(--ease-field);
-  }
-  .reveal.in-view {
-    opacity: 1;
-    transform: translateY(0);
   }
 
   .about-photo {

@@ -14,11 +14,16 @@ interface Props {
   title: string;
   tag: string;
   description: string;
+  impact?: string;
   href?: string;
   links?: { label: string; href: string }[];
   image?: string;
+  imageAlt?: string;
   kindLabel?: string;
   eyebrow?: string;
+  statusKind?: "live" | "shipped" | "inProgress";
+  statusLabel?: string;
+  rankReason?: string;
   related?: { title: string; href: string }[];
   delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
   techStack?: string[];
@@ -31,11 +36,16 @@ const {
   title,
   tag,
   description,
+  impact,
   href,
   links: linksProp,
   image,
+  imageAlt,
   kindLabel,
   eyebrow,
+  statusKind,
+  statusLabel,
+  rankReason,
   related = [],
   delaunay,
   techStack = [],
@@ -51,16 +61,24 @@ const hasDetails = description.length > 160 || links.length > 0;
   <div class="flex flex-col">
     <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-3">
       <span class="uppercase tracking-widest text-moss">{eyebrow ?? "Featured"}{kindLabel && ` · ${kindLabel}`}</span>
+      {rankReason && <span class="text-stone text-[0.7rem] normal-case tracking-normal">{rankReason}</span>}
       <span class="text-stone" aria-hidden="true">·</span>
       <span class="text-stone">no. {number}</span>
+      {statusLabel && (
+        <span class="chip text-stone">
+          {statusKind === "live" && <span class="text-moss" aria-hidden="true">&#9679; </span>}
+          {statusLabel}
+        </span>
+      )}
       {tags.map((entry) => (
         <span class="chip text-stone">{entry}</span>
       ))}
     </div>
     <div class="flex flex-col flex-1">
-      <h3 class="font-display text-3xl mb-3 flex items-center gap-2">
+      <h3 class="font-display text-h3 mb-3 flex items-center gap-2">
         {title}
       </h3>
+      {impact && <p class="text-parchment mb-1">{impact}</p>}
       <p class="text-parchment/90 mb-3">{description}</p>
       {
         techStack.length > 0 && (
@@ -80,7 +98,7 @@ const hasDetails = description.length > 160 || links.length > 0;
         hasDetails && (
           <button
             type="button"
-            class="details-trigger font-mono text-xs text-moss hover:text-parchment transition-colors duration-150 mb-3 self-start"
+            class="details-trigger tap-target font-mono text-xs text-moss hover:text-parchment transition-colors duration-150 mb-3 self-start"
             aria-haspopup="dialog"
             data-number={number}
             data-title={title}
@@ -112,7 +130,13 @@ const hasDetails = description.length > 160 || links.length > 0;
         tabindex={imageHref ? 0 : -1}
         aria-hidden={imageHref ? undefined : "true"}
       >
-        <img src={image} alt="" class="featured-image w-full h-auto block" loading="lazy" />
+        <img
+          src={image}
+          alt={imageAlt ?? ""}
+          aria-hidden={imageAlt ? undefined : "true"}
+          class="featured-image w-full h-auto block"
+          loading="lazy"
+        />
       </a>
     )
   }
