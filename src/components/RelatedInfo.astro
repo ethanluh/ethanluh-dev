@@ -19,7 +19,7 @@ const { related, delaunay } = Astro.props;
 {
   related.length > 0 && (
     <span class="related-info">
-      <button type="button" class="related-trigger font-mono text-xs">
+      <button type="button" class="related-trigger tap-target font-mono text-xs">
         ⓘ {related.length} related
       </button>
       <span class="related-popover" role="note">
@@ -55,7 +55,7 @@ const { related, delaunay } = Astro.props;
   .related-trigger {
     background: none;
     border: none;
-    padding: 0;
+    padding-inline: 0;
     color: var(--color-stone);
     border-bottom: 1px dotted var(--color-stone);
     cursor: help;

@@ -118,6 +118,12 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
     color: var(--color-moss);
   }
 
+  .nav-menu-toggle {
+    padding: 0.875rem;
+    margin-block: -0.875rem;
+    margin-inline-end: -0.875rem;
+  }
+
   .nav-menu-bar {
     display: block;
     width: 1.25rem;
@@ -136,7 +142,7 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
 
   .nav-menu-resume {
     text-align: left;
-    padding: 0;
+    padding-inline: 0;
     background: none;
     border: none;
     font-family: var(--font-mono);
