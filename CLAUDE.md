@@ -13,7 +13,7 @@ A PR missing it still gets triaged, just on its own instead of grouped with rela
 # CLAUDE.md
 
 ## Project
-ethanluh.com — dev/professional site. Astro + Tailwind static site, "Field Guide" design concept (see `ethanluh-design-spec.md` handoff for the full spec).
+ethanluh.com — dev/professional site. Astro + Tailwind static site, "Field Guide" design concept (see `docs/design-spec-sheet.html` handoff for the full spec).
 
 ## Stack
 Astro 7, Tailwind CSS v4 (via `@tailwindcss/vite`), TypeScript. No backend, no database.
@@ -43,7 +43,7 @@ Always base the PR body on `.github/pull_request_template.md` — don't fall bac
 - `src/data/content-points.ts` — hand-scored (topic, recency, depth) points driving hull-peel ordering, Delaunay "related", and the zero-forcing hero graph
 - `src/lib/` — `copy.ts` (copy.ts loader), `zeroForcing.ts`, `geometry/` (hull peeling, Delaunay-ish related-content)
 - `src/styles/` — `global.css`, Tailwind v4 `@theme` design tokens
-- `public/` — static assets, including `resume.pdf` (must be added — not yet present)
+- `public/` — static assets, including `resume.pdf`
 
 ## Out of scope
 Claude Code should not modify `.github/workflows/` without explicit request.

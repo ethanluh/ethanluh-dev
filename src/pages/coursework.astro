@@ -32,8 +32,8 @@ function delaunayFor(slug: string) {
   description={copy("coursework.meta.description")}
   railSections={coursework.map((entry) => ({ label: entry.title, href: `#content-${entry.slug}` }))}
 >
-  <section class="section-block scroll-mt-16">
-    <h2 class="font-display text-h3 rule-draw mb-6">{copy("coursework.heading")}</h2>
+  <section class="section-block scroll-mt-24">
+    <h2 class="reveal font-display text-h3 rule-draw mb-6">{copy("coursework.heading")}</h2>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
       {
         coursework.map((entry) => (

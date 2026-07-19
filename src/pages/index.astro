@@ -37,7 +37,7 @@ const workEntries: WorkEntry[] = [
       kind: "research",
       number: r.number,
       title: r.title,
-      tag: `${r.status} · updated ${r.updated}`,
+      tag: `updated ${r.updated}`,
       description: r.abstract,
       impact: r.impact,
       links: r.links,
@@ -154,23 +154,23 @@ function delaunayFor(slug: string) {
           <br />
           {copy("home.hero.chipGradDate")}
         </p>
-        <div class="flex flex-wrap gap-1.5 mt-2">
-          <span class="border border-bark rounded-sm px-2 py-0.5 text-[0.8125rem] text-stone font-mono">
+        <ul class="flex flex-wrap gap-1.5 mt-2">
+          <li class="chip border border-stone/40 text-[0.8125rem] text-stone font-mono">
             <span class="text-moss" aria-hidden="true">&#9679;</span> {copy("home.hero.chipShipped")}
-          </span>
-          <span class="border border-bark rounded-sm px-2 py-0.5 text-[0.8125rem] text-stone font-mono">
+          </li>
+          <li class="chip border border-stone/40 text-[0.8125rem] text-stone font-mono">
             {copy("home.hero.chipTeam")}
-          </span>
-          <span class="border border-bark rounded-sm px-2 py-0.5 text-[0.8125rem] text-stone font-mono">
+          </li>
+          <li class="chip border border-stone/40 text-[0.8125rem] text-stone font-mono">
             {copy("home.hero.chipResearch")}
-          </span>
-        </div>
+          </li>
+        </ul>
       </div>
       <div class="hero-enter flex flex-wrap items-center gap-3" style="--enter-order: 3">
         <Cta variant="primary" href={`mailto:${CONTACT_EMAIL}`} arrow>{copy("home.hero.ctaEmail")}</Cta>
         <Cta variant="secondary" resumeTrigger>{copy("home.hero.ctaResume")}</Cta>
       </div>
-      <p class="font-mono text-xs text-stone">
+      <p class="hero-enter font-mono text-xs text-stone" style="--enter-order: 4">
         <a href="#content-zero-forcing-polytopes-research" class="tap-target hover:text-moss transition-colors duration-150">
           {copy("home.hero.ctaMath")}
         </a>
@@ -181,7 +181,7 @@ function delaunayFor(slug: string) {
     </div>
   </section>
 
-  <section id="work" class="section-block scroll-mt-16">
+  <section id="work" class="section-block scroll-mt-24">
     <h2 class="reveal rule-draw font-display text-h3 mb-6">{copy("home.work.heading")}</h2>
     <div class="mb-12">
       <p class="font-mono text-xs text-stone mb-2">
@@ -225,7 +225,7 @@ function delaunayFor(slug: string) {
           if (entries.length === 0) return null;
           return (
             <div>
-              <p class="font-mono text-[0.65rem] uppercase tracking-widest text-stone mb-3 flex items-center gap-3 track-label">
+              <p class="font-mono text-[0.75rem] uppercase tracking-widest text-stone mt-2 mb-3 flex items-center gap-3 track-label">
                 {copy(`home.work.trackLabel.${kind}`)}
               </p>
               <div class="flex flex-col gap-4">
@@ -272,7 +272,7 @@ function delaunayFor(slug: string) {
     </p>
   </section>
 
-  <section id="about" class="section-block scroll-mt-16">
+  <section id="about" class="section-block scroll-mt-24">
     <h2 class="reveal rule-draw font-display text-h3 mb-6">{copy("home.about.heading")}</h2>
     <div class="reveal grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-10 items-start">
       <div class="max-w-xl text-parchment/90 flex flex-col gap-4">
@@ -291,7 +291,7 @@ function delaunayFor(slug: string) {
     </div>
   </section>
 
-  <section id="contact" class="section-block pb-24 border-t border-bark scroll-mt-16">
+  <section id="contact" class="section-block pb-24 border-t border-bark scroll-mt-24">
     <div class="max-w-2xl">
       <h2 class="reveal rule-draw font-display text-h3 mb-6">{copy("home.contact.heading")}</h2>
       <p class="reveal text-parchment/90 mb-8" style="--reveal-delay: 90ms">

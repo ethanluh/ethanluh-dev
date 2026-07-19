@@ -34,14 +34,13 @@ const COPY = {
     meta: {
       title: "Ethan Luh — math into working software",
       description:
-        "CS/Math/Stats student at Penn State Behrend. Zero forcing polytope research, autonomous drone perception, and shipped dev tools like quire (quire-review.com).",
+        "CS/Math/Stats student at Penn State Behrend. Zero forcing research, drone perception, and shipped dev tools like quire.",
     },
     hero: {
       headline: "Math into working software.",
       subhead:
-        "I'm Ethan Luh — a CS/Math/Stats student who ships the software his math implies: zero forcing polytope research, an autonomous drone perception pipeline, and dev tools for reviewing AI-generated code.",
-      ctaWork: "recruiting? → work",
-      ctaMath: "Researching zero forcing? Start with the math →",
+        "I'm Ethan Luh — a CS/Math/Stats student who ships the software his math implies: zero forcing polytope research, an autonomous drone perception pipeline, and dev tools for triaging AI-generated pull requests.",
+      ctaMath: "researching zero forcing? → the math",
       ctaEmail: "Email me",
       ctaResume: "Résumé",
       zeroForcingCaptionPrefix: "Hover a node to see what it is, click to visit —",
