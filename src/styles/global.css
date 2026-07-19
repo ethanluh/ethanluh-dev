@@ -12,10 +12,16 @@
   --font-body: "IBM Plex Sans", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
-  --text-h1: 3.5rem;
-  --text-h2: 2.25rem;
-  --text-h3: 1.6rem;
+  --text-h1: clamp(2.375rem, 1.55rem + 3.3vw, 4.25rem);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h2: clamp(1.75rem, 1.4rem + 1.7vw, 2.25rem);
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h3: clamp(1.35rem, 1.22rem + 0.6vw, 1.6rem);
+  --text-h3--line-height: 1.25;
   --text-body: 1.0625rem;
+  --text-body--line-height: 1.65;
   --text-mono: 0.875rem;
 
   --spacing-1: 0.5rem;
@@ -27,6 +33,11 @@
   --ease-field: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-base: 300ms;
   --duration-stagger: 220ms;
+
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-slow: 600ms;
+  --stagger-step: 90ms;
 }
 
 :root {
@@ -107,6 +118,17 @@
     font-weight: 600;
   }
 
+  h1,
+  h2 {
+    text-wrap: balance;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-optical-sizing: auto;
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-moss);
     outline-offset: 2px;
@@ -123,6 +145,17 @@
   }
 }
 
+@keyframes enter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @layer components {
   /* Small rounded tag used in the Work-card meta row (research/project/experience). */
   .chip {
@@ -130,5 +163,128 @@
     background-color: color-mix(in srgb, var(--color-canopy) 60%, transparent);
     border-radius: 999px;
     padding: 0.125rem 0.6rem;
+  }
+
+  .hero-enter {
+    animation: enter-rise var(--duration-slow) var(--ease-enter) both;
+    animation-delay: calc(var(--enter-order, 0) * var(--stagger-step));
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity var(--duration-slow) var(--ease-enter),
+      transform var(--duration-slow) var(--ease-enter);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .rule-draw {
+    position: relative;
+    padding-left: 1rem;
+  }
+
+  .rule-draw::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.1em;
+    bottom: 0.1em;
+    width: 2px;
+    background: var(--color-moss);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform var(--duration-base) var(--ease-field);
+  }
+
+  .reveal.in-view .rule-draw::before,
+  .rule-draw.in-view::before,
+  .reveal.in-view.rule-draw::before {
+    transform: scaleY(1);
+  }
+
+  .section-block {
+    padding-block: clamp(4rem, 2.5rem + 4vw, 6.5rem);
+  }
+
+  .section-block-hero {
+    padding-block: clamp(3rem, 2rem + 3vw, 4.5rem);
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: var(--text-mono, 0.75rem);
+    padding: 0.65rem 1.4rem;
+    min-height: 2.75rem;
+    border-radius: 0.125rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition:
+      transform var(--duration-fast) var(--ease-field),
+      box-shadow var(--duration-fast) var(--ease-field),
+      background-color var(--duration-fast) var(--ease-field);
+  }
+
+  .btn-primary {
+    background: var(--color-moss);
+    color: var(--color-canopy);
+  }
+
+  .btn-primary:hover,
+  .btn-primary:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--color-moss) 60%, transparent);
+  }
+
+  .btn-primary .btn-arrow {
+    display: inline-block;
+    transition: transform var(--duration-fast) var(--ease-field);
+  }
+
+  .btn-primary:hover .btn-arrow,
+  .btn-primary:focus-visible .btn-arrow {
+    transform: translateX(3px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--color-moss);
+    color: var(--color-moss);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-secondary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--color-moss) 15%, transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-field);
+  }
+
+  .btn-secondary:hover::before,
+  .btn-secondary:focus-visible::before {
+    transform: scaleX(1);
+  }
+
+  .btn-secondary > * {
+    position: relative;
+  }
+
+  .tap-target {
+    padding-block: 0.625rem;
+    margin-block: -0.625rem;
   }
 }
