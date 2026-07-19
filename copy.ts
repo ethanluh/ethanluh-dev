@@ -47,9 +47,9 @@ const COPY = {
       zeroForcingCaptionLink: "how this graph works ↓",
       chipProgram: "CS/Math/Stats · Penn State Behrend",
       chipGradDate: "Grad May 2028",
-      chipShipped: "3 shipped projects · 1 live app",
-      chipTeam: "Leads a 10-person drone software team",
-      chipResearch: "Zero forcing research in progress",
+      chipShipped: "3 shipped · 1 live app",
+      chipTeam: "leads a 10-person drone team",
+      chipResearch: "active zero forcing research",
     },
     work: {
       heading: "Work",
@@ -71,9 +71,8 @@ const COPY = {
       },
       rankReason: {
         featured: "featured — newest, deepest work",
-        frontier: "high on both recency and depth",
-        shippedRecent: "shipped and recent",
-        earlier: "earlier work",
+        liveRecent: "live and recent",
+        recent: "recent work",
       },
       outro: "That's the field guide. The one-page version is the",
       outroResumeLabel: "résumé",
@@ -209,7 +208,7 @@ const COPY = {
 
   projects: {
     zeroForcingPolytopes: {
-      title: "Zero Forcing Polytopes",
+      title: "zero-forcing-polytopes toolkit",
       tag: "python",
       description:
         "Computational companion to the zero forcing polytopes research above: construct the polytope from a graph's minimum forcing sets and enumerate its lattice points, pruning the search rather than brute-forcing it, since forcing-set enumeration blows up combinatorially past small graphs. In progress.",
@@ -275,7 +274,7 @@ const COPY = {
 
   contentPoints: {
     zeroForcingPolytopesResearch: { label: "Zero Forcing Polytopes (research)" },
-    zeroForcingPolytopes: { label: "Zero Forcing Polytopes" },
+    zeroForcingPolytopes: { label: "zero-forcing-polytopes toolkit" },
     preferenceLayer: { label: "preference-layer" },
     quire: { label: "quire" },
     marketSentimentPredictor: { label: "market-sentiment-predictor" },

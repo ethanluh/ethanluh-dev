@@ -68,7 +68,10 @@
 
     --canopy: #f4f1e8;
     --bark: #ddd4c0;
-    --moss: #5b7a45;
+    /* Darkened from #5b7a45 (4.31:1) — lightest hue-preserving shade that
+       clears 4.5:1 against light canopy in both directions (moss-on-canopy
+       text and canopy-on-moss .btn-primary text); see CLAUDE.md conventions. */
+    --moss: #587643;
     --stone: #6b6558;
     --parchment: #201c14;
     --lavender: #7c66a0;
@@ -91,7 +94,7 @@
 
   --canopy: #f4f1e8;
   --bark: #ddd4c0;
-  --moss: #5b7a45;
+  --moss: #587643;
   --stone: #6b6558;
   --parchment: #201c14;
   --lavender: #7c66a0;

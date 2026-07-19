@@ -89,6 +89,7 @@ const orderedWorkSlugs = workLayers.flatMap((layer) => [...layer].sort((a, b) =>
 const orderedWork = orderedWorkSlugs.map((slug) => workBySlug.get(slug)).filter((w): w is WorkEntry => Boolean(w));
 
 const [featuredWork, ...restWork] = orderedWork;
+const featuredMeta = featuredWork ? metaFor(featuredWork.slug) : undefined;
 
 // --- Status + rank-reason microcopy, derived from the same hull-peel data ---
 const contentPointBySlug = new Map(CONTENT_POINTS.map((p) => [p.slug, p]));
@@ -101,12 +102,17 @@ function statusFor(slug: string): "live" | "shipped" | "inProgress" {
   return "shipped";
 }
 
-function rankReasonFor(slug: string): "featured" | "frontier" | "shippedRecent" | "earlier" {
+// Rank reasons are intentionally sparse — see /how-it-works link copy and
+// the adversarial-review fix that trimmed this from "every card explains
+// itself" (repetitive, doubled up with the status badge) down to only the
+// cards where the reason says something the status badge doesn't already.
+function rankReasonFor(slug: string): "featured" | "liveRecent" | "recent" | undefined {
   if (slug === orderedWorkSlugs[0]) return "featured";
-  if (layer0Slugs.has(slug)) return "frontier";
-  const point = contentPointBySlug.get(slug);
-  if (point?.shipped === true && point.recency >= 0.5) return "shippedRecent";
-  return "earlier";
+  if (slug === "quire") return "liveRecent";
+  if ((slug === "agentmade-internship" || slug === "uas-software-lead") && layer0Slugs.has(slug)) {
+    return "recent";
+  }
+  return undefined;
 }
 
 // --- Related-content: Delaunay triangulation over (topic, recency) ---
@@ -115,6 +121,17 @@ const contentIndexBySlug = new Map(CONTENT_POINTS.map((p, i) => [p.slug, i]));
 const neighborIndices = relatedIndices(CONTENT_POINTS.map((p) => [p.topic, p.recency]));
 const delaunayEdges = edgesFromNeighbors(neighborIndices);
 const delaunayActive = CONTENT_POINTS.length >= MIN_POINTS_FOR_DELAUNAY;
+
+// Suppress the status badge whenever a rank reason renders on the same card,
+// so no card ever shows both (e.g. quire's "live" badge + "live and recent"
+// reason) — see the Fix 2 adversarial-review note in index.astro's history.
+function metaFor(slug: string) {
+  const reasonKey = rankReasonFor(slug);
+  const rankReason = reasonKey ? copy(`home.work.rankReason.${reasonKey}`) : undefined;
+  if (rankReason) return { statusKind: undefined, statusLabel: undefined, rankReason };
+  const statusKind = statusFor(slug);
+  return { statusKind, statusLabel: copy(`home.work.status.${statusKind}`), rankReason: undefined };
+}
 
 function relatedFor(slug: string) {
   if (!delaunayActive) return [];
@@ -140,7 +157,7 @@ function delaunayFor(slug: string) {
     { label: copy("home.contact.heading"), href: "#contact" },
   ]}
 >
-  <section class="section-block-hero flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10 lg:min-h-[calc(88svh-var(--header-height))]">
+  <section class="section-block-hero flex flex-col min-[900px]:flex-row min-[900px]:items-center min-[900px]:justify-between gap-6 min-[900px]:gap-10 min-[900px]:min-h-[calc(88svh-var(--header-height))]">
     <div class="max-w-2xl flex flex-col gap-3 lg:gap-4">
       <h1 class="hero-enter font-display text-h1" style="--enter-order: 0">
         {copy("home.hero.headline")}
@@ -176,7 +193,7 @@ function delaunayFor(slug: string) {
         </a>
       </p>
     </div>
-    <div class="hero-enter w-full max-w-[22rem] mx-auto lg:max-w-none lg:mx-0 lg:w-[26rem] lg:shrink-0" style="--enter-order: 5">
+    <div class="hero-enter w-full max-w-[22rem] mx-auto min-[900px]:max-w-none min-[900px]:mx-0 min-[900px]:w-[20rem] min-[900px]:shrink-0 lg:w-[26rem]" style="--enter-order: 5">
       <ZeroForcingHero />
     </div>
   </section>
@@ -207,9 +224,9 @@ function delaunayFor(slug: string) {
           imageAlt={featuredWork.imageAlt}
           kindLabel={featuredWork.kind}
           eyebrow={copy("home.work.featuredEyebrow")}
-          statusKind={statusFor(featuredWork.slug)}
-          statusLabel={copy(`home.work.status.${statusFor(featuredWork.slug)}`)}
-          rankReason={copy(`home.work.rankReason.${rankReasonFor(featuredWork.slug)}`)}
+          statusKind={featuredMeta?.statusKind}
+          statusLabel={featuredMeta?.statusLabel}
+          rankReason={featuredMeta?.rankReason}
           related={relatedFor(featuredWork.slug)}
           delaunay={delaunayFor(featuredWork.slug)}
           techStack={featuredWork.techStack}
@@ -229,30 +246,33 @@ function delaunayFor(slug: string) {
                 {copy(`home.work.trackLabel.${kind}`)}
               </p>
               <div class="flex flex-col gap-4">
-                {entries.map((entry, i) => (
-                  <div class="reveal" style={`--reveal-delay: ${Math.min(i * 90, 270)}ms`}>
-                    <SpecimenCard
-                      id={`content-${entry.slug}`}
-                      number={entry.number}
-                      title={entry.title}
-                      tag={entry.tag}
-                      description={entry.description}
-                      impact={entry.impact}
-                      links={entry.links ?? (entry.href ? [{ label: "view", href: entry.href }] : [])}
-                      image={entry.image}
-                      imageAlt={entry.imageAlt}
-                      variant={entry.kind}
-                      kindLabel={entry.kind}
-                      statusKind={statusFor(entry.slug)}
-                      statusLabel={copy(`home.work.status.${statusFor(entry.slug)}`)}
-                      rankReason={copy(`home.work.rankReason.${rankReasonFor(entry.slug)}`)}
-                      related={relatedFor(entry.slug)}
-                      delaunay={delaunayFor(entry.slug)}
-                      techStack={entry.techStack}
-                      mathStack={entry.mathStack}
-                    />
-                  </div>
-                ))}
+                {entries.map((entry, i) => {
+                  const meta = metaFor(entry.slug);
+                  return (
+                    <div class="reveal" style={`--reveal-delay: ${Math.min(i * 90, 270)}ms`}>
+                      <SpecimenCard
+                        id={`content-${entry.slug}`}
+                        number={entry.number}
+                        title={entry.title}
+                        tag={entry.tag}
+                        description={entry.description}
+                        impact={entry.impact}
+                        links={entry.links ?? (entry.href ? [{ label: "view", href: entry.href }] : [])}
+                        image={entry.image}
+                        imageAlt={entry.imageAlt}
+                        variant={entry.kind}
+                        kindLabel={entry.kind}
+                        statusKind={meta.statusKind}
+                        statusLabel={meta.statusLabel}
+                        rankReason={meta.rankReason}
+                        related={relatedFor(entry.slug)}
+                        delaunay={delaunayFor(entry.slug)}
+                        techStack={entry.techStack}
+                        mathStack={entry.mathStack}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
