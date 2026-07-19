@@ -1,5 +1,7 @@
 ---
 import { copy } from "../lib/copy";
+import ThemeToggle from "./ThemeToggle.astro";
+import { CONTACT_EMAIL, SOCIAL_LINKS } from "../content/site";
 
 interface Props {
   email: string;
@@ -8,10 +10,6 @@ interface Props {
 
 const { email, socialLinks } = Astro.props;
 
-// Contact (and, on desktop, résumé) live in IndexRail's "Contact" block,
-// which is always visible on desktop — no need to duplicate them in the top
-// nav there. IndexRail is hidden below the `lg` breakpoint, so the mobile
-// menu panel still needs its own contact link, appended separately below.
 const links = [
   { label: copy("nav.link.mainPage"), href: "/" },
   { label: copy("nav.link.coursework"), href: "/coursework" },
@@ -19,7 +17,7 @@ const links = [
   { label: copy("nav.link.about"), href: "/#about" },
   { label: copy("nav.link.howItWorks"), href: "/how-it-works" },
 ];
-const mobileLinks = [...links, { label: copy("nav.link.contact"), href: "mailto:ethan@ethanluh.com" }];
+const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:${CONTACT_EMAIL}` }];
 ---
 
 <header id="site-header" class="border-b border-bark sticky top-0 z-20 bg-canopy/85 backdrop-blur">
@@ -44,6 +42,14 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: "mailto:
 
     <button
       type="button"
+      data-resume-trigger
+      class="hidden lg:flex btn-secondary px-3 py-1.5 min-h-0 text-xs"
+    >
+      {copy("nav.link.resume")}
+    </button>
+
+    <button
+      type="button"
       id="nav-menu-toggle"
       aria-expanded="false"
       aria-controls="nav-menu-panel"
@@ -61,7 +67,7 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: "mailto:
       {
         mobileLinks.map((link) => (
           <li>
-            <a href={link.href} class="nav-link flex items-center gap-2 text-stone hover:text-moss transition-colors duration-150">
+            <a href={link.href} class="nav-link tap-target flex items-center gap-2 text-stone hover:text-moss transition-colors duration-150">
               <span class="nav-link-index"></span>
               <span>{link.label}</span>
             </a>
@@ -70,17 +76,19 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: "mailto:
       }
     </ul>
     <div class="nav-menu-divider my-5" aria-hidden="true"></div>
+    <ThemeToggle />
+    <div class="nav-menu-divider my-5" aria-hidden="true"></div>
     <ul class="flex flex-col gap-3 text-stone">
       <li>
-        <a href={`mailto:${email}`} class="hover:text-moss transition-colors duration-150">Email</a>
+        <a href={`mailto:${CONTACT_EMAIL}`} class="tap-target hover:text-moss transition-colors duration-150">{copy("nav.link.email")}</a>
       </li>
-      {socialLinks.map((link) => (
+      {SOCIAL_LINKS.map((link) => (
         <li>
-          <a href={link.href} target="_blank" rel="noopener noreferrer" class="hover:text-moss transition-colors duration-150">{link.label}</a>
+          <a href={link.href} target="_blank" rel="noopener noreferrer" class="tap-target hover:text-moss transition-colors duration-150">{link.label}</a>
         </li>
       ))}
       <li>
-        <button type="button" data-resume-trigger class="nav-menu-resume hover:text-moss transition-colors duration-150 cursor-pointer">Resume</button>
+        <button type="button" data-resume-trigger class="nav-menu-resume tap-target hover:text-moss transition-colors duration-150 cursor-pointer">{copy("nav.link.resume")}</button>
       </li>
     </ul>
   </div>
@@ -131,6 +139,10 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: "mailto:
     padding: 0;
     background: none;
     border: none;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: var(--text-mono, 0.75rem);
   }
 </style>
 
