@@ -10,7 +10,7 @@
         type="button"
         id="resume-modal-close"
         aria-label="Close resume"
-        class="hover:text-parchment transition-colors duration-150 cursor-pointer text-base leading-none"
+        class="modal-close hover:text-parchment transition-colors duration-150 cursor-pointer text-base leading-none"
       >
         &times;
       </button>
@@ -63,6 +63,17 @@
     padding: 0;
   }
 
+  /* Glyph stays visually the same size — padding expands the hit box to
+     44px+ and the matching negative margin keeps it from shoving the
+     Download/LaTeX Source links further left. */
+  .modal-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.2rem;
+    margin: -1rem -1.2rem;
+  }
+
   .resume-modal-object :global(canvas) {
     max-width: 100%;
     max-height: 100%;
@@ -111,9 +122,14 @@
 
         body.innerHTML = "";
         pages.forEach((canvas) => body.appendChild(canvas));
+        // The innerHTML swap can drop focus out of the dialog's tab boundary
+        // (Chromium loses track of it when the previously-focused subtree is
+        // replaced) — re-anchor it on a control that's always present.
+        if (modal?.open) closeBtn?.focus();
       } catch {
         renderPromise = null;
         body.innerHTML = `<p class="p-6 font-mono text-xs text-stone">Couldn't render the resume. <a href="/resume.pdf" download class="text-parchment underline">Download it</a> instead.</p>`;
+        if (modal?.open) closeBtn?.focus();
       }
     })();
 
@@ -150,6 +166,32 @@
   closeBtn?.addEventListener("click", () => modal?.close());
   modal?.addEventListener("click", (event) => {
     if (event.target === modal) modal.close();
+  });
+
+  // The innerHTML swap in renderResume() corrupts the dialog's native tab
+  // trap in Chromium — after the swap, tabbing can fall straight to <body>
+  // even mid-list, not just past the last element. Re-focusing the close
+  // button at swap time isn't enough, since it's the trap's bookkeeping
+  // (not just what currently has focus) that's broken. Compute the
+  // focusable set fresh on every Tab press instead of trusting the
+  // browser's (stale) internal order.
+  modal?.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab" || !modal) return;
+    const focusable = Array.from(modal.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"));
+    if (focusable.length === 0) return;
+    event.preventDefault();
+    const currentIndex = focusable.indexOf(document.activeElement as HTMLElement);
+    const delta = event.shiftKey ? -1 : 1;
+    const nextIndex = (currentIndex + delta + focusable.length) % focusable.length;
+    focusable[nextIndex]?.focus();
+  });
+
+  // Safety net: if focus still ends up outside the dialog some other way
+  // while it's open, pull it back in.
+  document.addEventListener("focusin", (event) => {
+    if (modal?.open && !modal.contains(event.target as Node)) {
+      closeBtn?.focus();
+    }
   });
   window.addEventListener("resize", () => {
     if (modal?.open) fitModalWidth();

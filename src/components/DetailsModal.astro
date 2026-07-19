@@ -8,7 +8,7 @@
       type="button"
       id="details-modal-close"
       aria-label="Close details"
-      class="shrink-0 hover:text-parchment transition-colors duration-150 cursor-pointer text-base leading-none"
+      class="modal-close shrink-0 hover:text-parchment transition-colors duration-150 cursor-pointer text-base leading-none"
     >
       &times;
     </button>
@@ -41,6 +41,16 @@
 
   .details-modal::backdrop {
     background-color: rgb(0 0 0 / 0.6);
+  }
+
+  /* Glyph stays visually the same size — padding expands the hit box to
+     44px+ and the matching negative margin keeps it from shifting layout. */
+  .modal-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.2rem;
+    margin: -1rem -1.2rem;
   }
 </style>
 

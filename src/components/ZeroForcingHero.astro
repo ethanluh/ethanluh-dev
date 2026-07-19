@@ -163,6 +163,7 @@ function tooltipRect(centerX: number, labelY: number, title: string) {
             data-rect-w={box.width}
             data-rect-h={box.height}
           >
+            <circle cx={node.x} cy={node.y} r={nodeRadius + 8} class="zf-node-hit" fill="transparent" />
             <circle
               class:list={["zf-node", round === 0 ? "zf-seed" : "zf-forced"]}
               style={{ "--round": round }}
@@ -267,6 +268,10 @@ function tooltipRect(centerX: number, labelY: number, title: string) {
 
   .zf-node-link {
     cursor: pointer;
+  }
+
+  .zf-node-hit {
+    fill: transparent;
   }
 
   .zf-node {

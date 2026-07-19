@@ -62,7 +62,7 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
     </button>
   </nav>
 
-  <div id="nav-menu-panel" class="nav-menu-panel lg:hidden border-t border-bark px-6 py-5 font-mono text-xs uppercase tracking-widest" hidden>
+  <div id="nav-menu-panel" class="nav-menu-panel lg:hidden bg-canopy/85 backdrop-blur border-t border-bark px-6 py-5 font-mono text-xs uppercase tracking-widest" hidden>
     <ul class="nav-links flex flex-col gap-3">
       {
         mobileLinks.map((link) => (
@@ -121,7 +121,20 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
   .nav-menu-toggle {
     padding: 0.875rem;
     margin-block: -0.875rem;
-    margin-inline-end: -0.875rem;
+    margin-inline: -0.875rem;
+  }
+
+  /* Fixed overlay so the panel never depends on scrolling the page behind
+     it — bottom items were unreachable before when the panel was in-flow
+     and taller than the viewport. */
+  .nav-menu-panel {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    max-height: calc(100dvh - var(--header-height));
+    overflow-y: auto;
   }
 
   .nav-menu-bar {
@@ -194,8 +207,16 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
 
   function closeMenu() {
     if (!menuToggle || !menuPanel) return;
+    // Only return focus to the toggle when it was inside the panel (or lost
+    // entirely, i.e. on body) — a click on some unrelated focusable control
+    // outside the header has already moved focus where the user intended,
+    // and shouldn't be yanked back to the hamburger.
+    const activeElement = document.activeElement;
+    const shouldReturnFocus =
+      activeElement === document.body || (activeElement instanceof Node && menuPanel.contains(activeElement));
     menuToggle.setAttribute("aria-expanded", "false");
     menuPanel.hidden = true;
+    if (shouldReturnFocus) menuToggle.focus();
   }
 
   function openMenu() {
@@ -211,7 +232,11 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
     });
 
     menuPanel.addEventListener("click", (event) => {
-      if ((event.target as HTMLElement)?.closest("a, button")) closeMenu();
+      const target = event.target as HTMLElement;
+      // The theme toggle is a button inside the panel too, but activating it
+      // shouldn't close the menu — only exclude it, not other links/buttons.
+      if (target?.closest("[data-theme-toggle]")) return;
+      if (target?.closest("a, button")) closeMenu();
     });
 
     document.addEventListener("click", (event) => {

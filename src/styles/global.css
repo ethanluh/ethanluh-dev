@@ -283,8 +283,25 @@
     position: relative;
   }
 
+  /* Bumped from 0.875rem — measured effective height was ~42px, just short
+     of the 44px target, for text-xs content. Stays a plain inline element
+     (no display change) so it doesn't distort the inline links this class
+     is used on mid-sentence in prose (contact band, work-section outro). */
   .tap-target {
-    padding-block: 0.875rem;
-    margin-block: -0.875rem;
+    padding-block: 0.9375rem;
+    margin-block: -0.9375rem;
+  }
+
+  /* Standalone tap-target controls (nav links/buttons, related/details
+     triggers) aren't mixed inline with surrounding prose, so they can also
+     get true min-height + vertical centering — min-height has no effect on
+     a plain inline element like the bare `.tap-target` usages above. */
+  .nav-link.tap-target,
+  .nav-menu-resume.tap-target,
+  .related-trigger.tap-target,
+  .details-trigger.tap-target {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 }

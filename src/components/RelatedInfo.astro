@@ -19,7 +19,7 @@ const { related, delaunay } = Astro.props;
 {
   related.length > 0 && (
     <span class="related-info">
-      <button type="button" class="related-trigger tap-target font-mono text-xs">
+      <button type="button" class="related-trigger tap-target font-mono text-xs" aria-expanded="false">
         ⓘ {related.length} related
       </button>
       <span class="related-popover" role="note">
@@ -102,7 +102,8 @@ const { related, delaunay } = Astro.props;
     white-space: normal;
   }
   .related-info:hover .related-popover,
-  .related-info:focus-within .related-popover {
+  .related-info:focus-within .related-popover,
+  .related-info.open .related-popover {
     opacity: 1;
     pointer-events: auto;
   }
@@ -114,7 +115,8 @@ const { related, delaunay } = Astro.props;
         transform 160ms var(--ease-field);
     }
     .related-info:hover .related-popover,
-    .related-info:focus-within .related-popover {
+    .related-info:focus-within .related-popover,
+    .related-info.open .related-popover {
       transform: translateY(0);
     }
   }
@@ -124,8 +126,10 @@ const { related, delaunay } = Astro.props;
      position: fixed doesn't reliably escape it — the card's own
      hover/focus transform (.card-lift) creates a containing block that
      traps fixed-position descendants too. Drop the floating overlay in
-     favor of an in-flow panel below the trigger instead. */
-  @media (max-width: 640px) {
+     favor of an in-flow panel below the trigger instead. Raised to 1024px:
+     the floating popover was still overflowing the viewport at narrower
+     desktop/tablet widths (measured 183px of overflow at 1023px). */
+  @media (max-width: 1024px) {
     .related-info {
       display: block;
     }
@@ -141,9 +145,38 @@ const { related, delaunay } = Astro.props;
       transform: none;
     }
     .related-info:hover .related-popover,
-    .related-info:focus-within .related-popover {
+    .related-info:focus-within .related-popover,
+    .related-info.open .related-popover {
       display: flex;
       transform: none;
     }
   }
 </style>
+
+<script>
+  // :hover/:focus-within alone don't reliably trigger on iOS Safari taps, so
+  // give the trigger an explicit click-toggle too. Hover/focus keep working
+  // as-is via the CSS above; this just adds a third way in.
+  document.querySelectorAll<HTMLElement>(".related-info").forEach((info) => {
+    const trigger = info.querySelector<HTMLButtonElement>(".related-trigger");
+    if (!trigger) return;
+
+    function setOpen(open: boolean) {
+      info.classList.toggle("open", open);
+      trigger!.setAttribute("aria-expanded", String(open));
+    }
+
+    trigger.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setOpen(!info.classList.contains("open"));
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!info.contains(event.target as Node)) setOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setOpen(false);
+    });
+  });
+</script>
