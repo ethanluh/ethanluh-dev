@@ -135,6 +135,7 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
     z-index: 30;
     max-height: calc(100dvh - var(--header-height));
     overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .nav-menu-bar {
@@ -190,7 +191,7 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
         const currentScrollY = window.scrollY;
         header.classList.toggle("nav-scrolled", currentScrollY > 4);
 
-        if (currentScrollY > lastScrollY && currentScrollY > 120) {
+        if (currentScrollY > lastScrollY && currentScrollY > 120 && (!menuPanel || menuPanel.hidden)) {
           header.classList.add("nav-hidden");
         } else {
           header.classList.remove("nav-hidden");

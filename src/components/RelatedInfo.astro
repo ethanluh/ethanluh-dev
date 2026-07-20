@@ -156,27 +156,62 @@ const { related, delaunay } = Astro.props;
 <script>
   // :hover/:focus-within alone don't reliably trigger on iOS Safari taps, so
   // give the trigger an explicit click-toggle too. Hover/focus keep working
-  // as-is via the CSS above; this just adds a third way in.
-  document.querySelectorAll<HTMLElement>(".related-info").forEach((info) => {
+  // as-is via the CSS above; this just adds a third way in — but the
+  // attribute is driven from a single function on every relevant event
+  // (click, hover, focus) so aria-expanded never contradicts the visible
+  // (CSS hover/focus-within) state.
+  const allInfos = document.querySelectorAll<HTMLElement>(".related-info");
+
+  function isVisiblyOpen(info: HTMLElement) {
+    return info.classList.contains("open") || info.matches(":hover") || info.matches(":focus-within");
+  }
+
+  function syncExpanded(info: HTMLElement) {
+    const trigger = info.querySelector<HTMLButtonElement>(".related-trigger");
+    trigger?.setAttribute("aria-expanded", String(isVisiblyOpen(info)));
+  }
+
+  allInfos.forEach((info) => {
     const trigger = info.querySelector<HTMLButtonElement>(".related-trigger");
     if (!trigger) return;
 
-    function setOpen(open: boolean) {
-      info.classList.toggle("open", open);
-      trigger!.setAttribute("aria-expanded", String(open));
-    }
-
     trigger.addEventListener("click", (event) => {
       event.stopPropagation();
-      setOpen(!info.classList.contains("open"));
+      const opening = !info.classList.contains("open");
+      if (opening) {
+        allInfos.forEach((other) => {
+          if (other !== info) {
+            other.classList.remove("open");
+            syncExpanded(other);
+          }
+        });
+      }
+      info.classList.toggle("open", opening);
+      syncExpanded(info);
     });
 
-    document.addEventListener("click", (event) => {
-      if (!info.contains(event.target as Node)) setOpen(false);
-    });
+    info.addEventListener("focusin", () => syncExpanded(info));
+    info.addEventListener("mouseenter", () => syncExpanded(info));
+    info.addEventListener("mouseleave", () => syncExpanded(info));
+    info.addEventListener("focusout", () => syncExpanded(info));
+  });
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") setOpen(false);
+  document.addEventListener("click", (event) => {
+    allInfos.forEach((info) => {
+      if (!info.contains(event.target as Node) && info.classList.contains("open")) {
+        info.classList.remove("open");
+        syncExpanded(info);
+      }
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    allInfos.forEach((info) => {
+      if (info.classList.contains("open")) {
+        info.classList.remove("open");
+        syncExpanded(info);
+      }
     });
   });
 </script>

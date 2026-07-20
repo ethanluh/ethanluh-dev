@@ -48,8 +48,8 @@ const COPY = {
       chipProgram: "CS/Math/Stats · Penn State Behrend",
       chipGradDate: "Grad May 2028",
       chipShipped: "3 shipped · 1 live app",
-      chipTeam: "leads a 10-person drone team",
-      chipResearch: "active zero forcing research",
+      chipTeam: "10-person team lead",
+      chipResearch: "active research",
     },
     work: {
       heading: "Work",
