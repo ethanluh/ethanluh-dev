@@ -23,8 +23,8 @@ const mathCategories = [
     { label: copy("stack.railLabel.math"), href: "#math-stack" },
   ]}
 >
-  <section class="py-10 scroll-mt-16">
-    <h2 class="font-display text-h3 border-l-2 border-moss pl-4 mb-6">{copy("stack.heading")}</h2>
+  <section class="section-block scroll-mt-24">
+    <h2 class="reveal font-display text-h3 rule-draw mb-6">{copy("stack.heading")}</h2>
     <p class="font-mono text-xs text-stone mb-10 max-w-2xl">
       {copy("stack.intro")}
     </p>
@@ -85,22 +85,8 @@ const mathCategories = [
           }
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.1, rootMargin: "0px 0px -8% 0px" },
     );
     reveals.forEach((el) => observer.observe(el));
   }
 </script>
-
-<style>
-  .reveal {
-    opacity: 0;
-    transform: translateY(12px);
-    transition:
-      opacity var(--duration-base, 300ms) var(--ease-field),
-      transform var(--duration-base, 300ms) var(--ease-field);
-  }
-  .reveal.in-view {
-    opacity: 1;
-    transform: translateY(0);
-  }
-</style>

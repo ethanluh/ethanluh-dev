@@ -4,21 +4,18 @@ import Nav from "../components/Nav.astro";
 import ResumeModal from "../components/ResumeModal.astro";
 import DetailsModal from "../components/DetailsModal.astro";
 import IndexRail from "../components/IndexRail.astro";
+import { CONTACT_EMAIL, SOCIAL_LINKS, PERSONAL_SITE } from "../content/site";
 
 interface Props {
   title: string;
   description: string;
   railSections?: { label: string; href: string }[];
+  ogImage?: string;
 }
 
-const { title, description, railSections = [] } = Astro.props;
+const { title, description, railSections = [], ogImage = "/og-image.png" } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const CONTACT_EMAIL = "ethan@ethanluh.com";
-const SOCIAL_LINKS = [
-  { label: "GitHub", href: "https://github.com/ethanluh" },
-  { label: "LinkedIn", href: "https://linkedin.com/in/ethanluh" },
-];
-const PERSONAL_SITE = { label: "me", href: "https://me.ethanluh.com" };
+const ogImageURL = new URL(ogImage, Astro.site);
 
 const personSchema = {
   "@context": "https://schema.org",
@@ -30,7 +27,7 @@ const personSchema = {
     "@type": "CollegeOrUniversity",
     name: "Penn State Behrend",
   },
-  sameAs: ["https://github.com/ethanluh", "https://linkedin.com/in/ethanluh"],
+  sameAs: ["https://github.com/ethanluh", "https://linkedin.com/in/ethanluh", "https://quire-review.com"],
 };
 ---
 
@@ -46,19 +43,26 @@ const personSchema = {
     </script>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    <noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
     <title>{title}</title>
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Ethan Luh — math into working software" />
+    <meta property="og:site_name" content="Ethan Luh" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
 
     <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
 

@@ -6,9 +6,11 @@ export interface ProjectEntry {
   title: string;
   tag: string;
   description: string;
+  impact: string;
   href?: string;
   links?: { label: string; href: string }[];
   image?: string;
+  imageAlt?: string;
   techStack: string[];
   mathStack?: string[];
 }
@@ -23,6 +25,7 @@ export const projects: ProjectEntry[] = [
     title: copy("projects.zeroForcingPolytopes.title"),
     tag: copy("projects.zeroForcingPolytopes.tag"),
     description: copy("projects.zeroForcingPolytopes.description"),
+    impact: copy("projects.zeroForcingPolytopes.impact"),
     image: "/placeholder-project.svg",
     techStack: copy("projects.zeroForcingPolytopes.techStack").split(" · "),
     mathStack: copy("projects.zeroForcingPolytopes.mathStack").split(" · "),
@@ -33,8 +36,10 @@ export const projects: ProjectEntry[] = [
     title: copy("projects.preferenceLayer.title"),
     tag: copy("projects.preferenceLayer.tag"),
     description: copy("projects.preferenceLayer.description"),
+    impact: copy("projects.preferenceLayer.impact"),
     href: "https://github.com/ethanluh/preference-layer",
     image: "/preference-layer-diagram.svg",
+    imageAlt: copy("projects.preferenceLayer.imageAlt"),
     techStack: copy("projects.preferenceLayer.techStack").split(" · "),
     mathStack: copy("projects.preferenceLayer.mathStack").split(" · "),
   },
@@ -44,11 +49,13 @@ export const projects: ProjectEntry[] = [
     title: copy("projects.quire.title"),
     tag: copy("projects.quire.tag"),
     description: copy("projects.quire.description"),
+    impact: copy("projects.quire.impact"),
     links: [
       { label: "app", href: "https://quire-review.com" },
       { label: "code", href: "https://github.com/ethanluh/quire" },
     ],
     image: "/quire-diagram.svg",
+    imageAlt: copy("projects.quire.imageAlt"),
     techStack: copy("projects.quire.techStack").split(" · "),
     mathStack: copy("projects.quire.mathStack").split(" · "),
   },
@@ -58,8 +65,10 @@ export const projects: ProjectEntry[] = [
     title: copy("projects.marketSentimentPredictor.title"),
     tag: copy("projects.marketSentimentPredictor.tag"),
     description: copy("projects.marketSentimentPredictor.description"),
+    impact: copy("projects.marketSentimentPredictor.impact"),
     href: "https://github.com/ethanluh/market-sentiment-predictor",
     image: "/market-sentiment-diagram.svg",
+    imageAlt: copy("projects.marketSentimentPredictor.imageAlt"),
     techStack: copy("projects.marketSentimentPredictor.techStack").split(" · "),
     mathStack: copy("projects.marketSentimentPredictor.mathStack").split(" · "),
   },

@@ -7,6 +7,7 @@ export interface ExperienceEntry {
   org: string;
   dates: string;
   description: string;
+  impact: string;
 }
 
 export const experience: ExperienceEntry[] = [
@@ -17,6 +18,7 @@ export const experience: ExperienceEntry[] = [
     org: copy("experience.agentmadeInternship.org"),
     dates: "Summer 2026",
     description: copy("experience.agentmadeInternship.description"),
+    impact: copy("experience.agentmadeInternship.impact"),
   },
   {
     slug: "uas-software-lead",
@@ -25,5 +27,6 @@ export const experience: ExperienceEntry[] = [
     org: copy("experience.uasSoftwareLead.org"),
     dates: "Fall 2025–present",
     description: copy("experience.uasSoftwareLead.description"),
+    impact: copy("experience.uasSoftwareLead.impact"),
   },
 ];

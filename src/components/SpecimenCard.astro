@@ -14,11 +14,16 @@ interface Props {
   title: string;
   tag: string;
   description: string;
+  impact?: string;
   links?: { label: string; href: string }[];
   image?: string;
+  imageAlt?: string;
   kindLabel?: string;
   variant?: "research" | "project" | "experience" | "coursework";
   layout?: "row" | "stack";
+  statusKind?: "live" | "shipped" | "inProgress";
+  statusLabel?: string;
+  rankReason?: string;
   related?: { title: string; href: string }[];
   delaunay?: { points: DelaunayPoint[]; edges: [number, number][]; activeSlug: string };
   techStack?: string[];
@@ -31,11 +36,16 @@ const {
   title,
   tag,
   description,
+  impact,
   links = [],
   image,
+  imageAlt,
   kindLabel,
   variant = "research",
   layout = "row",
+  statusKind,
+  statusLabel,
+  rankReason,
   related = [],
   delaunay,
   techStack = [],
@@ -67,14 +77,22 @@ const isProject = variant === "project";
     <div class="flex flex-col flex-1">
       <div class="meta-row flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs mb-2">
         {kindLabel && <span class="uppercase tracking-widest text-moss">{kindLabel}</span>}
+        {rankReason && <span class="chip text-stone text-[0.7rem] normal-case tracking-normal">{rankReason}</span>}
         {kindLabel && <span class="text-stone" aria-hidden="true">·</span>}
+        {statusLabel && (
+          <span class="chip text-stone">
+            {statusKind === "live" && <span class="text-moss" aria-hidden="true">&#9679; </span>}
+            {statusLabel}
+          </span>
+        )}
         {chips.map((entry, i) => (
           <span class:list={["chip text-stone", isExperience && i === 0 && "text-moss bg-transparent px-0"]}>{entry}</span>
         ))}
       </div>
-      <h3 class:list={["text-xl mb-1 flex items-center gap-2", isProject ? "font-mono project-title" : "font-display"]}>
+      <h3 class:list={["text-h3 mb-1 flex items-center gap-2", isProject ? "font-mono project-title" : "font-display"]}>
         {title}
       </h3>
+      {impact && <p class="text-parchment mb-1">{impact}</p>}
       <p class="text-parchment/90 mb-2 line-clamp-2">{description}</p>
       {
         techStack.length > 0 && (
@@ -94,7 +112,7 @@ const isProject = variant === "project";
         hasDetails && (
           <button
             type="button"
-            class="details-trigger font-mono text-xs text-moss hover:text-parchment transition-colors duration-150 mb-2 self-start"
+            class="details-trigger tap-target font-mono text-xs text-moss hover:text-parchment transition-colors duration-150 mb-2 self-start"
             aria-haspopup="dialog"
             data-number={number}
             data-title={title}
@@ -125,7 +143,13 @@ const isProject = variant === "project";
           tabindex={primaryHref ? 0 : -1}
           aria-hidden={primaryHref ? undefined : "true"}
         >
-          <img src={image} alt="" class="specimen-image w-full h-auto block" loading="lazy" />
+          <img
+            src={image}
+            alt={imageAlt ?? ""}
+            aria-hidden={imageAlt ? undefined : "true"}
+            class="specimen-image w-full h-auto block"
+            loading="lazy"
+          />
         </a>
       )
     }

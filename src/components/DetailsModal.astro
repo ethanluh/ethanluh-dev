@@ -8,7 +8,7 @@
       type="button"
       id="details-modal-close"
       aria-label="Close details"
-      class="shrink-0 hover:text-parchment transition-colors duration-150 cursor-pointer text-base leading-none"
+      class="modal-close shrink-0 hover:text-parchment transition-colors duration-150 cursor-pointer text-base leading-none"
     >
       &times;
     </button>
@@ -41,6 +41,16 @@
 
   .details-modal::backdrop {
     background-color: rgb(0 0 0 / 0.6);
+  }
+
+  /* Glyph stays visually the same size — padding expands the hit box to
+     44px+ and the matching negative margin keeps it from shifting layout. */
+  .modal-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.2rem;
+    margin: -1rem -1.2rem;
   }
 </style>
 
@@ -101,5 +111,21 @@
   closeBtn?.addEventListener("click", () => modal?.close());
   modal?.addEventListener("click", (event) => {
     if (event.target === modal) modal.close();
+  });
+
+  // The details modal swaps its content via innerHTML on every open, which
+  // corrupts the dialog's native tab trap in Chromium (Tab eventually falls
+  // through to <body>) — compute the focusable set fresh on every Tab press
+  // instead of trusting the browser's (stale) internal order. Same approach
+  // as ResumeModal.astro.
+  modal?.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab" || !modal) return;
+    const focusable = Array.from(modal.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"));
+    if (focusable.length === 0) return;
+    event.preventDefault();
+    const currentIndex = focusable.indexOf(document.activeElement as HTMLElement);
+    const delta = event.shiftKey ? -1 : 1;
+    const nextIndex = (currentIndex + delta + focusable.length) % focusable.length;
+    focusable[nextIndex]?.focus();
   });
 </script>
