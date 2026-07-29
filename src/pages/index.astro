@@ -169,8 +169,11 @@ function delaunayFor(slug: string) {
       <p class="hero-enter text-parchment/90 max-w-xl leading-snug sm:leading-relaxed" style="--enter-order: 1">
         {copy("home.hero.subhead")}
       </p>
-      <p class="hero-enter font-mono text-xs text-moss" style="--enter-order: 2">
-        {copy("home.hero.targetLine")}
+      <p class="hero-enter font-mono text-xs text-stone" style="--enter-order: 2">
+        {copy("home.hero.targetLine")}{" "}
+        <a href="#contact" class="tap-target text-moss hover:text-parchment transition-colors duration-150">
+          {copy("home.hero.targetLineLinkLabel")}
+        </a>
       </p>
       <div class="hero-enter" style="--enter-order: 3">
         <p class="font-mono text-xs uppercase tracking-widest text-stone leading-snug">
@@ -214,11 +217,11 @@ function delaunayFor(slug: string) {
       <p class="font-mono text-xs text-stone">
         {copy("home.work.stackLine")} <a href="/stack" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.stackLinkLabel")}</a>
       </p>
-      <div class="border-l-2 border-dashed border-moss/60 pl-3 mt-4 max-w-lg">
-        <span class="block font-mono text-[0.65rem] uppercase tracking-widest text-moss mb-1">field note</span>
-        <p class="text-sm text-stone italic">
+      <div class="border-l-2 border-moss pl-3 mt-4 max-w-lg">
+        <span class="block font-mono text-[0.65rem] uppercase tracking-widest text-stone mb-1">{copy("home.work.fieldNoteLabel")}</span>
+        <p class="text-sm text-parchment/90">
           {copy("home.work.fieldNote")}{" "}
-          <a href="#about" class="not-italic text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.fieldNoteLinkLabel")}</a>
+          <a href="#about" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.fieldNoteLinkLabel")}</a>
         </p>
       </div>
     </div>
