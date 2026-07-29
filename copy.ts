@@ -90,7 +90,7 @@ const COPY = {
     contact: {
       heading: "Contact",
       body: "I'm looking for Summer 2027 software engineering internships — especially anywhere the work sits on top of real math. If my projects fit what you're hiring for, or you want to compare notes on zero forcing, my inbox is open.",
-      ctaEmail: "Email ethan@ethanluh.com",
+      ctaEmail: "Email hello@ethanluh.com",
       ctaResume: "View résumé",
       elsewhere: "Elsewhere:",
     },
