@@ -4,13 +4,22 @@
 set -euo pipefail
 
 input="$(cat)"
-command="$(printf '%s' "$input" | grep -o '"command"[[:space:]]*:[[:space:]]*"[^"]*"' | head -n1 || true)"
+command="$(printf '%s' "$input" | jq -r '.tool_input.command // empty')"
 
 if ! printf '%s' "$command" | grep -qE 'gh pr (create|edit)'; then
   exit 0
 fi
 
-if printf '%s' "$command" | grep -qP '<!--\s*declared-direction:\s*\S.*-->'; then
+marker_re='<!--[[:space:]]*declared-direction:[[:space:]]*[^[:space:]].*-->'
+
+if printf '%s' "$command" | grep -qE "$marker_re"; then
+  exit 0
+fi
+
+# --body-file points the marker at a file instead of the inline command
+# string; the pr skill always writes the body to a file, so check that too.
+body_file="$(printf '%s' "$command" | grep -oE -- '--body-file[= ][^[:space:]"]+' | head -n1 | sed -E 's/^--body-file[= ]//' || true)"
+if [[ -n "$body_file" && -f "$body_file" ]] && grep -qE "$marker_re" "$body_file"; then
   exit 0
 fi
 
