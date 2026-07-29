@@ -169,7 +169,10 @@ function delaunayFor(slug: string) {
       <p class="hero-enter text-parchment/90 max-w-xl leading-snug sm:leading-relaxed" style="--enter-order: 1">
         {copy("home.hero.subhead")}
       </p>
-      <div class="hero-enter" style="--enter-order: 2">
+      <p class="hero-enter font-mono text-xs text-moss" style="--enter-order: 2">
+        {copy("home.hero.targetLine")}
+      </p>
+      <div class="hero-enter" style="--enter-order: 3">
         <p class="font-mono text-xs uppercase tracking-widest text-stone leading-snug">
           {copy("home.hero.chipProgram")}
           <br />
@@ -187,17 +190,17 @@ function delaunayFor(slug: string) {
           </li>
         </ul>
       </div>
-      <div class="hero-enter flex flex-wrap items-center gap-3" style="--enter-order: 3">
+      <div class="hero-enter flex flex-wrap items-center gap-3" style="--enter-order: 4">
         <Cta variant="primary" href={`mailto:${CONTACT_EMAIL}`} arrow>{copy("home.hero.ctaEmail")}</Cta>
         <Cta variant="secondary" resumeTrigger>{copy("home.hero.ctaResume")}</Cta>
       </div>
-      <p class="hero-enter font-mono text-xs text-stone" style="--enter-order: 4">
+      <p class="hero-enter font-mono text-xs text-stone" style="--enter-order: 5">
         <a href="#content-zero-forcing-polytopes-research" class="tap-target hover:text-moss transition-colors duration-150">
           {copy("home.hero.ctaMath")}
         </a>
       </p>
     </div>
-    <div class="hero-enter w-full max-w-[22rem] mx-auto min-[900px]:max-w-none min-[900px]:mx-0 min-[900px]:w-[20rem] min-[900px]:shrink-0 lg:w-[16rem] xl:w-[17rem] 2xl:w-[26rem]" style="--enter-order: 5">
+    <div class="hero-enter w-full max-w-[22rem] mx-auto min-[900px]:max-w-none min-[900px]:mx-0 min-[900px]:w-[20rem] min-[900px]:shrink-0 lg:w-[16rem] xl:w-[17rem] 2xl:w-[26rem]" style="--enter-order: 6">
       <ZeroForcingHero />
     </div>
   </section>
@@ -211,6 +214,13 @@ function delaunayFor(slug: string) {
       <p class="font-mono text-xs text-stone">
         {copy("home.work.stackLine")} <a href="/stack" class="text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.stackLinkLabel")}</a>
       </p>
+      <div class="border-l-2 border-dashed border-moss/60 pl-3 mt-4 max-w-lg">
+        <span class="block font-mono text-[0.65rem] uppercase tracking-widest text-moss mb-1">field note</span>
+        <p class="text-sm text-stone italic">
+          {copy("home.work.fieldNote")}{" "}
+          <a href="#about" class="not-italic text-moss hover:text-parchment transition-colors duration-150">{copy("home.work.fieldNoteLinkLabel")}</a>
+        </p>
+      </div>
     </div>
 
     {featuredWork && (
