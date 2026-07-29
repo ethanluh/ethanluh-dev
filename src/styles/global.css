@@ -184,7 +184,10 @@
 
   .reveal.in-view {
     opacity: 1;
-    transform: translateY(0);
+    /* Not translateY(0) — any non-"none" transform value permanently pins a
+       stacking context on the card, trapping its z-index:20 related-info
+       popover below later-DOM-order sibling cards it needs to overlap. */
+    transform: none;
   }
 
   .rule-draw {
