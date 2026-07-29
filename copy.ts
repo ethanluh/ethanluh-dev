@@ -41,7 +41,8 @@ const COPY = {
       subhead:
         "I'm Ethan Luh — a CS/Math/Stats student who ships the software his math implies: zero forcing polytope research, an autonomous drone perception pipeline, and dev tools for triaging AI-generated pull requests.",
       ctaMath: "researching zero forcing? → the math",
-      targetLine: "→ Open to Summer 2027 SWE internships — especially where the work sits on real math.",
+      targetLine: "Currently open to Summer 2027 internships —",
+      targetLineLinkLabel: "details in Contact ↓",
       ctaEmail: "Email me",
       ctaResume: "Résumé",
       zeroForcingCaptionPrefix: "Hover a node to see what it is, click to visit —",
@@ -54,9 +55,10 @@ const COPY = {
     },
     work: {
       heading: "Work",
+      fieldNoteLabel: "field note",
       fieldNote:
-        "Sat in on a thesis defense on the minimal forts of trees, then read the foundational zero-forcing paper independently — the combinatorics is what stuck.",
-      fieldNoteLinkLabel: "full story in About ↓",
+        "This is what's actually occupying most of my attention outside coursework right now — an independent study, still being written up.",
+      fieldNoteLinkLabel: "how it started, in About ↓",
       introPrefix:
         "Research, projects, and experience — ordered by convex-hull peel layer over (recency, depth), not by type. See",
       introLinkLabel: "how this site works",
