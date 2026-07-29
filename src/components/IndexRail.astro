@@ -42,10 +42,8 @@ const { sections = [], email, socialLinks, personalSite } = Astro.props;
           </a>
         </li>
       ))}
-      <li>
-        <button type="button" data-resume-trigger class="uppercase hover:text-moss transition-colors duration-150 cursor-pointer">Resume</button>
-      </li>
       <li class="flex items-center gap-2">
+        <button type="button" data-resume-trigger class="uppercase hover:text-moss transition-colors duration-150 cursor-pointer">Resume</button>
         <span class="rail-dot transition-colors duration-150" aria-hidden="true">&middot;</span>
         <a href={personalSite.href} class="hover:text-moss transition-colors duration-150">{personalSite.label}</a>
       </li>
