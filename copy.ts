@@ -39,7 +39,7 @@ const COPY = {
     hero: {
       headline: "Math into working software.",
       subhead:
-        "I'm Ethan Luh — a CS/Math/Stats student who ships the software his math implies: zero forcing polytope research, an autonomous drone perception pipeline, and dev tools for triaging AI-generated pull requests.",
+        "I'm Ethan Luh — a CS/Math/Stats student who ships the software his math implies: zero forcing research, drone perception, and AI PR-triage tooling.",
       ctaMath: "researching zero forcing? → the math",
       targetLine: "Currently open to Summer 2027 internships —",
       targetLineLinkLabel: "details in Contact ↓",
@@ -47,8 +47,7 @@ const COPY = {
       ctaResume: "Résumé",
       zeroForcingCaptionPrefix: "Hover a node to see what it is, click to visit —",
       zeroForcingCaptionLink: "how this graph works ↓",
-      chipProgram: "CS/Math/Stats · Penn State Behrend",
-      chipGradDate: "Grad May 2028",
+      chipProgram: "CS/Math/Stats · Penn State Behrend · Grad May 2028",
       chipShipped: "3 shipped · 1 live app",
       chipTeam: "10-person team lead",
       chipResearch: "active research",
