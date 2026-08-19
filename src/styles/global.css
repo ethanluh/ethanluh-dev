@@ -219,7 +219,7 @@
   }
 
   .section-block-hero {
-    padding-block: clamp(3rem, 2rem + 3vw, 4.5rem);
+    padding-block: clamp(2rem, 1rem + 3vw, 4.5rem);
   }
 
   .btn-primary,

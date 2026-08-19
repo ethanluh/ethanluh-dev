@@ -27,7 +27,7 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
       <span class="text-[0.65rem] tracking-normal normal-case text-stone">{copy("nav.brand.tagline")}</span>
     </a>
 
-    <ul class="nav-links hidden lg:flex flex-nowrap gap-5 items-center ml-auto">
+    <ul class="nav-links hidden xl:flex flex-nowrap gap-5 items-center ml-auto">
       {
         links.map((link) => (
           <li class="shrink-0">
@@ -43,7 +43,7 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
     <button
       type="button"
       data-resume-trigger
-      class="hidden lg:flex btn-secondary px-3 py-1.5 min-h-0 text-xs"
+      class="hidden xl:flex btn-secondary px-3 py-1.5 min-h-0 text-xs"
     >
       {copy("nav.link.resume")}
     </button>
@@ -54,7 +54,7 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
       aria-expanded="false"
       aria-controls="nav-menu-panel"
       aria-label="Toggle menu"
-      class="nav-menu-toggle lg:hidden flex flex-col justify-center gap-1.5 ml-auto cursor-pointer"
+      class="nav-menu-toggle xl:hidden flex flex-col justify-center gap-1.5 ml-auto cursor-pointer"
     >
       <span class="nav-menu-bar" aria-hidden="true"></span>
       <span class="nav-menu-bar" aria-hidden="true"></span>
@@ -62,7 +62,7 @@ const mobileLinks = [...links, { label: copy("nav.link.contact"), href: `mailto:
     </button>
   </nav>
 
-  <div id="nav-menu-panel" class="nav-menu-panel lg:hidden bg-canopy/85 backdrop-blur border-t border-bark px-6 py-5 font-mono text-xs uppercase tracking-widest" hidden>
+  <div id="nav-menu-panel" class="nav-menu-panel xl:hidden bg-canopy/85 backdrop-blur border-t border-bark px-6 py-5 font-mono text-xs uppercase tracking-widest" hidden>
     <ul class="nav-links flex flex-col gap-3">
       {
         mobileLinks.map((link) => (
