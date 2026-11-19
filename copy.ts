@@ -277,6 +277,36 @@ const COPY = {
     },
   },
 
+  mahjong: {
+    meta: {
+      title: "Mahjong — Ethan Luh",
+      description: "A solitaire Mahjong game with five modes, five board layouts, and five themes.",
+    },
+    heading: "Mahjong",
+    tagline: "Match free pairs and clear the board.",
+    modes: {
+      classic: { name: "Classic", desc: "Score with combos. Hints and shuffles cost points." },
+      timed: { name: "Time Attack", desc: "Beat the clock. Every match buys back a few seconds." },
+      zen: { name: "Zen", desc: "No clock, no score. Unlimited hints, undo, and shuffles." },
+      daily: { name: "Daily", desc: "One shared board per day. Chase your best time." },
+      fog: { name: "Fog", desc: "Buried tiles are blank. Faces appear only when free." },
+    },
+    layouts: {
+      turtle: { name: "Turtle", desc: "The classic 144-tile stack." },
+      pyramid: { name: "Pyramid", desc: "A wide, stepped pyramid." },
+      fortress: { name: "Fortress", desc: "Walls, corner towers, a keep." },
+      cross: { name: "Cross", desc: "Four arms rising to a central spire." },
+      butterfly: { name: "Butterfly", desc: "Two wings joined by a raised body." },
+    },
+    themes: {
+      jade: { name: "Jade Garden" },
+      ivory: { name: "Bamboo & Ivory" },
+      midnight: { name: "Neon Midnight" },
+      sakura: { name: "Sakura" },
+      ink: { name: "Sumi Ink" },
+    },
+  },
+
   contentPoints: {
     zeroForcingPolytopesResearch: { label: "Zero Forcing Polytopes (research)" },
     zeroForcingPolytopes: { label: "zero-forcing-polytopes toolkit" },

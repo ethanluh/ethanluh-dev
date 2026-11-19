@@ -1,0 +1,154 @@
+---
+import "../styles/mahjong.css";
+import { copy } from "../lib/copy";
+import { MODE_IDS, THEMES } from "../lib/mahjong/config.ts";
+import { LAYOUTS } from "../lib/mahjong/layouts.ts";
+
+const title = copy("mahjong.meta.title");
+const description = copy("mahjong.meta.description");
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = new URL("/og-image.png", Astro.site);
+---
+
+<html lang="en" data-mj-theme="jade">
+  <head>
+    <script is:inline>
+      try {
+        const p = JSON.parse(localStorage.getItem("mj:prefs") || "{}");
+        if (p.theme) document.documentElement.dataset.mjTheme = p.theme;
+      } catch (e) {
+        console.error("mahjong: unreadable saved preferences", e);
+      }
+    </script>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <title>{title}</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <canvas id="mj-ambient" aria-hidden="true"></canvas>
+
+    <div class="mj-app">
+      <header class="mj-bar">
+        <a class="mj-back" href="/" aria-label="Back to ethanluh.com">
+          <svg class="ico" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          <span>ethanluh.com</span>
+        </a>
+
+        <div class="mj-hud" aria-live="off">
+          <div class="hud-cell wide"><span class="lbl">Mode</span><b id="hud-mode">—</b></div>
+          <div class="hud-cell" id="hud-score-box"><span class="lbl">Score</span><b id="hud-score">0</b></div>
+          <div class="hud-cell"><span class="lbl" id="hud-time-label">Time</span><b id="hud-time">0:00</b></div>
+          <div class="hud-cell"><span class="lbl">Tiles</span><b id="hud-tiles">0</b></div>
+          <div class="hud-cell"><span class="lbl">Pairs</span><b id="hud-moves">0</b></div>
+        </div>
+
+        <div class="mj-actions">
+          <button class="mj-btn" id="btn-hint" title="Hint (H)" aria-label="Hint">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+          </button>
+          <button class="mj-btn" id="btn-undo" title="Undo (U)" aria-label="Undo">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
+          </button>
+          <button class="mj-btn" id="btn-shuffle" title="Shuffle (S)" aria-label="Shuffle">
+            <svg class="ico" viewBox="0 0 24 24"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22"/><path d="M2 6h1.972a4 4 0 0 1 3.6 2.2"/><path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45"/></svg>
+          </button>
+          <button class="mj-btn" id="btn-sound" title="Sound (M)" aria-label="Sound" aria-pressed="true">
+            <svg class="ico on" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></svg>
+            <svg class="ico off" viewBox="0 0 24 24" hidden><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>
+          </button>
+          <button class="mj-btn" id="btn-menu" title="Menu (Esc)" aria-label="Menu">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M4 18h16"/><path d="M4 6h16"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main id="mj-stage"><div id="mj-board" class="mj-board"></div></main>
+    </div>
+
+    <div id="mj-toast" role="status" aria-live="polite"></div>
+
+    <section id="mj-menu" class="mj-overlay" role="dialog" aria-modal="true" aria-labelledby="menu-title">
+      <div class="mj-panel">
+        <h1 id="menu-title">{copy("mahjong.heading")}</h1>
+        <p class="tagline">{copy("mahjong.tagline")}</p>
+
+        <h2 class="sect">Mode</h2>
+        <div class="grid modes" role="radiogroup" aria-label="Mode">
+          {MODE_IDS.map((id) => (
+            <button id={`mode-${id}`} class="opt" role="radio" data-group="mode" data-value={id} data-label={copy(`mahjong.modes.${id}.name`)}>
+              <b>{copy(`mahjong.modes.${id}.name`)}</b>
+              <span>{copy(`mahjong.modes.${id}.desc`)}</span>
+            </button>
+          ))}
+        </div>
+
+        <h2 class="sect">Layout <em id="menu-layout-note" hidden>set by the day</em></h2>
+        <div class="grid layouts" role="radiogroup" aria-label="Layout">
+          {LAYOUTS.map((l) => (
+            <button id={`layout-${l.id}`} class="opt layout" role="radio" data-group="layout" data-value={l.id} data-label={copy(`mahjong.layouts.${l.id}.name`)} title={copy(`mahjong.layouts.${l.id}.desc`)}>
+              <svg class="thumb" data-thumb={l.id} aria-hidden="true"></svg>
+              <b>{copy(`mahjong.layouts.${l.id}.name`)}</b>
+              <span>{l.slots.length} tiles</span>
+            </button>
+          ))}
+        </div>
+
+        <h2 class="sect">Theme</h2>
+        <div class="grid themes" role="radiogroup" aria-label="Theme">
+          {THEMES.map((t) => (
+            <button class="opt theme" role="radio" data-theme-id={t.id} aria-checked="false">
+              <i class="swatch" data-swatch={t.id} aria-hidden="true"></i>
+              <b>{copy(`mahjong.themes.${t.id}.name`)}</b>
+            </button>
+          ))}
+        </div>
+
+        <div class="menu-foot">
+          <p id="menu-stats" class="stats"></p>
+          <div class="cta">
+            <button id="menu-resume" class="mj-cta ghost" hidden>Resume</button>
+            <button id="menu-play" class="mj-cta">
+              <svg class="ico" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+              New game
+            </button>
+          </div>
+        </div>
+        <p class="keys">H hint &nbsp; U undo &nbsp; S shuffle &nbsp; N new &nbsp; R restart deal &nbsp; M sound &nbsp; Esc menu</p>
+      </div>
+    </section>
+
+    <section id="mj-result" class="mj-overlay" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
+      <div class="mj-panel small">
+        <h2 id="result-title">Board cleared</h2>
+        <p id="result-record" class="record" hidden>New personal best</p>
+        <dl id="result-rows"></dl>
+        <div class="cta">
+          <button id="result-menu" class="mj-cta ghost">Menu</button>
+          <button id="result-again" class="mj-cta">Play again</button>
+        </div>
+      </div>
+    </section>
+
+    <canvas id="mj-fx" aria-hidden="true"></canvas>
+    <svg id="mj-defs" width="0" height="0" aria-hidden="true"></svg>
+
+    <script>
+      import "../lib/mahjong/main.ts";
+    </script>
+  </body>
+</html>
